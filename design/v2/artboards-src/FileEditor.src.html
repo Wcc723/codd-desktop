@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>本機檔案 · punch.vue</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<!--@HELMET-->
+<style>
+/* ===== FileEditor board (fe-) ===== */
+.codd .fe-tree{flex-basis:264px}
+.codd .fe-head{height:60px;flex:none;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:0 8px 0 14px;border-bottom:1px dashed var(--line)}
+.codd .fe-head .r1{display:flex;align-items:baseline;gap:7px;min-width:0}
+.codd .fe-head .r1 .brand{font-size:14px}
+.codd .fe-head .r1 .pj{font-size:12px;color:var(--cream)}
+.codd .fe-head .r2{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--dim);font-variant-numeric:tabular-nums;white-space:nowrap}
+.codd .fe-ib{width:22px;height:22px;font-size:12px}
+.codd .fe-ib svg{width:14px;height:14px}
+.codd .fe-filter{flex:1;display:flex;align-items:center;gap:6px;height:26px;border:1px solid var(--line-bright);background:var(--bg-soft);padding:0 8px;color:var(--dim);font-size:11.5px;min-width:0}
+.codd .fe-filter input{all:unset;flex:1;min-width:0;color:var(--cream);font-size:11.5px;font-family:var(--mono)}
+.codd .fe-filter input::placeholder{color:var(--dimmer)}
+.codd .fe-node{display:flex;align-items:center;gap:6px;height:22px;flex:none;padding:0 8px 0 calc(10px + var(--d, 0) * 14px);font-size:12px;color:var(--bone);background:transparent;border:0;border-left:2px solid transparent;width:100%;text-align:left;font-family:var(--mono);text-decoration:none;cursor:pointer;white-space:nowrap}
+.codd .fe-node:hover{background:var(--bg-soft);color:var(--cream)}
+.codd .fe-node.cur{background:var(--bg-lift);border-left-color:var(--amber);color:var(--cream)}
+.codd .fe-node.mod .nm{color:#f3d9a6}
+.codd .fe-node.cur .nm{color:var(--cream)}
+.codd .fe-node.ign{color:var(--dimmer)}
+.codd .fe-node .nm{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.codd .fe-node .sl{color:var(--dimmer)}
+.codd .fe-node .dir{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;color:var(--dimmer);font-size:10.5px}
+.codd .fe-ext{flex:none;width:28px;font-size:9.5px;letter-spacing:.04em;color:var(--dim)}
+.codd .fe-badges{margin-left:auto;display:inline-flex;align-items:center;gap:5px;flex:none}
+.codd .fe-m{color:var(--amber);font-size:10.5px;font-weight:700;width:10px;text-align:center}
+.codd .fe-ai{display:inline-flex;align-items:center;height:14px;padding:0 4px;font-size:9px;font-weight:700;letter-spacing:.1em;line-height:1;color:var(--t-pink);border:1px solid rgba(255,124,181,.5);background:rgba(255,124,181,.08)}
+.codd .fe-fdot{width:5px;height:5px;flex:none;margin-left:auto;background:var(--amber-dim)}
+.codd .fe-foot-r{display:flex;justify-content:space-between;align-items:center;gap:8px;min-width:0}
+
+/* tabs + toolbar */
+.codd .fe-tab{text-transform:none;letter-spacing:.02em;font-size:11.5px;padding:0 6px 0 12px;gap:4px;cursor:default}
+.codd .fe-tab .fe-tb{all:unset;display:inline-flex;align-items:center;gap:7px;height:100%;cursor:pointer}
+.codd .fe-tab .fe-tb:focus-visible,.codd .fe-x:focus-visible,.codd .fe-opt:focus-visible,.codd .fe-sbb:focus-visible{outline:1px solid var(--amber);outline-offset:1px}
+.codd .fe-tab.prev .fe-tb{font-style:italic;color:var(--dim)}
+.codd .fe-tab .fe-ext{width:auto}
+.codd .fe-tab .ico{width:13px;height:13px}
+.codd .fe-x{all:unset;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:var(--dimmer);cursor:pointer}
+.codd .fe-x:hover{color:var(--amber);background:var(--bg-raise)}
+.codd .fe-x.dirty{color:var(--amber);font-size:11px}
+.codd .fe-sess{text-transform:none;letter-spacing:.02em}
+.codd .fe-bar{height:30px;flex:none;display:flex;align-items:center;gap:10px;padding:0 10px 0 14px;background:var(--bg);border-bottom:1px dashed var(--line-bright)}
+.codd .fe-crumb{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--dim);white-space:nowrap;min-width:0;overflow:hidden}
+.codd .fe-crumb a{color:var(--dim);text-decoration:none}
+.codd .fe-crumb a:hover{color:var(--amber)}
+.codd .fe-crumb .sp{color:var(--dimmer)}
+.codd .fe-crumb .cu{color:var(--cream)}
+.codd .fe-tools{margin-left:auto;display:flex;align-items:center;gap:10px;flex:none}
+.codd .fe-vr{width:1px;height:14px;background:var(--line-bright);flex:none}
+.codd .fe-swl{display:inline-flex;align-items:center;gap:7px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--bone)}
+.codd .fe-sel{width:auto;min-height:22px;height:22px;padding:0 24px 0 8px;font-size:11px}
+.codd .fe-bang{width:16px;height:16px;flex:none;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--amber);color:var(--amber);font-size:11px;font-weight:700;box-shadow:0 0 8px var(--amber-glow)}
+
+/* code view */
+.codd .fe-code{flex:1;min-height:0;display:flex;position:relative;background:#000;overflow:hidden}
+.codd .fe-lines{flex:1;min-width:0;padding-top:4px;font-family:var(--mono);font-size:12.5px;line-height:20px;color:#e8e6d8;letter-spacing:0;overflow:hidden}
+.codd .fe-l{display:flex;height:20px}
+.codd .fe-l .n{flex:none;width:46px;padding-right:4px;text-align:right;color:var(--dimmer);font-variant-numeric:tabular-nums}
+.codd .fe-l .m{flex:none;width:16px;text-align:center;color:var(--dimmer)}
+.codd .fe-l .c{flex:1;min-width:0;overflow:hidden;padding-left:4px;white-space:pre}
+.codd .fe-l.add{background:rgba(124,255,154,.075);box-shadow:inset 2px 0 0 var(--t-pink)}
+.codd .fe-l.add .m{color:var(--success)}
+.codd .fe-l.add .n{color:#8fd6a0}
+.codd .fe-l.del{background:rgba(255,112,88,.085);box-shadow:inset 2px 0 0 var(--t-pink)}
+.codd .fe-l.del .m{color:var(--danger)}
+.codd .fe-l.del .c{opacity:.72}
+.codd .fe-l.curl{background:linear-gradient(rgba(245,236,214,.05),rgba(245,236,214,.05)),rgba(124,255,154,.075);box-shadow:inset 2px 0 0 var(--t-pink),inset 0 1px 0 #262626,inset 0 -1px 0 #262626}
+.codd .fe-l.curl .n{color:var(--cream)}
+.codd .fe-l.mod .m::before{content:'';display:block;width:3px;height:20px;margin:0 auto;background:var(--t-pink)}
+.codd .fe-lines .k{color:var(--amber)}
+.codd .fe-lines .s{color:var(--cyan)}
+.codd .fe-lines .cm{color:var(--dimmer);font-style:italic}
+.codd .fe-lines .p{color:#8a8578}
+.codd .fe-lines .tg{color:#e0896a}
+.codd .fe-lines .at{color:var(--bone)}
+.codd .fe-lines .dv{color:var(--amber-dim)}
+.codd .fe-lines .fn{color:var(--cream)}
+.codd .fe-lines .pr{color:var(--bone)}
+.codd .fe-lines .nu{color:#a6e9f2}
+.codd .fe-lines .fe-hit{background:rgba(255,184,74,.16);box-shadow:inset 0 0 0 1px rgba(255,184,74,.5)}
+.codd .fe-lines .fe-hit.cur{background:var(--amber);color:#000;box-shadow:0 0 8px var(--amber-glow)}
+.codd .fe-caret{display:inline-block;width:2px;height:16px;margin:0 -1px;vertical-align:-3px;background:var(--amber);box-shadow:0 0 6px var(--amber-glow);animation:codd-blink 1s steps(1) infinite}
+.codd .fe-hunk{display:flex;align-items:center;gap:8px;height:26px;padding:0 12px 0 66px;font-size:10.5px;line-height:1;color:var(--dim);white-space:nowrap;letter-spacing:.02em;background:linear-gradient(90deg,rgba(255,124,181,.08),transparent 55%);border-top:1px dashed rgba(255,124,181,.35);box-shadow:inset 2px 0 0 var(--t-pink)}
+.codd .fe-hunk .who{color:var(--bone)}
+.codd .fe-ruler{flex:none;width:14px;position:relative;background:#030303;border-left:1px solid var(--line)}
+.codd .fe-ruler .th{position:absolute;left:0;right:0;background:rgba(245,236,214,.07)}
+.codd .fe-ruler i{position:absolute;display:block;height:3px}
+.codd .fe-ruler .rh{left:8px;right:1px;background:var(--amber)}
+.codd .fe-ruler .ra{left:1px;width:4px;background:var(--success)}
+.codd .fe-ruler .rd{left:1px;width:4px;background:var(--danger)}
+.codd .fe-ruler .rm{left:1px;width:4px;background:var(--t-pink)}
+.codd .fe-ruler .rc{left:0;right:0;height:2px;background:var(--cream);opacity:.75}
+.codd .fe-find{position:absolute;top:0;right:26px;z-index:5;display:flex;align-items:center;gap:2px;padding:5px 6px;background:var(--bg-lift);border:1px solid var(--amber-dim);border-top:0;box-shadow:0 8px 24px rgba(0,0,0,.6),0 0 14px rgba(255,184,74,.08)}
+.codd .fe-fq{display:flex;align-items:center;gap:1px;width:232px;height:24px;padding:0 2px 0 7px;border:1px solid var(--amber);background:var(--bg);box-shadow:0 0 8px var(--amber-glow)}
+.codd .fe-fin{all:unset;flex:1;min-width:0;font-family:var(--mono);font-size:12px;color:var(--cream);caret-color:var(--amber)}
+.codd .fe-opt{all:unset;box-sizing:border-box;height:18px;min-width:22px;padding:0 3px;display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10.5px;color:var(--dim);border:1px solid transparent;cursor:pointer}
+.codd .fe-opt:hover{color:var(--amber);border-color:var(--line-bright)}
+.codd .fe-cnt{min-width:44px;padding:0 6px 0 8px;font-size:11px;color:var(--bone);font-variant-numeric:tabular-nums}
+.codd .fe-sbb{all:unset;cursor:pointer;color:inherit;font:inherit}
+.codd .fe-sbb:hover{color:var(--amber)}
+</style>
+</helmet>
+<div class="codd win {{ crtClass }}">
+<!--@RAIL on=notes-->
+
+<aside class="side fe-tree" aria-label="檔案">
+  <div class="fe-head">
+    <div class="r1"><span class="brand">FILES</span><span class="faint">·</span><span class="pj ell">orb-toolkit-frontend</span></div>
+    <div class="r2">
+      <span>⎇ feat/punch-rwd</span><span class="faint">↑2</span><span class="faint">·</span><span class="amber">M 3</span><span class="faint">·</span><span style="color:var(--t-pink)">AI 2</span>
+      <span style="flex:1"></span>
+      <button class="icon-btn fe-ib" type="button" aria-label="新增檔案"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M5 2.75h6.5l3.5 3.5v11H5z"></path><path d="M10 9.5v5M7.5 12h5"></path></svg></button>
+      <button class="icon-btn fe-ib" type="button" aria-label="全部收合"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="3.75" y="3.75" width="12.5" height="12.5"></rect><path d="M7 10h6"></path></svg></button>
+    </div>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center;padding:8px 8px 2px">
+    <label class="fe-filter"><span aria-hidden="true">/</span><input type="text" placeholder="篩選檔案…" aria-label="篩選檔案"><span class="kbd">⌘P</span></label>
+  </div>
+
+  <div class="side-scroll">
+    <button class="sbsec" type="button"><span class="caret open">▸</span>Recent<span class="cnt">4</span><span class="rule"></span></button>
+    <a class="fe-node mod" href="#recent/src/pages/punch.vue"><span class="fe-ext">vue</span><span class="nm">punch.vue</span><span class="dir">src/pages</span><span class="fe-badges"><span class="fe-m">M</span><span class="fe-ai">AI</span></span></a>
+    <a class="fe-node" href="#note/rwd-punch-k7x2"><span class="fe-ext">md</span><span class="nm">打卡頁 RWD 跑版紀錄.md</span><span class="dir">notebook</span></a>
+    <a class="fe-node mod" href="#recent/src/components/PunchButton.vue"><span class="fe-ext">vue</span><span class="nm">PunchButton.vue</span><span class="dir">src/components</span><span class="fe-badges"><span class="fe-m">M</span><span class="fe-ai">AI</span></span></a>
+    <a class="fe-node mod" href="#recent/tailwind.config.js"><span class="fe-ext">js</span><span class="nm">tailwind.config.js</span><span class="dir">/</span><span class="fe-badges"><span class="fe-m">M</span></span></a>
+
+    <button class="sbsec" type="button" style="margin-top:6px"><span class="caret open">▸</span>Project<span class="rule"></span></button>
+    <nav aria-label="專案檔案樹" style="display:flex;flex-direction:column;gap:1px">
+      <button class="fe-node ign" type="button" aria-expanded="false" style="--d:0"><span class="caret">▸</span><span class="nm">node_modules<span class="sl">/</span></span></button>
+      <button class="fe-node" type="button" aria-expanded="true" style="--d:0"><span class="caret open">▸</span><span class="nm">public<span class="sl">/</span></span></button>
+      <a class="fe-node" href="#public/favicon.svg" style="--d:1"><span class="fe-ext">svg</span><span class="nm">favicon.svg</span></a>
+      <button class="fe-node" type="button" aria-expanded="true" style="--d:0"><span class="caret open">▸</span><span class="nm">src<span class="sl">/</span></span><span class="fe-fdot" aria-hidden="true"></span></button>
+      <button class="fe-node" type="button" aria-expanded="false" style="--d:1"><span class="caret">▸</span><span class="nm">assets<span class="sl">/</span></span></button>
+      <button class="fe-node" type="button" aria-expanded="true" style="--d:1"><span class="caret open">▸</span><span class="nm">components<span class="sl">/</span></span><span class="fe-fdot" aria-hidden="true"></span></button>
+      <a class="fe-node" href="#src/components/AppNav.vue" style="--d:2"><span class="fe-ext">vue</span><span class="nm">AppNav.vue</span></a>
+      <a class="fe-node mod" href="#src/components/PunchButton.vue" style="--d:2"><span class="fe-ext">vue</span><span class="nm">PunchButton.vue</span><span class="fe-badges"><span class="fe-m">M</span><span class="fe-ai">AI</span></span></a>
+      <a class="fe-node" href="#src/components/PunchRecordCard.vue" style="--d:2"><span class="fe-ext">vue</span><span class="nm">PunchRecordCard.vue</span></a>
+      <button class="fe-node" type="button" aria-expanded="true" style="--d:1"><span class="caret open">▸</span><span class="nm">pages<span class="sl">/</span></span><span class="fe-fdot" aria-hidden="true"></span></button>
+      <a class="fe-node" href="#src/pages/history.vue" style="--d:2"><span class="fe-ext">vue</span><span class="nm">history.vue</span></a>
+      <a class="fe-node" href="#src/pages/login.vue" style="--d:2"><span class="fe-ext">vue</span><span class="nm">login.vue</span></a>
+      <a class="fe-node mod cur" href="#src/pages/punch.vue" aria-current="page" style="--d:2"><span class="fe-ext">vue</span><span class="nm">punch.vue</span><span class="fe-badges"><span class="fe-m">M</span><span class="fe-ai">AI</span></span></a>
+      <button class="fe-node" type="button" aria-expanded="false" style="--d:1"><span class="caret">▸</span><span class="nm">router<span class="sl">/</span></span></button>
+      <button class="fe-node" type="button" aria-expanded="false" style="--d:1"><span class="caret">▸</span><span class="nm">stores<span class="sl">/</span></span></button>
+      <a class="fe-node" href="#src/App.vue" style="--d:1"><span class="fe-ext">vue</span><span class="nm">App.vue</span></a>
+      <a class="fe-node" href="#src/main.js" style="--d:1"><span class="fe-ext">js</span><span class="nm">main.js</span></a>
+      <a class="fe-node" href="#src/style.css" style="--d:1"><span class="fe-ext">css</span><span class="nm">style.css</span></a>
+      <a class="fe-node ign" href="#.env.local" style="--d:0"><span class="fe-ext">env</span><span class="nm">.env.local</span></a>
+      <a class="fe-node" href="#index.html" style="--d:0"><span class="fe-ext">html</span><span class="nm">index.html</span></a>
+      <a class="fe-node" href="#package.json" style="--d:0"><span class="fe-ext">json</span><span class="nm">package.json</span></a>
+      <a class="fe-node" href="#postcss.config.js" style="--d:0"><span class="fe-ext">js</span><span class="nm">postcss.config.js</span></a>
+      <a class="fe-node mod" href="#tailwind.config.js" style="--d:0"><span class="fe-ext">js</span><span class="nm">tailwind.config.js</span><span class="fe-badges"><span class="fe-m">M</span></span></a>
+      <a class="fe-node" href="#vite.config.js" style="--d:0"><span class="fe-ext">js</span><span class="nm">vite.config.js</span></a>
+    </nav>
+  </div>
+
+  <div class="side-foot">
+    <div class="fe-foot-r"><span class="sec" style="font-size:9.5px">Local</span><span class="ell num faint">~/…/orb-toolkit-suite/orb-toolkit-frontend</span></div>
+    <div class="fe-foot-r"><span style="display:inline-flex;align-items:center;gap:6px;min-width:0"><span class="lamp st-busy">●</span><span class="tag" style="background:var(--t-pink)"></span><span class="ell" style="color:var(--bone)">打卡頁 RWD 調整</span></span><span class="num">AI 改 2 · 10:41</span></div>
+  </div>
+</aside>
+
+<div class="main">
+  <!-- editor tab strip -->
+  <div class="tabs" aria-label="已開啟的檔案">
+    <div class="tab fe-tab on">
+      <button class="fe-tb" type="button" aria-current="page"><span class="fe-ext">vue</span>punch.vue</button>
+      <button class="fe-x dirty" type="button" aria-label="關閉 punch.vue（有未儲存的修改）">●</button>
+    </div>
+    <div class="tab fe-tab prev">
+      <button class="fe-tb" type="button" aria-label="tailwind.config.js（預覽）"><span class="fe-ext">js</span>tailwind.config.js</button>
+      <button class="fe-x" type="button" aria-label="關閉 tailwind.config.js">✕</button>
+    </div>
+    <div class="tab fe-tab">
+      <button class="fe-tb" type="button"><svg class="ico" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M5 2.75h7.5l3 3v11.5H5z"></path><path d="M12.25 2.75V6h3.25M7.5 9.5h5M7.5 12.5h5M7.5 15h3"></path></svg>打卡頁 RWD 跑版紀錄.md</button>
+      <button class="fe-x" type="button" aria-label="關閉 打卡頁 RWD 跑版紀錄.md">✕</button>
+    </div>
+    <div class="tfill">
+      <a class="pillbtn fe-sess" href="#s9" aria-label="前往 session 打卡頁 RWD 調整（⌘9）"><span class="lamp st-busy">●</span><span class="tag" style="background:var(--t-pink)"></span>打卡頁 RWD 調整<span class="faint">Edit · 6m</span><span class="kbd">⌘9</span></a>
+      <button class="icon-btn" type="button" aria-label="分割編輯器"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="2.75" y="3.75" width="14.5" height="12.5"></rect><path d="M10 3.75v12.5"></path></svg></button>
+      <button class="icon-btn" type="button" aria-label="更多動作">⋯</button>
+    </div>
+  </div>
+
+  <!-- breadcrumb + toolbar -->
+  <div class="fe-bar">
+    <nav class="fe-crumb" aria-label="檔案路徑">
+      <a href="#src">src</a><span class="sp">›</span><a href="#src/pages">pages</a><span class="sp">›</span><span class="cu">punch.vue</span><span class="sp">›</span><span>&lt;style&gt;</span><span class="sp">›</span><span>.punch-sticky</span>
+    </nav>
+    <div class="fe-tools">
+      <span class="hint num">AI 變更 2 段</span>
+      <span style="display:inline-flex">
+        <button class="icon-btn fe-ib" type="button" aria-label="上一段 AI 變更">↑</button>
+        <button class="icon-btn fe-ib" type="button" aria-label="下一段 AI 變更">↓</button>
+      </span>
+      <span class="fe-vr" aria-hidden="true"></span>
+      <span class="fe-swl">Show AI changes<button class="sw on" type="button" role="switch" aria-checked="true" aria-label="SHOW AI CHANGES"></button></span>
+      <select class="select fe-sel" aria-label="比較基準">
+        <option>基準：git HEAD</option>
+        <option>基準：上次儲存 10:39</option>
+        <option>基準：AI 開始前 10:30</option>
+      </select>
+      <button class="btn sm" type="button" aria-label="尋找 ⌘F">⌘F</button>
+    </div>
+  </div>
+
+  <!-- disk changed by AI -->
+  <div class="banner warn" role="status">
+    <span class="fe-bang" aria-hidden="true">!</span>
+    <span>磁碟上的檔案已被 AI 變更（打卡頁 RWD 調整 · 10:41）</span>
+    <span class="muted" style="font-size:11.5px">· 你有未儲存的修改</span>
+    <span style="flex:1"></span>
+    <button class="btn sm" type="button">重新載入</button>
+    <button class="btn sm" type="button">保留我的</button>
+    <button class="btn sm accent" type="button">比較</button>
+  </div>
+
+  <!-- code -->
+  <div class="fe-code">
+    <div class="fe-lines" role="region" aria-label="punch.vue 原始碼">
+      <div class="fe-l"><span class="n">13</span><span class="m"></span><span class="c"><span class="fn">onMounted</span><span class="p">(() =&gt; </span>store.<span class="fn">fetchToday</span><span class="p">())</span></span></div>
+      <div class="fe-l"><span class="n">14</span><span class="m"></span><span class="c"><span class="p">&lt;/</span><span class="tg">script</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">15</span><span class="m"></span><span class="c"></span></div>
+      <div class="fe-l"><span class="n">16</span><span class="m"></span><span class="c"><span class="p">&lt;</span><span class="tg">template</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">17</span><span class="m"></span><span class="c"><span class="p">  &lt;</span><span class="tg">main</span><span class="at"> class</span><span class="p">=</span><span class="s">"punch-page"</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">18</span><span class="m"></span><span class="c"><span class="p">    &lt;</span><span class="tg">header</span><span class="at"> class</span><span class="p">=</span><span class="s">"punch-head"</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">19</span><span class="m"></span><span class="c"><span class="p">      &lt;</span><span class="tg">h1</span><span class="at"> class</span><span class="p">=</span><span class="s">"text-lg font-bold"</span><span class="p">&gt;</span>今日打卡<span class="p">&lt;/</span><span class="tg">h1</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">20</span><span class="m"></span><span class="c"><span class="p">      &lt;</span><span class="tg">span</span><span class="at"> class</span><span class="p">=</span><span class="s">"text-sm text-stone-500"</span><span class="p">&gt;</span><span class="dv">{</span><span class="dv">{</span> store.todayLabel <span class="dv">}</span><span class="dv">}</span><span class="p">&lt;/</span><span class="tg">span</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">21</span><span class="m"></span><span class="c"><span class="p">    &lt;/</span><span class="tg">header</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">22</span><span class="m"></span><span class="c"><span class="p">    &lt;</span><span class="tg">template</span><span class="dv"> v-if</span><span class="p">="</span>isNarrow<span class="p">"&gt;</span></span></div>
+      <div class="fe-l"><span class="n">23</span><span class="m"></span><span class="c"><span class="p">      &lt;</span><span class="tg">PunchRecordCard</span><span class="dv"> v-for</span><span class="p">="</span>r <span class="k">in</span> records<span class="p">"</span><span class="dv"> :key</span><span class="p">="</span>r.id<span class="p">"</span><span class="dv"> :record</span><span class="p">="</span>r<span class="p">" /&gt;</span></span></div>
+      <div class="fe-l"><span class="n">24</span><span class="m"></span><span class="c"><span class="p">    &lt;/</span><span class="tg">template</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">25</span><span class="m"></span><span class="c"><span class="p">    &lt;</span><span class="tg">table</span><span class="dv"> v-else</span><span class="at"> class</span><span class="p">=</span><span class="s">"punch-table"</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">26</span><span class="m"></span><span class="c"><span class="p">      &lt;</span><span class="tg">tr</span><span class="dv"> v-for</span><span class="p">="</span>r <span class="k">in</span> records<span class="p">"</span><span class="dv"> :key</span><span class="p">="</span>r.id<span class="p">"&gt;</span></span></div>
+      <div class="fe-l"><span class="n">27</span><span class="m"></span><span class="c"><span class="p">        &lt;</span><span class="tg">td</span><span class="p">&gt;</span><span class="dv">{</span><span class="dv">{</span> r.typeLabel <span class="dv">}</span><span class="dv">}</span><span class="p">&lt;/</span><span class="tg">td</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">28</span><span class="m"></span><span class="c"><span class="p">        &lt;</span><span class="tg">td</span><span class="at"> class</span><span class="p">=</span><span class="s">"tabular-nums"</span><span class="p">&gt;</span><span class="dv">{</span><span class="dv">{</span> r.time <span class="dv">}</span><span class="dv">}</span><span class="p">&lt;/</span><span class="tg">td</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">29</span><span class="m"></span><span class="c"><span class="p">        &lt;</span><span class="tg">td</span><span class="at"> class</span><span class="p">=</span><span class="s">"truncate"</span><span class="p">&gt;</span><span class="dv">{</span><span class="dv">{</span> r.location <span class="dv">}</span><span class="dv">}</span><span class="p">&lt;/</span><span class="tg">td</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">30</span><span class="m"></span><span class="c"><span class="p">      &lt;/</span><span class="tg">tr</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">31</span><span class="m"></span><span class="c"><span class="p">    &lt;/</span><span class="tg">table</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">32</span><span class="m"></span><span class="c"><span class="p">    &lt;</span><span class="tg">div</span><span class="at"> class</span><span class="p">=</span><span class="s">"punch-</span><span class="s fe-hit">sticky</span><span class="s">"</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l mod" title="AI 修改 · 打卡頁 RWD 調整 · 10:36"><span class="n">33</span><span class="m"></span><span class="c"><span class="p">      &lt;</span><span class="tg">PunchButton</span><span class="dv"> :loading</span><span class="p">="</span>store.pending<span class="p">" </span><span class="at fe-hit">sticky</span><span class="dv"> @punch</span><span class="p">="</span>store.punch<span class="p">" /&gt;</span></span></div>
+      <div class="fe-l"><span class="n">34</span><span class="m"></span><span class="c"><span class="p">    &lt;/</span><span class="tg">div</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">35</span><span class="m"></span><span class="c"><span class="p">  &lt;/</span><span class="tg">main</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">36</span><span class="m"></span><span class="c"><span class="p">&lt;/</span><span class="tg">template</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">37</span><span class="m"></span><span class="c"></span></div>
+      <div class="fe-l"><span class="n">38</span><span class="m"></span><span class="c"><span class="p">&lt;</span><span class="tg">style</span><span class="at"> scoped</span><span class="p">&gt;</span></span></div>
+      <div class="fe-l"><span class="n">39</span><span class="m"></span><span class="c"><span class="tg">.punch-</span><span class="tg fe-hit cur">sticky</span><span class="p"> {</span></span></div>
+      <div class="fe-hunk">
+        <span class="tag" style="background:var(--t-pink)"></span><span class="fe-ai">AI</span><span class="who">打卡頁 RWD 調整 · 10:36</span><span class="faint">@@ -40,2 +40,4 @@</span><span class="num"><span class="bad">−2</span> <span class="ok">+4</span></span>
+        <span style="flex:1"></span>
+        <span class="faint">2 / 2</span>
+        <button class="btn sm" type="button">還原此段</button>
+        <button class="btn sm accent" type="button">接受</button>
+      </div>
+      <div class="fe-l del"><span class="n"></span><span class="m">−</span><span class="c"><span class="pr">  position</span><span class="p">: </span>fixed<span class="p">;</span></span></div>
+      <div class="fe-l del"><span class="n"></span><span class="m">−</span><span class="c"><span class="pr">  bottom</span><span class="p">: </span><span class="nu">0</span><span class="p">;</span></span></div>
+      <div class="fe-l add"><span class="n">40</span><span class="m">+</span><span class="c"><span class="pr">  position</span><span class="p">: </span><span class="fe-hit">sticky</span><span class="p">;</span></span></div>
+      <div class="fe-l add"><span class="n">41</span><span class="m">+</span><span class="c"><span class="pr">  bottom</span><span class="p">: </span><span class="fn">env</span><span class="p">(</span>safe-area-inset-bottom<span class="p">);</span></span></div>
+      <div class="fe-l add curl"><span class="n">42</span><span class="m">+</span><span class="c"><span class="pr">  margin-bottom</span><span class="p">: </span><span class="fe-caret" aria-hidden="true"></span><span class="nu">64px</span><span class="p">;</span><span class="cm"> /* 底部導覽列高度 */</span></span></div>
+      <div class="fe-l add"><span class="n">43</span><span class="m">+</span><span class="c"><span class="pr">  z-index</span><span class="p">: </span><span class="nu">10</span><span class="p">;</span></span></div>
+      <div class="fe-l"><span class="n">44</span><span class="m"></span><span class="c"><span class="p">}</span></span></div>
+      <div class="fe-l"><span class="n">45</span><span class="m"></span><span class="c"><span class="tg">.punch-page</span><span class="p"> {</span></span></div>
+      <div class="fe-l"><span class="n">46</span><span class="m"></span><span class="c"><span class="pr">  min-height</span><span class="p">: </span><span class="nu">100dvh</span><span class="p">;</span></span></div>
+      <div class="fe-l"><span class="n">47</span><span class="m"></span><span class="c"><span class="pr">  padding-bottom</span><span class="p">: </span><span class="fn">calc</span><span class="p">(</span><span class="nu">64px</span><span class="p"> + </span><span class="fn">env</span><span class="p">(</span>safe-area-inset-bottom<span class="p">));</span></span></div>
+      <div class="fe-l"><span class="n">48</span><span class="m"></span><span class="c"><span class="p">}</span></span></div>
+      <div class="fe-l"><span class="n">49</span><span class="m"></span><span class="c"><span class="k">@media</span><span class="p"> (</span><span class="pr">max-width</span><span class="p">: </span><span class="nu">640px</span><span class="p">) {</span></span></div>
+    </div>
+
+    <!-- overview ruler: 56 lines; viewport 13–48; hits 32 33 39 40 51 53 54; AI 33, 40–43; cursor 42 -->
+    <div class="fe-ruler" aria-hidden="true">
+      <span class="th" style="top:21.4%;height:63%"></span>
+      <i class="rh" style="top:55.4%"></i><i class="rh" style="top:57.1%"></i><i class="rh" style="top:67.9%"></i><i class="rh" style="top:69.6%"></i><i class="rh" style="top:89.3%"></i><i class="rh" style="top:92.9%"></i><i class="rh" style="top:94.6%"></i>
+      <i class="rm" style="top:57.1%"></i>
+      <i class="rd" style="top:69.2%;height:2px"></i>
+      <i class="ra" style="top:69.6%;height:7.2%"></i>
+      <i class="rc" style="top:73.2%"></i>
+    </div>
+
+    <!-- find widget -->
+    <div class="fe-find" role="search" aria-label="在檔案中尋找">
+      <button class="icon-btn fe-ib" type="button" aria-label="切換取代" aria-expanded="false">▸</button>
+      <div class="fe-fq">
+        <input class="fe-fin" type="text" value="sticky" aria-label="尋找">
+        <button class="fe-opt" type="button" aria-pressed="false" aria-label="大小寫須相符">Aa</button>
+        <button class="fe-opt" type="button" aria-pressed="false" aria-label="全字拼寫須相符"><u>ab</u></button>
+        <button class="fe-opt" type="button" aria-pressed="false" aria-label="使用規則運算式">.*</button>
+      </div>
+      <span class="fe-cnt num">3/7</span>
+      <button class="icon-btn fe-ib" type="button" aria-label="上一個相符項目 ⇧⏎">↑</button>
+      <button class="icon-btn fe-ib" type="button" aria-label="下一個相符項目 ⏎">↓</button>
+      <button class="icon-btn fe-ib" type="button" aria-label="關閉尋找 esc">✕</button>
+    </div>
+  </div>
+
+  <!-- editor + app status bar -->
+  <div class="statusbar">
+    <span><span class="lamp st-busy" style="width:auto">●</span> MCP 127.0.0.1:47821 · 3 clients</span>
+    <span>⎇ feat/punch-rwd ↑2</span>
+    <span style="display:inline-flex;align-items:center;gap:6px"><span class="tag" style="background:var(--t-pink)"></span>打卡頁 RWD 調整 正在編輯此專案</span>
+    <span style="flex:1"></span>
+    <button class="fe-sbb num" type="button" aria-label="前往行號">Ln 42, Col 18</button>
+    <button class="fe-sbb" type="button" aria-label="檔案編碼">UTF-8</button>
+    <button class="fe-sbb" type="button" aria-label="行尾字元">LF</button>
+    <button class="fe-sbb" type="button" aria-label="語言模式">Vue</button>
+    <button class="fe-sbb" type="button" aria-label="縮排">2 spaces</button>
+    <span><span style="color:var(--amber-dim)">●</span> 已儲存 10:39</span>
+    <span class="kbd">⌘K</span>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"crt":{"editor":"enum","options":["subtle","full","off"],"default":"subtle","section":"Look"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const crt = this.props.crt ?? 'subtle';
+    return { crtClass: crt === 'off' ? '' : 'crt-' + crt };
+  }
+}
+</script>
+</body>
+</html>

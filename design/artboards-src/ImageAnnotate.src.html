@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>圖片標註</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<!--@HELMET-->
+<style>
+/* ===== ImageAnnotate board (.ia-) ===== */
+.codd .ia-crumb{display:flex;align-items:center;gap:7px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);white-space:nowrap;flex:none}
+.codd .ia-crumb a{color:var(--dim);text-decoration:none}
+.codd .ia-crumb a.cj{letter-spacing:.02em;text-transform:none;font-size:12px;color:var(--bone)}
+.codd .ia-crumb a:hover{color:var(--amber)}
+.codd .ia-crumb .sl{color:var(--dimmer)}
+.codd .ia-vr{width:1px;height:18px;background:var(--line-bright);flex:none;margin:0 4px}
+
+.codd .ia-body{flex:1;min-height:0;display:flex}
+
+/* tool strip */
+.codd .ia-tools{flex:0 0 48px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 0;background:var(--bg);border-right:1px solid var(--line)}
+.codd .ia-tool{position:relative;width:36px;height:36px}
+.codd .ia-tool svg{width:18px;height:18px}
+.codd .ia-k{position:absolute;right:2px;bottom:1px;font-size:9px;line-height:1;color:var(--dim);font-family:var(--mono)}
+.codd .ia-tool.on .ia-k{color:var(--amber-dim)}
+.codd .ia-tsep{width:24px;border-top:1px dashed var(--line-bright);margin:6px 0}
+.codd .ia-color{width:36px;height:36px;display:flex;align-items:center;justify-content:center;gap:2px;background:transparent;border:1px solid var(--line-bright);cursor:pointer;padding:0;color:var(--dim);font-size:9px}
+.codd .ia-color:hover{border-color:var(--amber-dim)}
+.codd .ia-color .sq{width:14px;height:14px;background:var(--amber);box-shadow:0 0 0 1px #000,0 0 8px var(--amber-glow)}
+.codd .ia-grow{flex:1}
+.codd .ia-zl{font-size:9px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+.codd .seg.ia-zoom{flex-direction:column;width:40px}
+.codd .seg.ia-zoom button{border-right:0;border-bottom:1px solid var(--line-bright);height:24px;padding:0;font-size:9.5px;letter-spacing:.04em}
+.codd .seg.ia-zoom button:last-child{border-bottom:0}
+
+/* canvas */
+.codd .ia-stage{flex:1;min-width:0;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  background-color:#060606;background-image:linear-gradient(rgba(245,236,214,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(245,236,214,.035) 1px,transparent 1px);background-size:16px 16px}
+.codd .ia-shint{position:absolute;top:12px;left:16px;margin:0;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--dim);white-space:nowrap}
+.codd .ia-frame{display:flex;padding:8px;background:#000;border:1px solid var(--line-bright);box-shadow:0 18px 50px rgba(0,0,0,.65)}
+.codd .ia-o{position:absolute;font-size:10.5px;color:var(--dimmer);font-variant-numeric:tabular-nums;white-space:nowrap;pointer-events:none}
+.codd .ia-o.tl{right:calc(100% + 16px);top:-7px}
+.codd .ia-o.br{left:calc(100% + 16px);bottom:-7px}
+.codd .ia-cap{margin:0;font-size:11px;color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+
+/* the screenshot: CSS-built iPhone SE punch page, 375×667 display = 50% of 750×1334 */
+.codd .ia-ph{position:relative;width:375px;height:667px;overflow:hidden;background:#ecebe6;font-family:var(--cjk);color:#2a2a2a;filter:brightness(.86) saturate(.9)}
+.codd .ia-sb{position:absolute;left:0;right:0;top:0;height:20px;display:flex;justify-content:space-between;align-items:center;padding:0 10px 0 12px;background:#fff;color:#111;font-family:var(--mono);font-size:12px;font-weight:600}
+.codd .ia-bt{width:24px;height:11px;border:1px solid #111;position:relative}
+.codd .ia-bt::after{content:'';position:absolute;inset:1px 7px 1px 1px;background:#111}
+.codd .ia-hd{position:absolute;left:0;right:0;top:20px;height:44px;display:flex;align-items:center;justify-content:center;background:#fff;border-bottom:1px solid #d9d6ce;font-size:17px;font-weight:700;color:#1d1d1d}
+.codd .ia-hd::before{content:'';position:absolute;left:18px;top:16px;width:10px;height:10px;border-left:2px solid #555;border-bottom:2px solid #555;transform:rotate(45deg)}
+.codd .ia-clock{position:absolute;left:0;right:0;top:133px;height:64px;text-align:center;font-family:var(--mono);font-size:64px;line-height:64px;font-weight:500;color:#1d1d1d;letter-spacing:0}
+.codd .ia-date{position:absolute;left:0;right:0;top:204px;text-align:center;font-size:12px;line-height:16px;color:#6b6760}
+.codd .ia-card{position:absolute;left:16px;right:16px;background:#fff;border:1px solid #dcd8cf}
+.codd .ia-shift{top:236px;height:64px;display:flex;align-items:center;gap:10px;padding:0 14px}
+.codd .ia-sk{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
+.codd .ia-sk span{font-size:11px;color:#8a857c}
+.codd .ia-sk b{font-family:var(--mono);font-size:15px;color:#1d1d1d;font-weight:600}
+.codd .ia-gps{font-size:11px;color:#2e8b57;border:1px solid #9fd0b4;padding:2px 7px}
+.codd .ia-rec{top:316px;height:246px;display:flex;flex-direction:column;padding:0 14px}
+.codd .ia-rech{height:42px;flex:none;display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:700;color:#1d1d1d}
+.codd .ia-rech span{font-size:12px;font-weight:400;color:#8a857c}
+.codd .ia-rr{flex:1;display:flex;align-items:center;gap:14px;border-top:1px solid #ebe8e1;font-size:12.5px;color:#3a3833}
+.codd .ia-rr .dt{width:86px;color:#6b6760}
+.codd .ia-rr b{font-family:var(--mono);font-weight:500;font-size:12.5px;color:#1d1d1d;margin-left:4px}
+.codd .ia-btn{position:absolute;left:12px;right:12px;top:572px;height:60px;background:#2f6fe0;color:#fff;font-size:17px;font-weight:700;letter-spacing:.12em;display:flex;justify-content:center;padding-top:10px;line-height:22px}
+.codd .ia-nav{position:absolute;left:0;right:0;top:611px;height:56px;background:rgba(255,255,255,.97);border-top:1px solid #d6d2c8;display:flex;justify-content:space-around;align-items:center}
+.codd .ia-nav span{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10.5px;color:#77736b}
+.codd .ia-nav i{width:20px;height:20px;border:2px solid currentColor;display:block}
+.codd .ia-nav .on{color:#2f6fe0}
+
+/* annotation overlay (selected rect handles, coords tooltip, arrow svg in original-pixel viewBox) */
+.codd .ia-hdl{position:absolute;width:9px;height:9px;background:#000;border:1.5px solid var(--amber);box-shadow:0 0 6px var(--amber-glow)}
+.codd .ia-hdl.tl{left:-5px;top:-5px}.codd .ia-hdl.tr{right:-5px;top:-5px}
+.codd .ia-hdl.bl{left:-5px;bottom:-5px}.codd .ia-hdl.br{right:-5px;bottom:-5px}
+.codd .ia-tip{position:absolute;left:50%;top:calc(100% + 9px);transform:translateX(-50%);display:inline-flex;align-items:center;gap:6px;padding:0 8px;height:22px;background:var(--bg-lift);border:1px solid var(--amber-dim);box-shadow:0 6px 18px rgba(0,0,0,.6);font-family:var(--mono);font-size:11px;color:var(--cream);white-space:nowrap;font-variant-numeric:tabular-nums}
+.codd .ia-tip .u{color:var(--dim)}
+.codd .ia-svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.codd .ia-svg .halo{stroke:#000;stroke-width:5;stroke-linecap:square}
+.codd .ia-svg .ln{stroke:var(--amber);stroke-width:2.5;stroke-linecap:square}
+.codd .ia-svg .hd{fill:var(--amber);stroke:#000;stroke-width:1.5}
+
+/* right panel */
+.codd .ia-panel{flex:0 0 380px;min-width:0;display:flex;flex-direction:column;background:var(--bg);border-left:1px solid var(--line);overflow:hidden}
+.codd .ia-sec{padding:12px 16px 14px;border-bottom:1px dashed var(--line);display:flex;flex-direction:column;gap:10px}
+.codd .ia-sh{display:flex;align-items:center;gap:8px}
+.codd .ia-sh .sec{margin:0;font-weight:500}
+.codd .ia-cnt{color:var(--amber);letter-spacing:0;font-variant-numeric:tabular-nums}
+.codd .ia-list{display:flex;flex-direction:column;gap:6px}
+.codd .ann-item.ia-ex{padding:10px 10px 10px 8px;background:var(--bg-lift);border:1px solid var(--amber-dim);box-shadow:inset 2px 0 0 var(--amber),0 0 14px rgba(255,184,74,.06)}
+.codd .ia-exb{display:flex;flex-direction:column;gap:9px;min-width:0}
+.codd .ia-exh{display:flex;align-items:center;gap:7px;min-height:22px}
+.codd .ia-exh .tn{font-size:11.5px;color:var(--bone)}
+.codd .ia-ib{width:22px;height:22px;font-size:11px}
+.codd .ia-xywh{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.codd .ia-f{display:flex;flex-direction:column;gap:4px;min-width:0}
+.codd .ia-f .lbl{font-size:10px}
+.codd .input.ia-in{min-height:26px;height:26px;padding:3px 7px;font-size:12px;font-variant-numeric:tabular-nums}
+.codd .input.ia-ta{resize:none;line-height:1.5;padding:5px 9px;font-size:12.5px;display:block}
+.codd .ia-exf{display:flex;align-items:center;gap:8px}
+.codd .ia-exf .hint{font-size:11px;display:inline-flex;align-items:center;gap:5px}
+.codd .ann-item.ia-row{width:100%;padding:8px 10px 8px 8px;background:transparent;border:1px solid var(--line-bright);text-align:left;cursor:pointer;font-family:var(--mono)}
+.codd .ann-item.ia-row:hover{border-color:var(--amber-dim);background:var(--bg-soft)}
+.codd .ia-r1{display:flex;align-items:center;gap:7px;min-width:0}
+.codd .chip.ia-ty{height:16px;font-size:9.5px;padding:0 5px;flex:none}
+.codd .ia-ck{display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--bone);cursor:pointer;line-height:1.45}
+.codd .ia-ck input{margin-top:2px;flex:none}
+.codd .ia-ck .hint{font-size:11px;margin-left:auto;flex:none}
+.codd .ia-ck.off{color:var(--dim)}
+.codd .term.ia-term{flex:none;white-space:normal;font-size:11px;line-height:1.5;padding:8px 10px;border:1px solid var(--line-bright)}
+.codd .ia-ln{display:block;white-space:pre-wrap;padding-left:var(--hi,4ch);text-indent:calc(var(--hi,4ch) * -1)}
+.codd .ia-cm{display:inline-block;max-width:100%;text-indent:0;color:var(--cream)}
+.codd .ia-md{display:flex;align-items:center;gap:6px;width:100%;min-height:24px;padding:0;background:transparent;border:0;color:var(--dim);font-family:var(--mono);font-size:11px;cursor:pointer;text-align:left;white-space:nowrap}
+.codd .ia-md:hover{color:var(--cream)}
+.codd .ia-md:hover .caret{color:var(--amber)}
+</style>
+</helmet>
+<div class="codd win {{ crtClass }}">
+<!--@RAIL on=notes-->
+<div class="main">
+
+  <!-- ===== TOP BAR ===== -->
+  <header class="sh">
+    <div class="ident">
+      <div class="l1">
+        <nav class="ia-crumb" aria-label="位置"><a href="#inbox">Inbox</a><span class="sl">/</span><a class="cj" href="#n1">打卡頁 RWD 跑版紀錄</a><span class="sl">/</span></nav>
+        <span class="ttl">9f3a1c.png</span>
+        <span class="chip amber">標註模式 ⌘⇧A</span>
+      </div>
+      <div class="meta"><span>assets/rwd-punch-k7x2/9f3a1c.png</span><span class="sep">·</span><span>750×1334 px</span><span class="sep">·</span><span>iPhone SE @2x</span><span class="sep">·</span><span>截圖 2026-10-15 09:32</span></div>
+    </div>
+    <div class="acts">
+      <button class="icon-btn" type="button" aria-label="復原 ⌘Z"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M7.5 5.5L4 9l3.5 3.5"></path><path d="M4 9h8a4 4 0 0 1 0 8H9"></path></svg></button>
+      <button class="icon-btn" type="button" aria-label="重做 ⌘⇧Z"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M12.5 5.5L16 9l-3.5 3.5"></path><path d="M16 9H8a4 4 0 0 0 0 8h3"></path></svg></button>
+      <span class="ia-vr" aria-hidden="true"></span>
+      <button class="btn" type="button">取消</button>
+      <button class="btn primary" type="button">完成</button>
+    </div>
+  </header>
+
+  <div class="ia-body">
+
+    <!-- ===== TOOL STRIP ===== -->
+    <nav class="ia-tools" aria-label="標註工具">
+      <button class="icon-btn ia-tool on" type="button" aria-pressed="true" aria-label="選取 (V)">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M5.5 3.25v12.5l3.25-3.25 2.25 5 2-.9-2.25-4.85h4.5z"></path></svg><span class="ia-k" aria-hidden="true">V</span></button>
+      <button class="icon-btn ia-tool" type="button" aria-pressed="false" aria-label="框選 (R)">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="3.75" y="5.25" width="12.5" height="9.5"></rect></svg><span class="ia-k" aria-hidden="true">R</span></button>
+      <button class="icon-btn ia-tool" type="button" aria-pressed="false" aria-label="點 (P)">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="6" y="3" width="8" height="8"></rect><path d="M10 11v6"></path></svg><span class="ia-k" aria-hidden="true">P</span></button>
+      <button class="icon-btn ia-tool" type="button" aria-pressed="false" aria-label="箭頭 (A)">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M4.5 15.5L15 5M9 4.75h6.25V11"></path></svg><span class="ia-k" aria-hidden="true">A</span></button>
+      <button class="icon-btn ia-tool" type="button" aria-pressed="false" aria-label="文字 (T)">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M4.5 4.75h11M10 4.75v11M7.5 15.75h5"></path></svg><span class="ia-k" aria-hidden="true">T</span></button>
+      <span class="ia-tsep" aria-hidden="true"></span>
+      <button class="ia-color" type="button" aria-haspopup="menu" aria-label="標註顏色：琥珀"><span class="sq"></span></button>
+      <span class="ia-grow"></span>
+      <span class="ia-zl" aria-hidden="true">Zoom</span>
+      <div class="seg ia-zoom" role="group" aria-label="縮放"><button class="on" type="button" aria-pressed="true">Fit</button><button type="button" aria-pressed="false">100%</button><button type="button" aria-pressed="false">200%</button></div>
+    </nav>
+
+    <!-- ===== CANVAS ===== -->
+    <section class="ia-stage" aria-label="標註畫布">
+      <p class="ia-shint">拖曳控制點調整大小 <span class="faint">·</span> <span class="kbd">⇧</span> 鎖定比例 <span class="faint">·</span> <span class="kbd">Del</span> 刪除 <span class="faint">·</span> <span class="kbd">⎋</span> 結束標註</p>
+
+      <div class="ia-frame" role="img" aria-label="9f3a1c.png 標註中：1 框選上班打卡按鈕（已選取），2 點在時鐘數字，3 箭頭從打卡紀錄卡片指向按鈕">
+        <div class="ann-wrap">
+          <div class="ia-ph" aria-hidden="true">
+            <div class="ia-sb"><span>9:32</span><span class="ia-bt"></span></div>
+            <div class="ia-hd">打卡</div>
+            <div class="ia-clock">09:32</div>
+            <div class="ia-date">10/15（四）· 台北辦公室</div>
+            <div class="ia-card ia-shift"><span class="ia-sk"><span>今日班別</span><b>09:00 – 18:00</b></span><span class="ia-gps">GPS 已定位</span></div>
+            <div class="ia-card ia-rec">
+              <div class="ia-rech">打卡紀錄<span>本週</span></div>
+              <div class="ia-rr"><span class="dt">10/14（三）</span><span>上班<b>08:57</b></span><span>下班<b>18:12</b></span></div>
+              <div class="ia-rr"><span class="dt">10/13（二）</span><span>上班<b>09:02</b></span><span>下班<b>18:30</b></span></div>
+              <div class="ia-rr"><span class="dt">10/12（一）</span><span>上班<b>08:49</b></span><span>下班<b>18:05</b></span></div>
+              <div class="ia-rr"><span class="dt">10/09（五）</span><span>上班<b>09:10</b></span><span>下班<b>17:58</b></span></div>
+            </div>
+            <div class="ia-btn">上班打卡</div>
+            <div class="ia-nav"><span><i></i>首頁</span><span class="on"><i></i>打卡</span><span><i></i>紀錄</span><span><i></i>我的</span></div>
+          </div>
+
+          <!-- annotations · display = original px × 0.5 -->
+          <!-- ① rect x20 y1150 710×120 (selected) -->
+          <div class="ann-box sel" style="left:10px;top:575px;width:355px;height:60px">
+            <span class="ia-hdl tl" aria-hidden="true"></span><span class="ia-hdl tr" aria-hidden="true"></span><span class="ia-hdl bl" aria-hidden="true"></span><span class="ia-hdl br" aria-hidden="true"></span>
+            <span class="ann-pin" style="left:-13px;top:-13px">1</span>
+            <span class="ia-tip">x 20 · y 1150 · 710×120 <span class="u">px</span></span>
+          </div>
+          <!-- ② point 375,330 -->
+          <span class="ann-pin" style="left:187.5px;top:165px">2</span>
+          <!-- ③ arrow 600,760 → 700,1080 -->
+          <svg class="ia-svg" viewBox="0 0 750 1334" aria-hidden="true">
+            <line class="halo" x1="600" y1="760" x2="692.2" y2="1055.2" vector-effect="non-scaling-stroke"></line>
+            <line class="ln" x1="600" y1="760" x2="692.2" y2="1055.2" vector-effect="non-scaling-stroke"></line>
+            <polygon class="hd" points="700,1080 678.9,1059.4 705.6,1051" vector-effect="non-scaling-stroke"></polygon>
+          </svg>
+          <span class="ann-pin" style="left:300px;top:380px">3</span>
+
+          <span class="ia-o tl" aria-hidden="true">0,0</span>
+          <span class="ia-o br" aria-hidden="true">750,1334</span>
+        </div>
+      </div>
+      <p class="ia-cap">原圖 750×1334 · 顯示 50% · 座標以原圖像素、左上為原點</p>
+    </section>
+
+    <!-- ===== RIGHT PANEL ===== -->
+    <aside class="ia-panel" aria-label="標註清單與送出設定">
+      <section class="ia-sec">
+        <div class="ia-sh"><h2 class="sec">Annotations <span class="ia-cnt">3</span></h2><span style="flex:1"></span><span class="hint" style="font-size:11px">依建立順序編號</span></div>
+        <div class="ia-list">
+          <!-- ① expanded / selected -->
+          <div class="ann-item ia-ex" role="group" aria-label="標註 1 · 框選（已選取）">
+            <span class="no">1</span>
+            <div class="ia-exb">
+              <div class="ia-exh">
+                <span class="chip amber caps ia-ty">Rect</span><span class="tn">框選</span>
+                <span style="flex:1"></span>
+                <span class="hint" style="font-size:11px">已選取</span>
+                <button class="icon-btn ia-ib" type="button" aria-expanded="true" aria-label="收合標註 1">▾</button>
+              </div>
+              <div class="ia-xywh">
+                <label class="ia-f"><span class="lbl">X</span><input class="input ia-in" type="text" value="20"></label>
+                <label class="ia-f"><span class="lbl">Y</span><input class="input ia-in" type="text" value="1150"></label>
+                <label class="ia-f"><span class="lbl">W</span><input class="input ia-in" type="text" value="710"></label>
+                <label class="ia-f"><span class="lbl">H</span><input class="input ia-in" type="text" value="120"></label>
+              </div>
+              <label class="ia-f"><span class="lbl">說明 · Comment</span><textarea class="input ia-ta" rows="3">上班打卡按鈕被底部導覽列蓋住 → 改 position: sticky，底部留 env(safe-area-inset-bottom)</textarea></label>
+              <div class="ia-exf"><span class="hint">單位 px（原圖）· <span class="kbd">Del</span></span><span style="flex:1"></span><button class="btn sm danger" type="button">刪除</button></div>
+            </div>
+          </div>
+          <!-- ② collapsed -->
+          <button class="ann-item ia-row" type="button" aria-expanded="false">
+            <span class="no">2</span>
+            <span class="ia-r1"><span class="chip caps ia-ty">Point</span><span class="ell">時鐘數字在 SE 上太大，會擠到下方卡片 → 改 48px</span></span>
+            <span class="xy">x 375 · y 330</span>
+          </button>
+          <!-- ③ collapsed -->
+          <button class="ann-item ia-row" type="button" aria-expanded="false">
+            <span class="no">3</span>
+            <span class="ia-r1"><span class="chip caps ia-ty">Arrow</span><span class="ell">打卡紀錄卡片離按鈕太近，間距加到 16px</span></span>
+            <span class="xy">x 600 · y 760 → x 700 · y 1080</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="ia-sec" role="group" aria-labelledby="ia-send-h">
+        <h3 class="sec" id="ia-send-h" style="margin:0;font-weight:500">送給 AI 時</h3>
+        <label class="ia-ck off"><input type="checkbox"><span>附上原圖</span><span class="hint">9f3a1c.png</span></label>
+        <label class="ia-ck"><input type="checkbox" checked="checked"><span>附上標註後的圖（燒進框線與編號）</span></label>
+        <label class="ia-ck"><input type="checkbox" checked="checked"><span>附上座標清單</span></label>
+      </section>
+
+      <section class="ia-sec" style="border-bottom:0" aria-labelledby="ia-recv-h">
+        <div class="ia-sh"><h3 class="sec" id="ia-recv-h">AI 會收到</h3><span style="flex:1"></span><span class="hint" style="font-size:11px">notes_read · 送到 session</span></div>
+        <pre class="term ia-term"><span class="ia-ln" style="--hi:8ch"><span class="d">[image]</span> <span class="c">~/.codd/notebook/assets/&#8203;rwd-punch-k7x2/&#8203;9f3a1c.annotated.png</span> <span class="d">(750×1334)</span></span>
+<span class="ia-ln">annotations<span class="d">（原圖像素，左上為原點）</span>:</span>
+<span class="ia-ln">  <span class="a">1</span> <span class="c">rect</span>  x=20  y=1150 w=710 h=120  <span class="ia-cm">上班打卡按鈕被底部導覽列蓋住 → 改 sticky…</span></span>
+<span class="ia-ln">  <span class="a">2</span> <span class="c">point</span> x=375 y=330               <span class="ia-cm">時鐘數字在 SE 上太大 → 改 48px</span></span>
+<span class="ia-ln">  <span class="a">3</span> <span class="c">arrow</span> 600,760 → 700,1080        <span class="ia-cm">打卡紀錄卡片離按鈕太近，間距加到 16px</span></span></pre>
+        <button class="ia-md" type="button" aria-expanded="false"><span class="caret">▸</span>Markdown 原始碼<span class="faint">（codd-annotations 區塊）</span></button>
+      </section>
+    </aside>
+  </div>
+
+  <div class="statusbar"><span><span class="lamp st-busy" style="width:auto">●</span> MCP 127.0.0.1:47821 · 3 clients</span><span>hooks <span class="ok">●</span> ok</span><span class="amber">標註模式</span><span class="num" style="color:var(--bone)">3 個標註 · <span class="ok">●</span> 已儲存 10:46</span><span style="flex:1"></span><span class="num">13 live · <span class="amber">◆ 3</span> · <span class="ok">● 4</span></span><span class="kbd">⌘K</span></div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"crt":{"editor":"enum","options":["subtle","full","off"],"default":"subtle","section":"Look"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const crt = this.props.crt ?? 'subtle';
+    return { crtClass: crt === 'off' ? '' : 'crt-' + crt };
+  }
+}
+</script>
+</body>
+</html>

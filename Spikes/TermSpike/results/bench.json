@@ -1,0 +1,1230 @@
+{
+  "build" : "Release",
+  "generatedAt" : "2026-10-15T15:50:13Z",
+  "machine" : {
+    "cpu" : "Apple M4 Max",
+    "loadAverage" : "9.69 / 8.03 / 6.58",
+    "memoryGiB" : 64,
+    "model" : "Mac16,6",
+    "os" : "Version 27.0.1 (Build 26A434)",
+    "screens" : ""
+  },
+  "quick" : false,
+  "results" : [
+    {
+      "build" : "Release",
+      "spec" : {
+        "engine" : "ghostty",
+        "environment" : {
+          "SPIKE_GHOSTTY_CONFIG" : "cursor-style-blink=false"
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 0,
+        "kind" : "throughput",
+        "round" : 1,
+        "runs" : 3,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : true
+      },
+      "throughput" : {
+        "bytes" : 67108864,
+        "chunkBytes" : 65536,
+        "grid" : "123×37",
+        "medianSeconds" : 0.43407575,
+        "mibPerSecond" : 147.43970378442012,
+        "peakFootprintMiB" : 299.75169372558594,
+        "renderer" : "Metal",
+        "seconds" : [
+          0.438446875,
+          0.43407575,
+          0.422562333
+        ],
+        "visibleOnScreen" : false
+      },
+      "warnings" : [
+        "visible run, but the window was not on screen (display asleep, locked or covered); rendering-dependent numbers (MiB/s, peak fp) are invalid"
+      ]
+    },
+    {
+      "build" : "Release",
+      "spec" : {
+        "engine" : "ghostty",
+        "environment" : {
+          "SPIKE_GHOSTTY_CONFIG" : "cursor-style-blink=false"
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 0,
+        "kind" : "throughput",
+        "round" : 1,
+        "runs" : 3,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : false
+      },
+      "throughput" : {
+        "bytes" : 67108864,
+        "chunkBytes" : 65536,
+        "grid" : "123×37",
+        "medianSeconds" : 0.43793475,
+        "mibPerSecond" : 146.14049239070434,
+        "peakFootprintMiB" : 53.47003173828125,
+        "renderer" : "Metal, surface occluded",
+        "seconds" : [
+          0.434612708,
+          0.43793475,
+          0.491596209
+        ],
+        "visibleOnScreen" : false
+      }
+    },
+    {
+      "build" : "Release",
+      "spec" : {
+        "engine" : "swiftterm",
+        "environment" : {
+
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 0,
+        "kind" : "throughput",
+        "round" : 1,
+        "runs" : 3,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : true
+      },
+      "throughput" : {
+        "bytes" : 67108864,
+        "chunkBytes" : 65536,
+        "grid" : "125×35",
+        "medianSeconds" : 0.363543042,
+        "mibPerSecond" : 176.0451792665585,
+        "peakFootprintMiB" : 50.657325744628906,
+        "renderer" : "Metal",
+        "seconds" : [
+          0.364669292,
+          0.363543042,
+          0.357666667
+        ],
+        "visibleOnScreen" : false
+      },
+      "warnings" : [
+        "visible run, but the window was not on screen (display asleep, locked or covered); rendering-dependent numbers (MiB/s, peak fp) are invalid"
+      ]
+    },
+    {
+      "build" : "Release",
+      "spec" : {
+        "engine" : "swiftterm",
+        "environment" : {
+
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 0,
+        "kind" : "throughput",
+        "round" : 1,
+        "runs" : 3,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : false
+      },
+      "throughput" : {
+        "bytes" : 67108864,
+        "chunkBytes" : 65536,
+        "grid" : "125×35",
+        "medianSeconds" : 0.36208875,
+        "mibPerSecond" : 176.7522465141488,
+        "peakFootprintMiB" : 39.594825744628906,
+        "renderer" : "not in a window",
+        "seconds" : [
+          0.364999875,
+          0.35994975,
+          0.36208875
+        ],
+        "visibleOnScreen" : false
+      }
+    },
+    {
+      "build" : "Release",
+      "spec" : {
+        "engine" : "swiftterm-headless",
+        "environment" : {
+
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 0,
+        "kind" : "throughput",
+        "round" : 1,
+        "runs" : 3,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : false
+      },
+      "throughput" : {
+        "bytes" : 67108864,
+        "chunkBytes" : 65536,
+        "grid" : "120×40",
+        "medianSeconds" : 0.31266525,
+        "mibPerSecond" : 204.69175899784193,
+        "peakFootprintMiB" : 65.00096130371094,
+        "renderer" : "none (parser only)",
+        "seconds" : [
+          0.318721,
+          0.31266525,
+          0.310555667
+        ],
+        "visibleOnScreen" : false
+      }
+    },
+    {
+      "build" : "Release",
+      "spec" : {
+        "engine" : "swiftterm",
+        "environment" : {
+          "SPIKE_SWIFTTERM_METAL" : "0"
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 0,
+        "kind" : "throughput",
+        "round" : 1,
+        "runs" : 3,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : true
+      },
+      "throughput" : {
+        "bytes" : 67108864,
+        "chunkBytes" : 65536,
+        "grid" : "125×35",
+        "medianSeconds" : 0.362780958,
+        "mibPerSecond" : 176.4149925421389,
+        "peakFootprintMiB" : 45.469825744628906,
+        "renderer" : "CoreGraphics",
+        "seconds" : [
+          0.36743225,
+          0.358954709,
+          0.362780958
+        ],
+        "visibleOnScreen" : false
+      },
+      "warnings" : [
+        "visible run, but the window was not on screen (display asleep, locked or covered); rendering-dependent numbers (MiB/s, peak fp) are invalid"
+      ]
+    },
+    {
+      "build" : "Release",
+      "spec" : {
+        "engine" : "ghostty",
+        "environment" : {
+          "SPIKE_GHOSTTY_CONFIG" : "cursor-style-blink=false"
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 0,
+        "kind" : "throughput",
+        "round" : 1,
+        "runs" : 3,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t100-67108864.bin",
+        "streamVariant" : "title-heavy",
+        "visible" : true
+      },
+      "throughput" : {
+        "bytes" : 67108864,
+        "chunkBytes" : 65536,
+        "grid" : "123×37",
+        "medianSeconds" : 0.492046209,
+        "mibPerSecond" : 130.06908462940723,
+        "peakFootprintMiB" : 299.5486602783203,
+        "renderer" : "Metal",
+        "seconds" : [
+          0.497678875,
+          0.492046209,
+          0.487879208
+        ],
+        "visibleOnScreen" : false
+      },
+      "warnings" : [
+        "visible run, but the window was not on screen (display asleep, locked or covered); rendering-dependent numbers (MiB/s, peak fp) are invalid"
+      ]
+    },
+    {
+      "build" : "Release",
+      "spec" : {
+        "engine" : "ghostty",
+        "environment" : {
+          "SPIKE_GHOSTTY_CONFIG" : "cursor-style-blink=false"
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 0,
+        "kind" : "throughput",
+        "round" : 1,
+        "runs" : 3,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t100-67108864.bin",
+        "streamVariant" : "title-heavy",
+        "visible" : false
+      },
+      "throughput" : {
+        "bytes" : 67108864,
+        "chunkBytes" : 65536,
+        "grid" : "123×37",
+        "medianSeconds" : 0.468528709,
+        "mibPerSecond" : 136.59781945187055,
+        "peakFootprintMiB" : 45.06371307373047,
+        "renderer" : "Metal, surface occluded",
+        "seconds" : [
+          0.468528709,
+          0.472375125,
+          0.466957916
+        ],
+        "visibleOnScreen" : false
+      }
+    },
+    {
+      "build" : "Release",
+      "spec" : {
+        "engine" : "swiftterm",
+        "environment" : {
+
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 0,
+        "kind" : "throughput",
+        "round" : 1,
+        "runs" : 3,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t100-67108864.bin",
+        "streamVariant" : "title-heavy",
+        "visible" : true
+      },
+      "throughput" : {
+        "bytes" : 67108864,
+        "chunkBytes" : 65536,
+        "grid" : "125×35",
+        "medianSeconds" : 0.391950375,
+        "mibPerSecond" : 163.28597721076295,
+        "peakFootprintMiB" : 46.594825744628906,
+        "renderer" : "Metal",
+        "seconds" : [
+          0.391950375,
+          0.400708292,
+          0.387497209
+        ],
+        "visibleOnScreen" : false
+      },
+      "warnings" : [
+        "visible run, but the window was not on screen (display asleep, locked or covered); rendering-dependent numbers (MiB/s, peak fp) are invalid"
+      ]
+    },
+    {
+      "build" : "Release",
+      "spec" : {
+        "engine" : "swiftterm",
+        "environment" : {
+
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 0,
+        "kind" : "throughput",
+        "round" : 1,
+        "runs" : 3,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t100-67108864.bin",
+        "streamVariant" : "title-heavy",
+        "visible" : false
+      },
+      "throughput" : {
+        "bytes" : 67108864,
+        "chunkBytes" : 65536,
+        "grid" : "125×35",
+        "medianSeconds" : 0.389073084,
+        "mibPerSecond" : 164.4935171100142,
+        "peakFootprintMiB" : 39.860450744628906,
+        "renderer" : "not in a window",
+        "seconds" : [
+          0.387889084,
+          0.389073084,
+          0.397042708
+        ],
+        "visibleOnScreen" : false
+      }
+    },
+    {
+      "build" : "Release",
+      "memory" : {
+        "baseline" : {
+          "footprintBytes" : 21251104,
+          "residentBytes" : 77955072,
+          "threads" : 17
+        },
+        "deltaFootprintMiB" : 254.71932220458984,
+        "deltaResidentMiB" : 42.609375,
+        "hiddenStrategy" : "in window, view hidden + ghostty_surface_set_occlusion",
+        "historyBytesPerInstance" : 2097152,
+        "idleCPUPercent" : 0.2452802454795116,
+        "instances" : 1,
+        "loaded" : {
+          "footprintBytes" : 288343672,
+          "residentBytes" : 122634240,
+          "threads" : 20
+        },
+        "perInstanceFootprintMiB" : 254.71932220458984,
+        "streamedBytes" : 4456448,
+        "streamingCPUPercent" : 20.542190323476753,
+        "streamingPeakFootprintMiB" : 294.31410217285156,
+        "visibleInstances" : 1,
+        "visibleOnScreen" : false
+      },
+      "spec" : {
+        "engine" : "ghostty",
+        "environment" : {
+          "SPIKE_GHOSTTY_CONFIG" : "cursor-style-blink=true"
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 2097152,
+        "instances" : 1,
+        "keyCount" : 0,
+        "kind" : "memory",
+        "round" : 1,
+        "runs" : 1,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : true
+      },
+      "warnings" : [
+        "visible instance, but the window was not on screen (display asleep, locked or covered); rendering-dependent numbers (MiB/s, peak fp) are invalid"
+      ]
+    },
+    {
+      "build" : "Release",
+      "memory" : {
+        "baseline" : {
+          "footprintBytes" : 20988936,
+          "residentBytes" : 77758464,
+          "threads" : 18
+        },
+        "deltaFootprintMiB" : 32.953834533691406,
+        "deltaResidentMiB" : 42.96875,
+        "hiddenStrategy" : "in window, view hidden + ghostty_surface_set_occlusion",
+        "historyBytesPerInstance" : 2097152,
+        "idleCPUPercent" : 0.04008937110973576,
+        "instances" : 1,
+        "loaded" : {
+          "footprintBytes" : 55543536,
+          "residentBytes" : 122814464,
+          "threads" : 21
+        },
+        "perInstanceFootprintMiB" : 32.953834533691406,
+        "streamedBytes" : 4374528,
+        "streamingCPUPercent" : 16.651575815651203,
+        "streamingPeakFootprintMiB" : 294.12664794921875,
+        "visibleInstances" : 1,
+        "visibleOnScreen" : false
+      },
+      "spec" : {
+        "engine" : "ghostty",
+        "environment" : {
+          "SPIKE_GHOSTTY_CONFIG" : "cursor-style-blink=false"
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 2097152,
+        "instances" : 1,
+        "keyCount" : 0,
+        "kind" : "memory",
+        "round" : 1,
+        "runs" : 1,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : true
+      },
+      "warnings" : [
+        "visible instance, but the window was not on screen (display asleep, locked or covered); rendering-dependent numbers (MiB/s, peak fp) are invalid"
+      ]
+    },
+    {
+      "build" : "Release",
+      "memory" : {
+        "baseline" : {
+          "footprintBytes" : 22234120,
+          "residentBytes" : 79052800,
+          "threads" : 17
+        },
+        "deltaFootprintMiB" : 73.76679229736328,
+        "deltaResidentMiB" : 116.71875,
+        "hiddenStrategy" : "in window, view hidden + ghostty_surface_set_occlusion",
+        "historyBytesPerInstance" : 2097152,
+        "idleCPUPercent" : 0.07641214910242695,
+        "instances" : 6,
+        "loaded" : {
+          "footprintBytes" : 99584208,
+          "residentBytes" : 201441280,
+          "threads" : 35
+        },
+        "perInstanceFootprintMiB" : 12.29446538289388,
+        "streamedBytes" : 4440064,
+        "streamingCPUPercent" : 10.410695845241671,
+        "streamingPeakFootprintMiB" : 326.392822265625,
+        "visibleInstances" : 1,
+        "visibleOnScreen" : false
+      },
+      "spec" : {
+        "engine" : "ghostty",
+        "environment" : {
+          "SPIKE_GHOSTTY_CONFIG" : "cursor-style-blink=false"
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 2097152,
+        "instances" : 6,
+        "keyCount" : 0,
+        "kind" : "memory",
+        "round" : 1,
+        "runs" : 1,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : true
+      },
+      "warnings" : [
+        "visible instance, but the window was not on screen (display asleep, locked or covered); rendering-dependent numbers (MiB/s, peak fp) are invalid"
+      ]
+    },
+    {
+      "build" : "Release",
+      "memory" : {
+        "baseline" : {
+          "footprintBytes" : 22463520,
+          "residentBytes" : 79233024,
+          "threads" : 17
+        },
+        "deltaFootprintMiB" : 170.57979583740234,
+        "deltaResidentMiB" : 230.296875,
+        "hiddenStrategy" : "in window, view hidden + ghostty_surface_set_occlusion",
+        "historyBytesPerInstance" : 2097152,
+        "idleCPUPercent" : 0.12693169127487028,
+        "instances" : 15,
+        "loaded" : {
+          "footprintBytes" : 201329400,
+          "residentBytes" : 320716800,
+          "threads" : 62
+        },
+        "perInstanceFootprintMiB" : 11.371986389160156,
+        "streamedBytes" : 4489216,
+        "streamingCPUPercent" : 25.563163551588698,
+        "streamingPeakFootprintMiB" : 423.33084869384766,
+        "visibleInstances" : 1,
+        "visibleOnScreen" : false
+      },
+      "spec" : {
+        "engine" : "ghostty",
+        "environment" : {
+          "SPIKE_GHOSTTY_CONFIG" : "cursor-style-blink=false"
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 2097152,
+        "instances" : 15,
+        "keyCount" : 0,
+        "kind" : "memory",
+        "round" : 1,
+        "runs" : 1,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : true
+      },
+      "warnings" : [
+        "visible instance, but the window was not on screen (display asleep, locked or covered); rendering-dependent numbers (MiB/s, peak fp) are invalid"
+      ]
+    },
+    {
+      "build" : "Release",
+      "memory" : {
+        "baseline" : {
+          "footprintBytes" : 21988384,
+          "residentBytes" : 78594048,
+          "threads" : 15
+        },
+        "deltaFootprintMiB" : 21.250045776367188,
+        "deltaResidentMiB" : 25.453125,
+        "hiddenStrategy" : "view not in any window",
+        "historyBytesPerInstance" : 2097152,
+        "idleCPUPercent" : 0.06090666900870149,
+        "instances" : 1,
+        "loaded" : {
+          "footprintBytes" : 44270672,
+          "residentBytes" : 105283584,
+          "threads" : 16
+        },
+        "perInstanceFootprintMiB" : 21.250045776367188,
+        "streamedBytes" : 4259840,
+        "streamingCPUPercent" : 7.024404423305501,
+        "streamingPeakFootprintMiB" : 43.65730285644531,
+        "visibleInstances" : 1,
+        "visibleOnScreen" : false
+      },
+      "spec" : {
+        "engine" : "swiftterm",
+        "environment" : {
+
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 2097152,
+        "instances" : 1,
+        "keyCount" : 0,
+        "kind" : "memory",
+        "round" : 1,
+        "runs" : 1,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : true
+      },
+      "warnings" : [
+        "visible instance, but the window was not on screen (display asleep, locked or covered); rendering-dependent numbers (MiB/s, peak fp) are invalid"
+      ]
+    },
+    {
+      "build" : "Release",
+      "memory" : {
+        "baseline" : {
+          "footprintBytes" : 21005344,
+          "residentBytes" : 77611008,
+          "threads" : 15
+        },
+        "deltaFootprintMiB" : 84.78129577636719,
+        "deltaResidentMiB" : 88.953125,
+        "hiddenStrategy" : "view not in any window",
+        "historyBytesPerInstance" : 2097152,
+        "idleCPUPercent" : 0.06509324556859085,
+        "instances" : 6,
+        "loaded" : {
+          "footprintBytes" : 109904976,
+          "residentBytes" : 170885120,
+          "threads" : 16
+        },
+        "perInstanceFootprintMiB" : 14.130215962727865,
+        "streamedBytes" : 4177920,
+        "streamingCPUPercent" : 8.919073609597278,
+        "streamingPeakFootprintMiB" : 106.2354507446289,
+        "visibleInstances" : 1,
+        "visibleOnScreen" : false
+      },
+      "spec" : {
+        "engine" : "swiftterm",
+        "environment" : {
+
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 2097152,
+        "instances" : 6,
+        "keyCount" : 0,
+        "kind" : "memory",
+        "round" : 1,
+        "runs" : 1,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : true
+      },
+      "warnings" : [
+        "visible instance, but the window was not on screen (display asleep, locked or covered); rendering-dependent numbers (MiB/s, peak fp) are invalid"
+      ]
+    },
+    {
+      "build" : "Release",
+      "memory" : {
+        "baseline" : {
+          "footprintBytes" : 22299680,
+          "residentBytes" : 78921728,
+          "threads" : 15
+        },
+        "deltaFootprintMiB" : 199.46893310546875,
+        "deltaResidentMiB" : 203.546875,
+        "hiddenStrategy" : "view not in any window",
+        "historyBytesPerInstance" : 2097152,
+        "idleCPUPercent" : 0.029710294387161832,
+        "instances" : 15,
+        "loaded" : {
+          "footprintBytes" : 231458016,
+          "residentBytes" : 292356096,
+          "threads" : 16
+        },
+        "perInstanceFootprintMiB" : 13.297928873697916,
+        "streamedBytes" : 4243456,
+        "streamingCPUPercent" : 2.0382276881707915,
+        "streamingPeakFootprintMiB" : 221.95431518554688,
+        "visibleInstances" : 1,
+        "visibleOnScreen" : false
+      },
+      "spec" : {
+        "engine" : "swiftterm",
+        "environment" : {
+
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 2097152,
+        "instances" : 15,
+        "keyCount" : 0,
+        "kind" : "memory",
+        "round" : 1,
+        "runs" : 1,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : true
+      },
+      "warnings" : [
+        "visible instance, but the window was not on screen (display asleep, locked or covered); rendering-dependent numbers (MiB/s, peak fp) are invalid"
+      ]
+    },
+    {
+      "build" : "Release",
+      "memory" : {
+        "baseline" : {
+          "footprintBytes" : 21939208,
+          "residentBytes" : 78741504,
+          "threads" : 15
+        },
+        "deltaFootprintMiB" : 196.89080810546875,
+        "deltaResidentMiB" : 200.734375,
+        "hiddenStrategy" : "view not in any window",
+        "historyBytesPerInstance" : 2097152,
+        "idleCPUPercent" : 0.027350053482740333,
+        "instances" : 15,
+        "loaded" : {
+          "footprintBytes" : 228394184,
+          "residentBytes" : 289226752,
+          "threads" : 15
+        },
+        "perInstanceFootprintMiB" : 13.126053873697916,
+        "streamedBytes" : 4243456,
+        "streamingCPUPercent" : 1.9857634039632972,
+        "streamingPeakFootprintMiB" : 218.93866729736328,
+        "visibleInstances" : 1,
+        "visibleOnScreen" : false
+      },
+      "spec" : {
+        "engine" : "swiftterm",
+        "environment" : {
+          "SPIKE_SWIFTTERM_METAL" : "0"
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 2097152,
+        "instances" : 15,
+        "keyCount" : 0,
+        "kind" : "memory",
+        "round" : 1,
+        "runs" : 1,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : true
+      },
+      "warnings" : [
+        "visible instance, but the window was not on screen (display asleep, locked or covered); rendering-dependent numbers (MiB/s, peak fp) are invalid"
+      ]
+    },
+    {
+      "build" : "Release",
+      "ptyFlood" : {
+        "deliveredBytes" : 269706605,
+        "fileBytes" : 268435456,
+        "flowControl" : "PTY reads pause above 1024 KiB queued, resume at 256 KiB",
+        "grid" : "123×37",
+        "interruptLatency" : {
+          "count" : 5,
+          "max" : 8.638042,
+          "mean" : 5.1372752,
+          "p50" : 4.180125,
+          "p95" : 8.638042,
+          "p99" : 8.638042
+        },
+        "interruptTimeouts" : 0,
+        "maxQueuedMiB" : 0.9665746688842773,
+        "mibPerSecond" : 108.33657530534936,
+        "pauses" : 31,
+        "peakFootprintMiB" : 37.12614440917969,
+        "renderer" : "Metal, surface occluded",
+        "seconds" : 2.363006208,
+        "visibleOnScreen" : false
+      },
+      "spec" : {
+        "engine" : "ghostty",
+        "environment" : {
+          "SPIKE_GHOSTTY_CONFIG" : "cursor-style-blink=false"
+        },
+        "floodCopies" : 4,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 0,
+        "kind" : "ptyFlood",
+        "round" : 1,
+        "runs" : 1,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : false
+      }
+    },
+    {
+      "build" : "Release",
+      "ptyFlood" : {
+        "deliveredBytes" : 269706623,
+        "fileBytes" : 268435456,
+        "flowControl" : "PTY reads pause above 1024 KiB queued, resume at 256 KiB",
+        "grid" : "123×37",
+        "interruptLatency" : {
+          "count" : 5,
+          "max" : 7.981583,
+          "mean" : 4.2851082,
+          "p50" : 3.025958,
+          "p95" : 7.981583,
+          "p99" : 7.981583
+        },
+        "interruptTimeouts" : 0,
+        "maxQueuedMiB" : 0.9939565658569336,
+        "mibPerSecond" : 106.09304588058006,
+        "pauses" : 34,
+        "peakFootprintMiB" : 295.39227294921875,
+        "renderer" : "Metal",
+        "seconds" : 2.41297625,
+        "visibleOnScreen" : false
+      },
+      "spec" : {
+        "engine" : "ghostty",
+        "environment" : {
+          "SPIKE_GHOSTTY_CONFIG" : "cursor-style-blink=false"
+        },
+        "floodCopies" : 4,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 0,
+        "kind" : "ptyFlood",
+        "round" : 1,
+        "runs" : 1,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : true
+      },
+      "warnings" : [
+        "visible run, but the window was not on screen (display asleep, locked or covered); rendering-dependent numbers (MiB/s, peak fp) are invalid"
+      ]
+    },
+    {
+      "build" : "Release",
+      "ptyFlood" : {
+        "deliveredBytes" : 269706616,
+        "fileBytes" : 268435456,
+        "flowControl" : "none needed: parses on the PTY read queue",
+        "grid" : "125×35",
+        "interruptLatency" : {
+          "count" : 5,
+          "max" : 2.164666,
+          "mean" : 2.139525,
+          "p50" : 2.149542,
+          "p95" : 2.164666,
+          "p99" : 2.164666
+        },
+        "interruptTimeouts" : 0,
+        "maxQueuedMiB" : 0,
+        "mibPerSecond" : 83.51162467135647,
+        "pauses" : 0,
+        "peakFootprintMiB" : 45.11042785644531,
+        "renderer" : "not in a window",
+        "seconds" : 3.0654415,
+        "visibleOnScreen" : false
+      },
+      "spec" : {
+        "engine" : "swiftterm",
+        "environment" : {
+
+        },
+        "floodCopies" : 4,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 0,
+        "kind" : "ptyFlood",
+        "round" : 1,
+        "runs" : 1,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : false
+      }
+    },
+    {
+      "build" : "Release",
+      "ptyFlood" : {
+        "deliveredBytes" : 269706631,
+        "fileBytes" : 268435456,
+        "flowControl" : "none needed: parses on the PTY read queue",
+        "grid" : "125×35",
+        "interruptLatency" : {
+          "count" : 5,
+          "max" : 2.162333,
+          "mean" : 2.1407916,
+          "p50" : 2.160417,
+          "p95" : 2.162333,
+          "p99" : 2.162333
+        },
+        "interruptTimeouts" : 0,
+        "maxQueuedMiB" : 0,
+        "mibPerSecond" : 83.44099924833839,
+        "pauses" : 0,
+        "peakFootprintMiB" : 50.594825744628906,
+        "renderer" : "Metal",
+        "seconds" : 3.068036125,
+        "visibleOnScreen" : false
+      },
+      "spec" : {
+        "engine" : "swiftterm",
+        "environment" : {
+
+        },
+        "floodCopies" : 4,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 0,
+        "kind" : "ptyFlood",
+        "round" : 1,
+        "runs" : 1,
+        "streamBytes" : 67108864,
+        "streamPath" : "/var/folders/xx/xxxxxxxxxxxxxxxxxxxxxxxx0000gn/T/TermSpike-stream-v2-c0dd2026-t1-67108864.bin",
+        "streamVariant" : "realistic",
+        "visible" : true
+      },
+      "warnings" : [
+        "visible run, but the window was not on screen (display asleep, locked or covered); rendering-dependent numbers (MiB/s, peak fp) are invalid"
+      ]
+    },
+    {
+      "build" : "Release",
+      "keyLatency" : {
+        "delivery" : "NSApp.sendEvent (synthetic NSEvent, app inactive)",
+        "inputSource" : "com.apple.keylayout.ABC",
+        "keyToEcho" : {
+          "count" : 300,
+          "max" : 4.408166,
+          "mean" : 0.5425811366666665,
+          "p50" : 0.401125,
+          "p95" : 1.440416,
+          "p99" : 2.486125
+        },
+        "keyToEmit" : {
+          "count" : 300,
+          "max" : 4.273375,
+          "mean" : 0.4341730400000001,
+          "p50" : 0.303167,
+          "p95" : 1.287625,
+          "p99" : 2.28825
+        },
+        "keyToWrite" : {
+          "count" : 300,
+          "max" : 4.389666,
+          "mean" : 0.5250596133333333,
+          "p50" : 0.386583,
+          "p95" : 1.379791,
+          "p99" : 2.419208
+        },
+        "keys" : 300,
+        "unmatched" : 0
+      },
+      "spec" : {
+        "engine" : "ghostty",
+        "environment" : {
+
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 300,
+        "kind" : "keyLatency",
+        "round" : 1,
+        "runs" : 1,
+        "streamBytes" : 0,
+        "streamPath" : "",
+        "streamVariant" : "realistic",
+        "visible" : true
+      }
+    },
+    {
+      "build" : "Release",
+      "keyLatency" : {
+        "delivery" : "NSApp.sendEvent (synthetic NSEvent, app inactive)",
+        "inputSource" : "com.apple.keylayout.ABC",
+        "keyToEcho" : {
+          "count" : 300,
+          "max" : 5.685542,
+          "mean" : 0.42593794333333335,
+          "p50" : 0.445708,
+          "p95" : 0.672666,
+          "p99" : 0.829667
+        },
+        "keyToEmit" : {
+          "count" : 300,
+          "max" : 5.38225,
+          "mean" : 0.3079098433333334,
+          "p50" : 0.318875,
+          "p95" : 0.492792,
+          "p99" : 0.578708
+        },
+        "keyToWrite" : {
+          "count" : 300,
+          "max" : 5.580417,
+          "mean" : 0.4048812966666666,
+          "p50" : 0.42875,
+          "p95" : 0.650458,
+          "p99" : 0.79875
+        },
+        "keys" : 300,
+        "unmatched" : 0
+      },
+      "spec" : {
+        "engine" : "swiftterm",
+        "environment" : {
+
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 300,
+        "kind" : "keyLatency",
+        "round" : 1,
+        "runs" : 1,
+        "streamBytes" : 0,
+        "streamPath" : "",
+        "streamVariant" : "realistic",
+        "visible" : true
+      }
+    },
+    {
+      "build" : "Release",
+      "keyLatency" : {
+        "delivery" : "NSApp.sendEvent (synthetic NSEvent, app inactive)",
+        "inputSource" : "com.apple.keylayout.ABC",
+        "keyToEcho" : {
+          "count" : 300,
+          "max" : 6.998583,
+          "mean" : 0.6586079366666666,
+          "p50" : 0.583167,
+          "p95" : 1.534417,
+          "p99" : 3.741
+        },
+        "keyToEmit" : {
+          "count" : 300,
+          "max" : 6.900792,
+          "mean" : 0.5455095833333332,
+          "p50" : 0.449625,
+          "p95" : 1.33275,
+          "p99" : 3.335542
+        },
+        "keyToWrite" : {
+          "count" : 300,
+          "max" : 6.979708,
+          "mean" : 0.6380782133333334,
+          "p50" : 0.569417,
+          "p95" : 1.502084,
+          "p99" : 3.633917
+        },
+        "keys" : 300,
+        "unmatched" : 0
+      },
+      "spec" : {
+        "engine" : "ghostty",
+        "environment" : {
+
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 300,
+        "kind" : "keyLatency",
+        "round" : 2,
+        "runs" : 1,
+        "streamBytes" : 0,
+        "streamPath" : "",
+        "streamVariant" : "realistic",
+        "visible" : true
+      }
+    },
+    {
+      "build" : "Release",
+      "keyLatency" : {
+        "delivery" : "NSApp.sendEvent (synthetic NSEvent, app inactive)",
+        "inputSource" : "com.apple.keylayout.ABC",
+        "keyToEcho" : {
+          "count" : 300,
+          "max" : 1.69275,
+          "mean" : 0.4017409233333332,
+          "p50" : 0.420084,
+          "p95" : 0.725666,
+          "p99" : 1.022875
+        },
+        "keyToEmit" : {
+          "count" : 300,
+          "max" : 1.600083,
+          "mean" : 0.28580901,
+          "p50" : 0.289959,
+          "p95" : 0.5285,
+          "p99" : 0.736208
+        },
+        "keyToWrite" : {
+          "count" : 300,
+          "max" : 1.651958,
+          "mean" : 0.3803936199999998,
+          "p50" : 0.398,
+          "p95" : 0.682042,
+          "p99" : 0.89
+        },
+        "keys" : 300,
+        "unmatched" : 0
+      },
+      "spec" : {
+        "engine" : "swiftterm",
+        "environment" : {
+
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 300,
+        "kind" : "keyLatency",
+        "round" : 2,
+        "runs" : 1,
+        "streamBytes" : 0,
+        "streamPath" : "",
+        "streamVariant" : "realistic",
+        "visible" : true
+      }
+    },
+    {
+      "build" : "Release",
+      "keyLatency" : {
+        "delivery" : "NSApp.sendEvent (synthetic NSEvent, app inactive)",
+        "inputSource" : "com.apple.keylayout.ABC",
+        "keyToEcho" : {
+          "count" : 300,
+          "max" : 4.492875,
+          "mean" : 0.6544184633333336,
+          "p50" : 0.59125,
+          "p95" : 1.781875,
+          "p99" : 2.7765
+        },
+        "keyToEmit" : {
+          "count" : 300,
+          "max" : 4.370959,
+          "mean" : 0.5353788699999998,
+          "p50" : 0.439958,
+          "p95" : 1.641792,
+          "p99" : 2.673459
+        },
+        "keyToWrite" : {
+          "count" : 300,
+          "max" : 4.476375,
+          "mean" : 0.6363062733333331,
+          "p50" : 0.571,
+          "p95" : 1.749416,
+          "p99" : 2.74425
+        },
+        "keys" : 300,
+        "unmatched" : 0
+      },
+      "spec" : {
+        "engine" : "ghostty",
+        "environment" : {
+
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 300,
+        "kind" : "keyLatency",
+        "round" : 3,
+        "runs" : 1,
+        "streamBytes" : 0,
+        "streamPath" : "",
+        "streamVariant" : "realistic",
+        "visible" : true
+      }
+    },
+    {
+      "build" : "Release",
+      "keyLatency" : {
+        "delivery" : "NSApp.sendEvent (synthetic NSEvent, app inactive)",
+        "inputSource" : "com.apple.keylayout.ABC",
+        "keyToEcho" : {
+          "count" : 300,
+          "max" : 1.854875,
+          "mean" : 0.3752275000000002,
+          "p50" : 0.37975,
+          "p95" : 0.645167,
+          "p99" : 1.116917
+        },
+        "keyToEmit" : {
+          "count" : 300,
+          "max" : 1.74075,
+          "mean" : 0.2648570966666668,
+          "p50" : 0.262667,
+          "p95" : 0.456834,
+          "p99" : 0.644542
+        },
+        "keyToWrite" : {
+          "count" : 300,
+          "max" : 1.806458,
+          "mean" : 0.3550801366666668,
+          "p50" : 0.3625,
+          "p95" : 0.621541,
+          "p99" : 1.06325
+        },
+        "keys" : 300,
+        "unmatched" : 0
+      },
+      "spec" : {
+        "engine" : "swiftterm",
+        "environment" : {
+
+        },
+        "floodCopies" : 1,
+        "historyBytes" : 0,
+        "instances" : 1,
+        "keyCount" : 300,
+        "kind" : "keyLatency",
+        "round" : 3,
+        "runs" : 1,
+        "streamBytes" : 0,
+        "streamPath" : "",
+        "streamVariant" : "realistic",
+        "visible" : true
+      }
+    }
+  ]
+}

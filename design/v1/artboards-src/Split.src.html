@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>下方終端機 · 筆記抽屜</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<!--@HELMET-->
+<style>
+/* ===== Split board (sp-) ===== */
+.codd .sp-h1{margin:0}
+.codd .sp-flex{flex:1}
+.codd .sp-lc{text-transform:none;letter-spacing:.04em}
+.codd .sp-acct{height:16px;font-size:10px;padding:0 5px;letter-spacing:.04em}
+.codd .sp-fs{display:inline-flex;align-items:center;height:24px;border:1px solid var(--line-bright);margin:0 2px}
+.codd .sp-fs button{background:transparent;border:0;color:var(--dim);height:22px;padding:0 6px;font-size:11px;cursor:pointer;font-family:var(--mono)}
+.codd .sp-fs button:hover{color:var(--amber)}
+.codd .sp-fs .num{font-size:11px;color:var(--bone);padding:0 4px;border-left:1px solid var(--line);border-right:1px solid var(--line);line-height:22px}
+.codd .sp-tl{display:flex;align-items:stretch}
+.codd .sp-row{flex:1;min-height:0;display:flex;flex-direction:row}
+.codd .sp-col{flex:1;min-width:0;display:flex;flex-direction:column}
+.codd .sp-blink{animation:codd-soft 1.2s ease-in-out infinite}
+/* composer */
+.codd .sp-composer{align-items:flex-start;padding:8px 12px 8px 16px}
+.codd .sp-cwrap{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.codd .sp-ta{display:block;white-space:normal;border-color:var(--amber-dim);box-shadow:inset 0 0 0 1px rgba(255,184,74,.25)}
+.codd .sp-ref{height:18px;vertical-align:1px;margin:0 2px;font-size:11px;gap:4px;background:rgba(255,184,74,.08)}
+.codd .sp-ref svg{width:11px;height:11px}
+.codd .sp-caret{display:inline-block;width:2px;height:15px;background:var(--amber);vertical-align:-3px;margin-left:2px;box-shadow:0 0 6px var(--amber-glow);animation:codd-blink 1s steps(1) infinite}
+.codd .sp-chint{display:flex;align-items:center;gap:10px;min-width:0}
+.codd .sp-send{min-height:40px}
+/* splitter */
+.codd .sp-split{flex:none;height:6px;position:relative;cursor:row-resize;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;outline:none}
+.codd .sp-split::before{content:'';position:absolute;left:0;right:0;top:2px;border-top:1px dashed var(--line-bright)}
+.codd .sp-split:hover::before,.codd .sp-split:focus-visible::before{border-top-color:var(--amber-dim)}
+.codd .sp-grip{position:relative;display:block;height:6px;line-height:6px;padding:0 10px;background:var(--bg-soft);color:var(--dim);font-size:13px;letter-spacing:0}
+/* bottom panel */
+.codd .sp-bottom{flex:none;height:280px;display:flex;flex-direction:column}
+.codd .sp-bterm{padding:6px 16px}
+.codd .sp-ib{width:24px;height:24px}
+.codd .sp-ib svg{width:14px;height:14px}
+.codd .sp-close{height:22px;padding:0 7px;gap:5px;font-size:10.5px;color:var(--dim)}
+/* drawer */
+.codd .sp-pad{flex:0 0 300px;width:300px;min-height:0;display:flex;flex-direction:column;border-left:1px solid var(--line-bright);background:var(--bg)}
+.codd .sp-pad-h{flex:none;height:36px;display:flex;align-items:center;gap:8px;padding:0 6px 0 14px;border-bottom:1px dashed var(--line-bright);background:var(--bg-soft)}
+.codd .sp-pad-t{margin:0;font-family:var(--display);font-weight:700;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);text-shadow:0 0 8px var(--amber-glow);white-space:nowrap}
+.codd .sp-pad-t span{font-family:var(--mono);font-weight:400;color:var(--dim);letter-spacing:.06em;text-shadow:none}
+.codd .sp-pad-b{flex:1;min-height:0;overflow:auto;padding:10px 12px 12px;display:flex;flex-direction:column;gap:10px}
+.codd .sp-sec{font-size:10px;margin-top:2px}
+.codd .sp-sec .n{color:var(--amber-dim);letter-spacing:0}
+.codd .sp-rule{flex:1;border-top:1px dashed var(--line)}
+.codd .sp-secr{letter-spacing:.04em;text-transform:none;color:var(--dimmer)}
+.codd .sp-note{border:1px solid var(--line-bright);background:var(--bg-soft);padding:9px 11px 10px;display:flex;flex-direction:column;gap:8px}
+.codd .sp-note.ref{border-color:var(--amber-dim)}
+.codd .sp-nh{display:flex;align-items:center;gap:7px;min-width:0}
+.codd .sp-kind{height:16px;font-size:9.5px;padding:0 4px}
+.codd .sp-nt{flex:1;min-width:0;font-size:12.5px;font-weight:500;color:var(--cream);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.codd .sp-nt:hover{color:var(--amber)}
+.codd .sp-ai{flex:none;display:inline-flex;align-items:center;gap:3px;font-size:9.5px;letter-spacing:.12em;color:var(--dim)}
+.codd .sp-ai svg{width:13px;height:13px}
+.codd .sp-shots{display:flex;align-items:flex-end;gap:10px;background:#000;border:1px solid var(--line);padding:8px 10px 6px}
+.codd .sp-fig{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10.5px;color:var(--dim)}
+.codd .sp-ph,.codd .sp-ls{position:relative;flex:none;border:1px solid var(--line-bright);background:var(--bg-soft);overflow:hidden}
+.codd .sp-ph{width:42px;height:74px}
+.codd .sp-ls{width:118px;height:58px}
+.codd .sp-ph i,.codd .sp-ls i{position:absolute;display:block}
+.codd .sp-ph .b,.codd .sp-ls .b{left:0;right:0;top:0;height:8px;background:var(--bg-raise);border-bottom:1px solid var(--line-bright)}
+.codd .sp-ph .r{left:5px;height:3px;background:var(--line-bright)}
+.codd .sp-ph .btn-x{left:5px;right:5px;bottom:9px;height:11px;border:1px solid var(--amber-dim);background:rgba(255,184,74,.18)}
+.codd .sp-ph .nav{left:0;right:0;bottom:0;height:13px;background:#1e1e1e;border-top:1px solid var(--line-bright)}
+.codd .sp-hit{outline:1px dashed var(--danger);outline-offset:0}
+.codd .sp-ph .sp-hit{left:2px;right:2px;bottom:3px;height:19px}
+.codd .sp-ls .t{left:5px;width:150px;height:4px;background:repeating-linear-gradient(90deg,var(--line-bright) 0 24px,transparent 24px 28px)}
+.codd .sp-ls .t.h{background:repeating-linear-gradient(90deg,var(--dim) 0 24px,transparent 24px 28px);opacity:.6}
+.codd .sp-ls .sp-hit{right:2px;top:11px;bottom:5px;width:16px}
+.codd .sp-cap{display:flex;justify-content:space-between;gap:8px;font-size:10.5px;color:var(--dimmer);margin-top:-3px}
+.codd .sp-tasks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;font-size:11.5px;color:var(--bone)}
+.codd .sp-tasks li{display:flex;gap:7px;align-items:baseline;min-width:0}
+.codd .sp-cb{flex:none;color:var(--dim)}
+.codd .sp-tasks li.done .sp-cb{color:var(--amber-dim)}
+.codd .sp-tasks li.done .tx{color:var(--dimmer);text-decoration:line-through}
+.codd .sp-tasks code{font-size:11px;padding:0 4px}
+.codd .sp-nm{display:flex;flex-wrap:wrap;gap:5px;font-size:10.5px;color:var(--dimmer);font-variant-numeric:tabular-nums}
+.codd .sp-na{display:flex;gap:6px}
+.codd .sp-pad-b .addrow{margin-top:0}
+.codd .sp-files{list-style:none;margin:0;padding:0;border:1px solid var(--line);background:var(--bg-soft)}
+.codd .sp-files li{display:flex;align-items:center;gap:8px;padding:6px 8px 6px 10px;border-bottom:1px dashed var(--line)}
+.codd .sp-files li:last-child{border-bottom:0}
+.codd .sp-fn{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.codd .sp-f1{display:flex;align-items:center;gap:7px;min-width:0}
+.codd .sp-f1 b{font-weight:500;font-size:12px;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.codd .sp-dir{font-size:10.5px;color:var(--dimmer);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.codd .sp-m{flex:none;color:var(--amber);font-size:10.5px;font-weight:700}
+.codd .sp-aichip{flex:none;height:15px;font-size:9.5px;padding:0 4px;letter-spacing:.06em;color:var(--t-pink);border-color:rgba(255,124,181,.45)}
+.codd .sp-pad-f{flex:none;display:flex;align-items:center;gap:8px;height:28px;padding:0 12px;border-top:1px dashed var(--line);font-size:10.5px;color:var(--dimmer)}
+</style>
+</helmet>
+<div class="codd win {{ crtClass }}">
+<!--@SHELL on=sessions current=s9-->
+<div class="main">
+  <header class="sh">
+    <div class="ident">
+      <div class="l1">
+        <span class="lamp st-busy" aria-label="BUSY">●</span>
+        <span class="tag" style="background:var(--t-pink)"></span>
+        <h1 class="ttl sp-h1">打卡頁 RWD 調整</h1>
+        <span class="stchip st-busy"><span class="lamp">●</span>Busy <span class="sp-lc">· Edit · 6m</span></span>
+      </div>
+      <div class="meta">
+        <span class="ell" title="~/Project/Northstar/websites/orb-toolkit-suite/orb-toolkit-frontend">~/…/orb-toolkit-suite/orb-toolkit-frontend</span><span class="sep">·</span>
+        <span>⎇ feat/punch-rwd</span><span class="sep">·</span>
+        <span>sonnet-5.5</span><span class="sep">·</span>
+        <span>CTX 49%</span><span class="sep">·</span>
+        <span>$1.36</span><span class="sep">·</span>
+        <span>UP 1h18m</span><span class="sep">·</span>
+        <span class="chip sp-acct">#3 工作</span>
+      </div>
+    </div>
+    <div class="acts">
+      <button class="pillbtn on" type="button" aria-pressed="true" aria-label="Session pad 筆記，2 則"><span aria-hidden="true">✎</span>Notes <span class="num">2</span></button>
+      <button class="icon-btn" type="button" aria-label="檔案"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2.75 4.75h5l1.75 2h7.75v9.5H2.75z"></path><path d="M2.75 8.75h14.5"></path></svg></button>
+      <button class="icon-btn on" type="button" aria-pressed="true" aria-label="下方終端機 ⌘J"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="2.75" y="3.75" width="14.5" height="12.5"></rect><path d="M2.75 11.25h14.5"></path><rect x="4.5" y="12.75" width="11" height="2" fill="currentColor" stroke="none"></rect></svg></button>
+      <div class="sp-fs" role="group" aria-label="終端機字級"><button type="button" aria-label="縮小字級">A−</button><span class="num">13</span><button type="button" aria-label="放大字級">A+</button></div>
+      <button class="icon-btn" type="button" aria-label="更多動作">⋯</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <div class="sp-tl" role="tablist" aria-label="Session 分頁">
+      <button class="tab on" type="button" role="tab" aria-selected="true"><span class="amber" aria-hidden="true">◆</span><span class="tlabel">Claude</span></button>
+    </div>
+    <button class="tab" type="button" aria-label="新增 shell 分頁 ⌘T">+</button>
+    <div class="tfill"><span class="num">100×22</span><span>·</span><span>⌘L composer</span><span>·</span><span>⌘J 終端機</span></div>
+  </div>
+
+  <div class="sp-row">
+    <div class="sp-col">
+<pre class="term" aria-label="Claude 終端機輸出"><span class="d">&gt;</span> 先處理表格：640px 以下把打卡紀錄改成卡片式，桌機版維持原樣
+
+<span class="cc">●</span> <span class="w">Read</span>(src/pages/punch.vue)
+  <span class="d">⎿  Read 186 lines</span>
+
+<span class="cc">●</span> 表格只靠 overflow-x-auto，小螢幕會整張橫向捲動。&lt;640px 改成卡片清單，桌機版不動。
+
+<span class="cc">●</span> <span class="w">Update</span>(src/pages/punch.vue)
+  <span class="d">⎿  Updated src/pages/punch.vue with 4 additions and 1 removal</span>
+     <span class="del"> 119 -  &lt;table class="punch-table w-full"&gt;                                    </span>
+     <span class="add"> 119 +  &lt;ul class="punch-cards space-y-2 sm:hidden"&gt;                          </span>
+     <span class="add"> 120 +    &lt;PunchCard v-for="r in records" :key="r.id" :record="r" /&gt;          </span>
+     <span class="add"> 121 +  &lt;/ul&gt;                                                                 </span>
+     <span class="add"> 122 +  &lt;table class="punch-table hidden w-full sm:table"&gt;                    </span>
+
+<span class="cc sp-blink">●</span> <span class="w">Update</span>(src/pages/punch.vue)
+
+<span class="cc">✻ Editing…</span> <span class="d">(6m 08s · ↓ 3.2k tokens · esc to interrupt)</span>
+
+<span class="d">────────────────────────────────────────────────────────────────────────────────────────────────</span>
+<span class="d">&gt;</span>
+<span class="d">────────────────────────────────────────────────────────────────────────────────────────────────</span></pre>
+
+      <div class="composer sp-composer">
+        <div class="sp-cwrap">
+          <div class="ta sp-ta" role="textbox" aria-multiline="true" aria-label="給 Claude 的訊息（⌘L）">iPhone SE 寬度下的打卡按鈕改成固定在底部，參考 <span class="chip amber sp-ref"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M5 2.75h7.5l3 3v11.5H5z"></path><path d="M7.5 9.5h5M7.5 12.5h5"></path></svg>codd://note/rwd-punch-k7x2</span><span class="sp-caret" aria-hidden="true"></span></div>
+          <div class="sp-chint">
+            <span class="hint">Enter 送出 · ⇧Enter 換行 · 貼上圖片會存成檔案路徑</span>
+            <span class="sp-flex"></span>
+            <span class="hint">Claude 工作中 · 送出後排入佇列</span>
+            <span class="kbd">⌘L</span>
+          </div>
+        </div>
+        <button class="btn primary sp-send" type="button">Send</button>
+      </div>
+
+      <div class="sp-split" role="separator" aria-orientation="horizontal" aria-label="調整高度" aria-valuenow="280" aria-valuemin="120" aria-valuemax="560" tabindex="0"><span class="sp-grip" aria-hidden="true">⋯</span></div>
+
+      <section class="sp-bottom" aria-label="下方終端機">
+        <div class="tabs">
+          <div class="sp-tl" role="tablist" aria-label="終端機分頁">
+            <button class="tab on" type="button" role="tab" aria-selected="true"><span aria-hidden="true">$</span><span class="tlabel">zsh 1</span></button>
+            <button class="tab" type="button" role="tab" aria-selected="false"><span aria-hidden="true">$</span>npm run dev<span class="lamp st-busy" aria-label="執行中">●</span></button>
+          </div>
+          <button class="tab" type="button" aria-label="新增終端機">+</button>
+          <div class="tfill">
+            <span class="ell">~/…/orb-toolkit-suite/orb-toolkit-frontend</span>
+            <button class="icon-btn sp-ib" type="button" aria-label="最大化下方終端機"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M11.75 3.75h4.5v4.5M8.25 16.25h-4.5v-4.5M16 4l-4.75 4.75M4 16l4.75-4.75"></path></svg></button>
+            <button class="pillbtn sp-close" type="button" aria-label="關閉下方終端機 ⌘J">✕ ⌘J</button>
+          </div>
+        </div>
+<pre class="term sp-bterm" aria-label="zsh 1 輸出"><span class="g">dev@mbp</span> <span class="c">orb-toolkit-frontend</span> % git status -s
+ <span class="r">M</span> src/components/PunchButton.vue
+ <span class="r">M</span> src/pages/punch.vue
+ <span class="r">M</span> tailwind.config.js
+<span class="g">dev@mbp</span> <span class="c">orb-toolkit-frontend</span> % npm run lint
+<span class="d">&gt; orb-toolkit-frontend@0.9.3 lint</span>
+<span class="d">&gt; eslint src</span>
+
+<span class="w">/Users/me/Project/Northstar/websites/orb-toolkit-suite/orb-toolkit-frontend/src/pages/punch.vue</span>
+  <span class="d">23:7</span>  <span class="a">warning</span>  'isLandscape' is assigned a value but never used  <span class="d">no-unused-vars</span>
+
+<span class="a">✕ 1 problem (0 errors, 1 warning)</span>
+<span class="g">dev@mbp</span> <span class="c">orb-toolkit-frontend</span> % <span class="cur"> </span></pre>
+      </section>
+    </div>
+
+    <aside class="sp-pad" aria-label="Session pad 筆記">
+      <div class="sp-pad-h">
+        <h2 class="sp-pad-t">Session pad <span>· 筆記</span></h2>
+        <span class="sp-flex"></span>
+        <button class="icon-btn sp-ib" type="button" aria-label="關閉 Session pad">✕</button>
+      </div>
+      <div class="sp-pad-b">
+        <div class="sec sp-sec">Linked notes <span class="n">2</span><span class="sp-rule"></span></div>
+
+        <article class="sp-note ref" aria-label="筆記：打卡頁 RWD 跑版紀錄">
+          <div class="sp-nh">
+            <span class="chip caps sp-kind">Note</span>
+            <a class="sp-nt" href="#n1">打卡頁 RWD 跑版紀錄</a>
+            <span class="sp-ai" aria-label="AI 存取：READ"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2 10s3-5.25 8-5.25S18 10 18 10s-3 5.25-8 5.25S2 10 2 10z"></path><circle cx="10" cy="10" r="2.25"></circle></svg>READ</span>
+          </div>
+          <div class="sp-shots" role="img" aria-label="2 張截圖：iPhone SE 直向，打卡按鈕被底部導覽列蓋住；橫向，表格溢出">
+            <div class="sp-fig" aria-hidden="true">
+              <div class="sp-ph"><i class="b"></i><i class="r" style="top:13px;width:28px"></i><i class="r" style="top:20px;width:24px"></i><i class="r" style="top:27px;width:30px"></i><i class="r" style="top:34px;width:20px"></i><i class="r" style="top:41px;width:27px"></i><i class="btn-x"></i><i class="nav"></i><i class="sp-hit"></i></div>
+              <span>直向</span>
+            </div>
+            <div class="sp-fig" aria-hidden="true">
+              <div class="sp-ls"><i class="b"></i><i class="t h" style="top:13px"></i><i class="t" style="top:21px"></i><i class="t" style="top:29px"></i><i class="t" style="top:37px"></i><i class="t" style="top:45px"></i><i class="sp-hit"></i></div>
+              <span>橫向</span>
+            </div>
+          </div>
+          <div class="sp-cap"><span>截圖 2026-10-15 09:32 · iPhone SE</span><span class="num">2 張 · 1.4 MB</span></div>
+          <ul class="sp-tasks">
+            <li class="done"><span class="sp-cb">[x]</span><span class="tx">先重現（Chrome DevTools 375 寬）</span></li>
+            <li><span class="sp-cb">[ ]</span><span class="tx">按鈕改 <code>position: sticky</code></span></li>
+            <li><span class="sp-cb">[ ]</span><span class="tx">表格改卡片式（&lt;640px）</span></li>
+          </ul>
+          <div class="sp-nm"><span>#rwd #punch</span><span>·</span><span>更新 10:05</span><span>·</span><span>AI 讀取 10:12</span></div>
+          <div class="sp-na"><button class="btn sm" type="button">插入引用</button><button class="btn sm" type="button">送出全文</button></div>
+        </article>
+
+        <article class="sp-note" aria-label="筆記：打卡頁 QA 清單">
+          <div class="sp-nh">
+            <span class="chip caps sp-kind">Note</span>
+            <a class="sp-nt" href="#qa">打卡頁 QA 清單</a>
+            <span class="sp-ai" aria-label="AI 存取：READ"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2 10s3-5.25 8-5.25S18 10 18 10s-3 5.25-8 5.25S2 10 2 10z"></path><circle cx="10" cy="10" r="2.25"></circle></svg>READ</span>
+          </div>
+          <ul class="sp-tasks">
+            <li><span class="sp-cb">[ ]</span><span class="tx">iPhone SE 直向：按鈕不被導覽列蓋住</span></li>
+            <li><span class="sp-cb">[ ]</span><span class="tx">iPhone SE 橫向：紀錄不需橫向捲動</span></li>
+            <li class="done"><span class="sp-cb">[x]</span><span class="tx">iPad mini（768 寬）維持表格版面</span></li>
+          </ul>
+          <div class="sp-nm"><span>#qa #punch</span><span>·</span><span class="num">1/3</span><span>·</span><span>更新 昨天 17:05</span></div>
+          <div class="sp-na"><button class="btn sm" type="button">插入引用</button><button class="btn sm" type="button">送出全文</button></div>
+        </article>
+
+        <button class="addrow" type="button">+ 新筆記（連結此 session）</button>
+
+        <div class="sec sp-sec">AI 改過的檔案 · <span class="n">3</span><span class="sp-rule"></span><span class="sp-secr">vs HEAD</span></div>
+        <ul class="sp-files">
+          <li>
+            <div class="sp-fn"><span class="sp-f1"><b>punch.vue</b><span class="sp-m" aria-label="已修改">M</span><span class="chip sp-aichip">AI 10:41</span></span><span class="sp-dir">src/pages/</span></div>
+            <button class="btn sm" type="button" aria-label="差異：src/pages/punch.vue">差異</button>
+          </li>
+          <li>
+            <div class="sp-fn"><span class="sp-f1"><b>PunchButton.vue</b><span class="sp-m" aria-label="已修改">M</span><span class="chip sp-aichip">AI</span></span><span class="sp-dir">src/components/</span></div>
+            <button class="btn sm" type="button" aria-label="差異：src/components/PunchButton.vue">差異</button>
+          </li>
+          <li>
+            <div class="sp-fn"><span class="sp-f1"><b>tailwind.config.js</b><span class="sp-m" aria-label="已修改">M</span></span><span class="sp-dir">./</span></div>
+            <button class="btn sm" type="button" aria-label="差異：tailwind.config.js">差異</button>
+          </li>
+        </ul>
+      </div>
+      <div class="sp-pad-f"><span>~/.codd/notebook</span><span class="sp-flex"></span><span class="kbd">⌘⇧N</span><span>快速筆記</span></div>
+    </aside>
+  </div>
+<!--@STATUSBAR-->
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"crt":{"editor":"enum","options":["subtle","full","off"],"default":"subtle","section":"Look"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const crt = this.props.crt ?? 'subtle';
+    return { crtClass: crt === 'off' ? '' : 'crt-' + crt };
+  }
+}
+</script>
+</body>
+</html>

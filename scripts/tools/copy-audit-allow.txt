@@ -1,0 +1,65 @@
+# Copy audit allow list (scripts/tools/copy-audit.py; docs/M5-PLAN.md §2.7, D22).
+# One entry per line:  <rule> <path>:<text> # reason
+#   <path>  repo-relative; a trailing / matches the folder, otherwise an fnmatch pattern (* also crosses /)
+#   <text>  must occur in the finding's text; empty = every finding of that rule in <path>
+# Unicode test data is never listed here: it is written as Swift \u{...} escapes (D22, step I3).
+
+# F: the old brand and bundle prefix stay only where D1 keeps them.
+F docs/M[0-4]-*.md: # history: the M0-M4 plans and reports stay as written (D1)
+F docs/M5-PLAN.md: # the M5 plan describes the rename it orders (D1)
+F Spikes/: # the M0 terminal spike keeps its own identifiers (D1)
+F design/research/: # research notes, history (D1)
+F App/Support/CoddIdentity.swift:app.fancy # the legacy bundle id constant: the show-window notification and BackgroundWindows still recognise an old CODD (D1)
+F Packages/CoddDataStore/:app.fancy # the one-time defaults migration names the old domain it copies from, its tests the domain they never touch (D2)
+F App/Tests/M5CoreTests.swift:app.fancy # the identity test asserts the legacy constants and both show-window names (D1)
+F design/SPEC.md: # frozen design spec; its §10 brand override reads every old brand mention there as CODD
+F design/artboards-src/: # frozen v3 artboards (SPEC §10: the old brand in them reads CODD)
+F design/helmet.html: # frozen visual tokens page (SPEC §10 brand override)
+F design/shell-sessions.html: # frozen sessions sidebar reference (SPEC §10 brand override)
+F design/v1/: # design history (v1)
+F design/v2/: # design history (v2)
+
+# E: emoji only where a document quotes or bans them; product strings and test data have none.
+E design/SPEC.md:FORBIDDEN (render as emoji) # the spec's own no-emoji rule lists the emoji it bans
+E design/v1/: # design history (v1): the same no-emoji rule line
+E design/v2/: # design history (v2): the same no-emoji rule line
+E design/research/: # research notes quote other tools' UI, history (D1 keeps design/research as written)
+E docs/M5-PLAN.md: # the M5 plan names the test-data scalars step I3 rewrites as escapes
+
+# F: the roadmap's standing-decision log records the 2026-10-18 rename itself (I4 rewrites its M5 sentence).
+F docs/ROADMAP.md:dropped from every visible string # the decision entry that removed the old brand from the product (history)
+
+# L (review only): English that is not UI copy. Reviewed in M5 I3; every entry is a log line, a
+# protocol or configuration text, or sample data drawn as the artboards show it.
+L App/MCP/PromptExpansion.swift: # an HTTP content type, not copy
+L App/Mock/: # mock mode's SPEC §5 sample data (file contents, terminal transcripts, hook commands) drawn as the artboards show it
+L App/Onboarding/OnboardingController.swift: # log lines through the host's onboardingLog (never shown)
+L App/Real/ClaudeSettingsService.swift: # log lines and technical error descriptions; the UI shows the 繁體中文 refusal / userMessage beside them
+L App/Real/HolderLauncher.swift: # log lines and technical error descriptions; the UI shows the 繁體中文 refusal / userMessage beside them
+L App/Real/HolderSessionStore+Ephemeral.swift: # log lines and technical error descriptions; the UI shows the 繁體中文 refusal / userMessage beside them
+L App/Real/HolderSessionStore+Launch.swift: # log lines and technical error descriptions; the UI shows the 繁體中文 refusal / userMessage beside them
+L App/Real/HolderSessionStore.swift: # log lines and technical error descriptions; the UI shows the 繁體中文 refusal / userMessage beside them
+L App/Real/LaunchProfiles.swift: # log lines and technical error descriptions; the UI shows the 繁體中文 refusal / userMessage beside them
+L App/Real/RealModeOptions.swift: # the DEBUG standard-root refusal printed to the terminal and a protected-path reason in logs
+L App/Session/ComposerStates.swift: # error descriptions and a summary that go to the log only
+L App/Support/LaunchTiming.swift: # the perf log line scripts parse
+L App/Terminal/CoddTerminalSetup.swift: # libghostty configuration lines
+L App/Terminal/PtyConnection.swift: # connection error descriptions for the log
+L App/Window/BackgroundWindows.swift: # a DEBUG log format
+L Packages/CoddAnnotateUI/Sources/CoddAnnotateUI/Samples/: # ImageAnnotate sample paths and the codd-annotations block (machine-read)
+L Packages/CoddClaudeSettings/: # settings.json / config.toml snippets, shell commands and error reasons for the log
+L Packages/CoddCodeEditor/Sources/CoddCodeEditor/Lexing/Keywords.swift: # programming-language keyword lists for the highlighter
+L Packages/CoddCore/: # shell command text and error reasons for the log
+L Packages/CoddDataStore/: # data preflight log lines and error reasons
+L Packages/CoddDialogsUI/Sources/CoddDialogsUI/DialogSamples.swift: # dialog B's sample settings.json diff (JSON keys and commands)
+L Packages/CoddFiles/: # git and process error reasons (logs and a test double)
+L Packages/CoddHolder/: # holder wire protocol, CLI and ring errors (logs and the holder log file, never UI)
+L Packages/CoddHooks/: # hook / status-line CLI errors on stderr, HTTP parser and policy reasons, JSON-RPC bodies (logs and protocol)
+L Packages/CoddMCP/: # MCP protocol text read by AI clients (tool and prompt descriptions, JSON-RPC errors): English by protocol convention
+L Packages/CoddNotebookUI/Sources/CoddNotebookUI/NotebookSamples.swift: # Notebook sample data (session chips, a CSS line inside a sample note)
+L Packages/CoddNotes/: # SQL statements and machine-read note markup (codd-note, codd:ai-append)
+L Packages/CoddPreferences/: # a log line
+L Packages/CoddSettingsUI/Sources/CoddSettingsUI/Hotkey/KeyCombo.swift: # a parse error for the log
+L Packages/CoddSettingsUI/Sources/CoddSettingsUI/Model/SettingsSamples.swift: # launch-profile sample commands (claude flags) as the artboard shows them
+L Packages/CoddSettingsUI/Sources/CoddSettingsUI/Views/Sections/AppearanceSectionView.swift: # the appearance preview's sample Claude Code terminal output (claude's own English)
+L Packages/CoddTerminal/: # ghostty configuration lines, its errors and a DEBUG log format

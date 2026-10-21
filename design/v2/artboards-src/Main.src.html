@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>主視窗 · Session</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<!--@HELMET-->
+<style>
+/* ===== Main board only (mn-) ===== */
+.codd sc-if,.codd sc-for{display:contents}
+.codd .mn-tg-red{background:var(--t-red);color:var(--t-red)}
+.codd .mn-tg-blue{background:var(--t-blue);color:var(--t-blue)}
+.codd .mn-tg-green{background:var(--t-green);color:var(--t-green)}
+.codd .mn-tg-yellow{background:var(--t-yellow);color:var(--t-yellow)}
+.codd .mn-tg-purple{background:var(--t-purple);color:var(--t-purple)}
+.codd .mn-tg-orange{background:var(--t-orange);color:var(--t-orange)}
+.codd .mn-tg-pink{background:var(--t-pink);color:var(--t-pink)}
+.codd .mn-tg-cyan{background:var(--t-cyan);color:var(--t-cyan)}
+.codd .mn-tg-none{background:transparent;border:1px dashed var(--dimmer);color:transparent}
+.codd .mn-side .side-scroll{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--line-bright) transparent}
+.codd .mn-side .side-foot{position:relative}
+.codd .acrow .mn-plan{font-size:10px;letter-spacing:.04em;color:var(--dim)}
+.codd .acrow .mn-src{font-size:10px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.codd .mn-sfhint{margin:0;font-size:10.5px;line-height:1.45;color:var(--dimmer);text-wrap:pretty}
+.codd .toast.mn-toast{position:absolute;left:8px;right:8px;bottom:calc(100% + 8px);display:flex;align-items:flex-start;gap:8px;padding:7px 4px 7px 10px;font-size:11.5px;line-height:1.45;box-shadow:0 10px 30px rgba(0,0,0,.6),inset 2px 0 0 var(--amber)}
+.codd .mn-toast .mn-tt{flex:1;min-width:0;color:var(--cream);text-wrap:pretty}
+.codd .mn-toast .icon-btn{width:22px;height:22px;font-size:11px}
+.codd .mn-side .side-scroll .needs,.codd .mn-side .side-scroll .sbsec,.codd .mn-side .side-scroll .grp,.codd .mn-side .side-scroll .proj,.codd .mn-side .side-scroll .srow,.codd .mn-side .side-scroll .addrow{flex-shrink:0}
+.codd .mn-side .agg .st-waiting .lamp{animation:none}
+.codd .srow .l2 .dur.mn-dimdur{color:var(--dim)}
+.codd .srow.mn-stale{opacity:.75}
+.codd .srow.mn-done1{min-height:28px}
+.codd .srow.mn-done1 .title{font-size:11.5px;color:var(--dim)}
+.codd .mn-achip{height:15px;font-size:9.5px;padding:0 4px;color:var(--cyan);border-color:rgba(110,224,240,.4)}
+.codd .mn-empty{padding:3px 8px 6px 34px;font-size:10.5px;color:var(--dimmer)}
+.codd .sh .mn-h1{margin:0}
+.codd .mn-mchip{height:16px;font-size:10px;padding:0 5px;gap:4px;letter-spacing:.04em}
+.codd .mn-vr{width:1px;height:18px;background:var(--line-bright);flex:none}
+.codd .mn-fs{display:inline-flex;align-items:center;height:28px;border:1px solid var(--line)}
+.codd .mn-fs .icon-btn{width:26px;height:26px;font-size:11px;font-family:var(--mono);letter-spacing:0}
+.codd .mn-fs .num{font-size:11px;color:var(--bone);min-width:18px;text-align:center}
+.codd .mn-body{flex:1;min-height:0;display:flex;flex-direction:column;background:#000;overflow:hidden}
+.codd .mn-body .term{flex:1;min-height:0}
+.codd .term.mn-col{display:flex;flex-direction:column}
+.codd .mn-col div{min-height:1.45em}
+.codd .mn-pre{margin:0;font:inherit;color:inherit;white-space:pre;flex:none}
+.codd .mn-box{padding-top:18px}
+.codd .mn-ended{opacity:.7}
+.codd .term .mn-blink{animation:codd-soft 1.2s ease-in-out infinite}
+.codd .term .mn-spin{display:inline-block;animation:codd-spin 2.4s linear infinite}
+.codd .term .mn-bl{animation:codd-blink 1s steps(1) infinite}
+.codd .mn-tablist{display:flex;align-items:stretch;flex:none}
+.codd .mn-note{flex:none;display:flex;align-items:center;gap:8px;height:26px;padding:0 16px;font-size:11px;color:var(--cyan);background:linear-gradient(90deg,rgba(110,224,240,.08),transparent 60%);border-bottom:1px solid var(--line)}
+.codd .banner.mn-info{background:var(--bg-soft)}
+.codd .answerbar .mn-q{color:var(--dim);font-size:11.5px}
+</style>
+</helmet>
+<div class="codd win {{ crtClass }}">
+<!--@RAIL on=sessions-->
+
+<aside class="side mn-side" aria-label="Sessions">
+  <div class="side-head">
+    <a class="brand" href="#home">FANCY/CODD</a>
+    <span style="flex:1"></span>
+    <button class="icon-btn" type="button" aria-label="快速切換 ⌘K"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><circle cx="9" cy="9" r="5.25"></circle><path d="M13 13l4.25 4.25"></path></svg></button>
+    <button class="btn sm accent" type="button">+ New ▾</button>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center;padding:8px 8px 2px">
+    <label class="ell" style="flex:1;display:flex;align-items:center;gap:6px;height:26px;border:1px solid var(--line-bright);background:var(--bg-soft);padding:0 8px;color:var(--dimmer);font-size:11.5px"><span aria-hidden="true">/</span><input class="ell" type="text" placeholder="篩選 session、專案…" aria-label="篩選" style="all:unset;flex:1;color:var(--cream);font-size:11.5px;min-width:0"></label>
+    <div class="seg" role="group" aria-label="檢視方式"><button class="on" type="button">Tree</button><button type="button">State</button></div>
+  </div>
+
+  <div class="side-scroll">
+    <!-- NEEDS YOU: mirror of waiting + error sessions (never reorders the tree) -->
+    <section class="needs" aria-label="需要你處理">
+      <button class="sbsec" type="button"><span class="caret open">▸</span>◆ Needs you <span class="badge">{{ needsCount }}</span><span class="rule"></span></button>
+      <sc-for list="{{ needs }}" as="s" hint-placeholder-count="3">
+        <a class="srow flat {{ s.cls }}" href="#{{ s.id }}" aria-current="{{ s.ariaCur }}" onClick="{{ s.pick }}">
+          <span class="l1"><span class="lamp">{{ s.glyph }}</span><sc-if value="{{ s.hasTag }}" hint-placeholder-val="{{ true }}"><span class="tag {{ s.tagCls }}"></span></sc-if><span class="title">{{ s.title }}</span><span class="state">{{ s.pill }}</span></span>
+          <span class="l2"><span class="dur">{{ s.fd }}</span><span>·</span><span class="ell">{{ s.where }}</span></span>
+        </a>
+      </sc-for>
+      <sc-if value="{{ hasDone }}" hint-placeholder-val="{{ true }}">
+        <a class="srow flat mn-done1 {{ done1.cls }}" href="#{{ done1.id }}" aria-current="{{ done1.ariaCur }}" onClick="{{ done1.pick }}">
+          <span class="l1"><span class="lamp">◇</span><span class="title">{{ doneLine }}</span><span class="state">Done</span></span>
+        </a>
+      </sc-if>
+    </section>
+
+    <button class="sbsec" type="button"><span class="caret open">▸</span>Pinned<span class="rule"></span></button>
+    <sc-for list="{{ pinned }}" as="s" hint-placeholder-count="1">
+      <a class="srow flat {{ s.cls }}" href="#{{ s.id }}" aria-current="{{ s.ariaCur }}" onClick="{{ s.pick }}">
+        <span class="l1"><span class="lamp">{{ s.glyph }}</span><sc-if value="{{ s.hasTag }}" hint-placeholder-val="{{ true }}"><span class="tag {{ s.tagCls }}"></span></sc-if><span class="title">{{ s.title }}</span><span class="state">{{ s.pill }}</span></span>
+        <span class="l2"><span class="dur">{{ s.fd }}</span><span>·</span><span class="ell">{{ s.where }}</span></span>
+      </a>
+    </sc-for>
+
+    <!-- GROUPS → PROJECTS → SESSIONS (manual order, never reshuffled by state) -->
+    <sc-for list="{{ groups }}" as="g" hint-placeholder-count="5">
+      <div class="gblk {{ g.blkCls }}">
+      <button class="grp" type="button" aria-expanded="{{ g.expanded }}" onClick="{{ g.toggle }}"><span class="caret {{ g.caretCls }}">▸</span>{{ g.name }}<span class="agg"><sc-for list="{{ g.agg }}" as="a" hint-placeholder-count="3"><span class="{{ a.cls }}"><span class="lamp">{{ a.glyph }}</span>{{ a.n }}</span></sc-for></span></button>
+      <sc-if value="{{ g.open }}" hint-placeholder-val="{{ true }}">
+        <sc-for list="{{ g.projects }}" as="p" hint-placeholder-count="2">
+          <button class="proj" type="button" aria-expanded="{{ p.expanded }}" title="{{ p.cwd }}" onClick="{{ p.toggle }}"><span class="caret {{ p.caretCls }}">▸</span><span class="pname">{{ p.name }}</span><span class="pcount">{{ p.count }}</span></button>
+          <sc-for list="{{ p.rows }}" as="s" hint-placeholder-count="2">
+            <a class="srow {{ s.cls }}" href="#{{ s.id }}" aria-current="{{ s.ariaCur }}" onClick="{{ s.pick }}"><span class="grip" aria-hidden="true">⠿</span>
+              <span class="l1"><span class="lamp">{{ s.glyph }}</span><sc-if value="{{ s.hasTag }}" hint-placeholder-val="{{ true }}"><span class="tag {{ s.tagCls }}"></span></sc-if><span class="title">{{ s.title }}</span><sc-if value="{{ s.hasAcct }}" hint-placeholder-val="{{ false }}"><span class="chip mn-achip">{{ s.rowAcct }}</span></sc-if><sc-if value="{{ s.ext }}" hint-placeholder-val="{{ false }}"><span class="ext">EXT</span></sc-if><span class="state">{{ s.pill }}</span></span>
+              <span class="l2"><span class="dur {{ s.durCls }}">{{ s.rowDur }}</span><sc-for list="{{ s.l2x }}" as="x" hint-placeholder-count="1"><span>·</span><span>{{ x.t }}</span></sc-for></span>
+            </a>
+          </sc-for>
+          <sc-if value="{{ p.empty }}" hint-placeholder-val="{{ false }}"><div class="mn-empty">{{ p.emptyMsg }}</div></sc-if>
+        </sc-for>
+      </sc-if>
+      </div>
+    </sc-for>
+    <button class="addrow" type="button">+ 新增群組</button>
+  </div>
+
+  <div class="side-foot">
+    <div style="display:flex;justify-content:space-between;align-items:center"><span class="sec" style="font-size:9.5px">Host</span><span class="num">cpu 23% · mem 21/36G · bat 86%</span></div>
+    <button class="sf-toggle" type="button" aria-expanded="{{ footExpanded }}" aria-label="{{ footLabel }}" onClick="{{ toggleFoot }}"><span class="caret {{ footCaret }}">▸</span><span class="sec" style="font-size:9.5px">Usage 剩餘</span><span style="color:var(--cyan)">{{ ac.name }}</span><span style="flex:1"></span><span>全部帳號 <span class="n">3</span></span></button>
+    <!-- collapsed (default): active account only, same as the canonical shell footer -->
+    <sc-if value="{{ footClosed }}" hint-placeholder-val="{{ true }}">
+      <div class="qrow {{ ac.c5 }}"><span class="k">5h</span><span class="bar10"><b style="width:{{ ac.p5 }}%"></b></span><span class="v">{{ ac.v5 }}</span></div>
+      <div class="qrow {{ ac.c1 }}"><span class="k">1w</span><span class="bar10"><b style="width:{{ ac.p1 }}%"></b></span><span class="v">{{ ac.v1 }}</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:10px" class="faint"><span>{{ ac.rsL }}</span><span>{{ ac.rsR }}</span></div>
+    </sc-if>
+    <!-- expanded: every account, one click switches directly -->
+    <sc-if value="{{ footOpen }}" hint-placeholder-val="{{ false }}">
+      <div class="acctlist" role="group" aria-label="切換帳號">
+        <sc-for list="{{ accts }}" as="a" hint-placeholder-count="3">
+          <button class="acrow {{ a.cls }}" type="button" aria-pressed="{{ a.pressed }}" aria-label="{{ a.label }}" onClick="{{ a.pick }}">
+            <span class="a1"><b>{{ a.no }}</b><span>{{ a.alias }}</span><span class="mn-plan">MAX 20x</span><span class="go">{{ a.go }}</span></span>
+            <span class="q2">
+              <span class="qrow {{ a.c5 }}"><span class="k">5h</span><span class="bar10"><b style="width:{{ a.p5 }}%"></b></span><span class="v">{{ a.v5 }}</span></span>
+              <span class="qrow {{ a.c1 }}"><span class="k">1w</span><span class="bar10"><b style="width:{{ a.p1 }}%"></b></span><span class="v">{{ a.v1 }}</span></span>
+            </span>
+            <span class="mn-src">{{ a.src }}</span>
+          </button>
+        </sc-for>
+      </div>
+      <p class="mn-sfhint">點一下直接切換 · 跟隨全域登入的 session 約 30 秒內套用</p>
+    </sc-if>
+    <!-- toast after a direct switch (floats above the footer) -->
+    <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+      <div class="toast mn-toast" role="status">
+        <span class="mn-tt">{{ toastText }}</span>
+        <button class="btn sm accent" type="button" onClick="{{ undoSwitch }}">Undo</button>
+        <button class="icon-btn" type="button" aria-label="關閉通知" onClick="{{ dismissToast }}">✕</button>
+      </div>
+    </sc-if>
+  </div>
+</aside>
+
+<div class="main">
+  <!-- ===== Session header (bound to the selected session) ===== -->
+  <header class="sh">
+    <div class="ident">
+      <div class="l1">
+        <span class="lamp {{ v.stc }}" aria-hidden="true">{{ v.glyph }}</span>
+        <sc-if value="{{ v.hasTag }}" hint-placeholder-val="{{ true }}"><span class="tag {{ v.tagCls }}" aria-hidden="true"></span></sc-if>
+        <h1 class="ttl mn-h1">{{ v.title }}</h1>
+        <span class="stchip {{ v.stc }}">{{ v.chip }}</span>
+        <sc-if value="{{ v.isExt }}" hint-placeholder-val="{{ false }}"><span class="ext">EXT</span></sc-if>
+      </div>
+      <div class="meta">
+        <span title="{{ v.cwd }}">{{ v.cwdShort }}</span>
+        <sc-for list="{{ v.meta }}" as="m" hint-placeholder-count="5"><span class="sep">·</span><span class="{{ m.c }}">{{ m.t }}</span></sc-for>
+        <sc-if value="{{ v.hasAcct }}" hint-placeholder-val="{{ true }}"><span class="chip mn-mchip {{ v.acctCls }}">{{ v.acct }}</span></sc-if>
+        <sc-if value="{{ v.rc }}" hint-placeholder-val="{{ true }}"><span class="chip mn-mchip" title="Remote Control 已連線"><span class="ok">◉</span>RC</span></sc-if>
+      </div>
+    </div>
+    <div class="acts">
+      <button class="pillbtn" type="button" title="這個 session 的筆記">✎ Notes<sc-if value="{{ v.hasNotes }}" hint-placeholder-val="{{ true }}"><span class="num amber">{{ v.notes }}</span></sc-if></button>
+      <button class="icon-btn" type="button" aria-label="檔案（在編輯器開啟專案）"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2.75 4.75h5l1.75 2h7.75v9.5H2.75z"></path><path d="M2.75 8.75h14.5"></path></svg></button>
+      <button class="icon-btn" type="button" aria-label="下方終端機 ⌘J"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="2.75" y="3.75" width="14.5" height="12.5"></rect><path d="M2.75 11.25h14.5M5.5 13.75h3"></path></svg></button>
+      <span class="mn-vr" aria-hidden="true"></span>
+      <span class="mn-fs" role="group" aria-label="終端機字級"><button class="icon-btn" type="button" aria-label="字小一點">A−</button><span class="num">13</span><button class="icon-btn" type="button" aria-label="字大一點">A+</button></span>
+      <button class="icon-btn" type="button" aria-label="更多動作">⋯</button>
+    </div>
+  </header>
+
+  <!-- banners under the header -->
+  <sc-if value="{{ v.isError }}" hint-placeholder-val="{{ false }}">
+    <div class="banner bad" role="alert"><span class="lamp st-error">▲</span><span>API 過載（529 overloaded）· 1m 前 · 本輪未完成</span><span style="flex:1"></span><button class="btn sm" type="button">↻ 重送上一則</button><button class="btn sm" type="button">⟲ 稍後自動重試</button></div>
+  </sc-if>
+  <sc-if value="{{ v.isExt }}" hint-placeholder-val="{{ false }}">
+    <div class="banner mn-info"><span class="ext">EXT</span><span>外部啟動的 session，唯讀狀態偵測</span><span class="hint">· 偵測自 claude agents --json</span><span style="flex:1"></span><button class="btn sm accent" type="button">接管到 CODD</button></div>
+  </sc-if>
+  <sc-if value="{{ v.isExited }}" hint-placeholder-val="{{ false }}">
+    <div class="banner mn-info"><span class="lamp st-exited">✕</span><span>Session 已結束 · code 0 · 3h 前</span><span class="hint">· 對話紀錄保留，可接續</span><span style="flex:1"></span><button class="btn sm accent" type="button">⟲ 接續對話</button><button class="btn sm" type="button">↻ 重新開始</button></div>
+  </sc-if>
+
+  <!-- tab strip -->
+  <div class="tabs">
+    <div class="mn-tablist" role="tablist" aria-label="終端機分頁">
+      <button class="tab {{ tabClaudeCls }}" type="button" role="tab" aria-selected="{{ tabClaudeSel }}" onClick="{{ tabClaude }}"><span class="lamp {{ v.tabStc }}">{{ v.tabGlyph }}</span><span class="tlabel">{{ v.tab1 }}</span></button>
+      <sc-if value="{{ v.hasZshTab }}" hint-placeholder-val="{{ true }}"><button class="tab {{ tabZshCls }}" type="button" role="tab" aria-selected="{{ tabZshSel }}" onClick="{{ tabZsh }}"><span class="lamp st-shell">$</span><span class="tlabel">zsh</span></button></sc-if>
+    </div>
+    <button class="tab" type="button" aria-label="新增 shell 分頁 ⌘T">+</button>
+    <div class="tfill"><span class="num">120×38</span><span>·</span><span><span class="kbd">⌘J</span> 終端機</span></div>
+  </div>
+  <sc-if value="{{ v.showDoneNote }}" hint-placeholder-val="{{ false }}">
+    <div class="mn-note" role="status"><span class="lamp st-done">◇</span><span>剛完成 · 開啟後標為已讀</span><span class="faint">· 10:38 完成</span></div>
+  </sc-if>
+
+  <!-- ===== terminal body ===== -->
+  <div class="mn-body">
+    <sc-if value="{{ onClaude }}" hint-placeholder-val="{{ true }}">
+      <div class="term mn-col" aria-label="Claude 終端機">
+        <sc-if value="{{ v.isPerm }}" hint-placeholder-val="{{ true }}"><pre class="mn-pre"><span class="d">&gt;</span> 登入 API 在 token 過期後會回 401，幫我修好並補測試
+
+<span class="cc">●</span> 我先看 auth middleware 的流程。
+
+<span class="cc">●</span> <span class="w">Read</span>(src/middleware/auth.ts)
+  <span class="d">⎿  Read 84 lines</span>
+
+<span class="cc">●</span> 問題在第 41 行：token 過期時直接回 401，沒有先用 refresh token 換新的 session。
+
+<span class="cc">●</span> <span class="w">Update</span>(src/middleware/auth.ts)
+  <span class="d">⎿  Updated src/middleware/auth.ts with 12 additions and 3 removals</span>
+     <span class="del"> 41 -   if (isExpired(token)) return res.status(401).end()            </span>
+     <span class="add"> 41 +   if (isExpired(token)) {                                       </span>
+     <span class="add"> 42 +     const next = await refreshSession(req, res)                 </span>
+     <span class="add"> 43 +     if (!next) return res.status(401).json({ code: 'EXPIRED' }) </span>
+
+<span class="cc">●</span> <span class="w">Update</span>(test/auth.spec.ts)
+  <span class="d">⎿  Updated test/auth.spec.ts with 18 additions</span>
+     <span class="add"> 58 +   it('refreshes an expired token', async () => {                </span>
+     <span class="add"> 59 +     const res = await request(app).get('/me').set(expired)      </span>
+     <span class="add"> 60 +     expect(res.status).toBe(200)                                </span>
+
+<span class="cc">●</span> 改好了，接著跑 auth 的測試確認。
+
+<span class="a">╭──────────────────────────────────────────────────────────────────────╮</span>
+<span class="a">│</span> <span class="w">Bash command</span>                                                         <span class="a">│</span>
+<span class="a">│</span>                                                                      <span class="a">│</span>
+<span class="a">│</span>   npm test -- auth.spec.ts                                           <span class="a">│</span>
+<span class="a">│</span>   <span class="d">執行 auth 相關的單元測試</span>
+<span class="a">│</span>                                                                      <span class="a">│</span>
+<span class="a">│</span> Do you want to proceed?                                              <span class="a">│</span>
+<span class="a">│</span> <span class="a">❯ 1. Yes</span>                                                             <span class="a">│</span>
+<span class="a">│</span>   2. Yes, and don't ask again for <span class="w">npm test</span> commands in this project  <span class="a">│</span>
+<span class="a">│</span>   3. No, and tell Claude what to do differently <span class="d">(esc)</span>                <span class="a">│</span>
+<span class="a">╰──────────────────────────────────────────────────────────────────────╯</span></pre></sc-if>
+
+        <sc-if value="{{ v.isAsk }}" hint-placeholder-val="{{ false }}"><pre class="mn-pre"><span class="d">&gt;</span> 發票列表加一個匯出 CSV，會計每月對帳要用
+
+<span class="cc">●</span> 我先看發票查詢的欄位，再決定匯出格式。
+
+<span class="cc">●</span> <span class="w">Read</span>(src/routes/invoices.ts)
+  <span class="d">⎿  Read 156 lines</span>
+
+<span class="cc">●</span> <span class="w">Search</span>(pattern: "toCsv|exportInvoices", path: "src")
+  <span class="d">⎿  Found 0 files</span>
+
+<span class="cc">●</span> <span class="w">Write</span>(src/export/invoiceCsv.ts)
+  <span class="d">⎿  Wrote 48 lines to src/export/invoiceCsv.ts</span>
+     <span class="d">import { stringify } from 'csv-stringify/sync'</span>
+     <span class="d">const COLUMNS = ['發票號碼', '開立日期', '買受人', '統一編號', '金額', '稅額']</span>
+     <span class="d">… +46 lines (ctrl+r to expand)</span>
+
+<span class="cc">●</span> 欄位有中文，編碼會影響會計用 Excel 開檔的結果，先跟你確認。
+
+<span class="a">╭──────────────────────────────────────────────────────────────────────╮</span>
+<span class="a">│</span> <span class="inv"> 編碼 </span>
+<span class="a">│</span>                                                                      <span class="a">│</span>
+<span class="a">│</span> <span class="w">CSV 要用哪種編碼？</span>
+<span class="a">│</span>                                                                      <span class="a">│</span>
+<span class="a">│</span> <span class="a">❯ 1. UTF-8 with BOM（Excel 開啟不亂碼）</span>
+<span class="a">│</span>   2. Big5（舊系統相容）
+<span class="a">│</span>   3. UTF-8（無 BOM）
+<span class="a">│</span>   4. Type something                                                  <span class="a">│</span>
+<span class="a">│</span>                                                                      <span class="a">│</span>
+<span class="a">│</span> <span class="d">Enter to select · ↑/↓ to navigate · Esc to cancel</span>                    <span class="a">│</span>
+<span class="a">╰──────────────────────────────────────────────────────────────────────╯</span></pre></sc-if>
+
+        <sc-if value="{{ v.isError }}" hint-placeholder-val="{{ false }}"><pre class="mn-pre"><span class="d">&gt;</span> 場景第一次載入要 6 秒，幫我找出瓶頸並優化
+
+<span class="cc">●</span> 我先量測載入流程每個階段的時間。
+
+<span class="cc">●</span> <span class="w">Bash</span>(npm run profile:scene)
+  <span class="d">⎿  [scene] parse gltf       1,820ms</span>
+     <span class="d">[scene] upload textures  2,960ms</span>
+     <span class="d">[scene] build bvh          740ms</span>
+     <span class="d">… +4 lines (ctrl+r to expand)</span>
+
+<span class="cc">●</span> 貼圖上傳佔了將近一半。我改成 KTX2 壓縮，視野外的貼圖延後載入。
+
+<span class="cc">●</span> <span class="w">Read</span>(src/scene/loader.ts)
+  <span class="d">⎿  Read 212 lines</span>
+
+<span class="cc">●</span> <span class="w">Update</span>(src/scene/loader.ts)
+  <span class="d">⎿  Updated src/scene/loader.ts with 9 additions and 4 removals</span>
+
+  <span class="d">⎿  API Error (529 overloaded_error) · Retrying in 8 seconds… (attempt 9/10)</span>
+  <span class="r">⎿  API Error: 529 {"type":"error","error":{"type":"overloaded_error","message":"Overloaded"}</span><span class="r">}</span></pre></sc-if>
+
+        <sc-if value="{{ v.isDone }}" hint-placeholder-val="{{ false }}"><pre class="mn-pre"><span class="d">&gt;</span> 把第二版原型的審查流程整理成 review/flow.md，從推 PR 到合併都要有
+
+<span class="cc">●</span> <span class="w">Read</span>(review/README.md)
+  <span class="d">⎿  Read 41 lines</span>
+
+<span class="cc">●</span> <span class="w">Write</span>(review/flow.md)
+  <span class="d">⎿  Wrote 86 lines to review/flow.md</span>
+
+<span class="cc">●</span> <span class="w">Update</span>(review/README.md)
+  <span class="d">⎿  Updated review/README.md with 2 additions</span>
+
+<span class="cc">●</span> 審查流程整理好了，放在 <span class="c">review/flow.md</span>：
+
+  1. 提交：同事推 PR，標題用「v2 - 功能名稱」
+  2. 自動檢查：CI 跑 lint 與 3 個必要測試，失敗會自動留言
+  3. 程式碼審查：依審查清單的四個面向看過，每項附一句具體建議
+  4. 收尾：合併前在 PR 留總結，結果同步到追蹤表
+
+  README 也補上了流程連結。下一步可以把審查清單做成 PR 範本裡的 checklist。</pre></sc-if>
+
+        <sc-if value="{{ v.busy5 }}" hint-placeholder-val="{{ false }}"><pre class="mn-pre"><span class="d">&gt;</span> 把 16 張畫板的規格整理成 spec/SPEC.md，共用 CSS 抽到 spec/helmet.html
+
+<span class="cc">●</span> 先把共用的 helmet 和視窗 shell 定下來，再逐張寫畫板規格。
+
+<span class="cc">●</span> <span class="w">Write</span>(spec/helmet.html)
+  <span class="d">⎿  Wrote 291 lines to spec/helmet.html</span>
+     <span class="d">&lt;link href="…fonts.googleapis.com/css2?family=JetBrains+Mono…" rel="stylesheet"&gt;</span>
+     <span class="d">&lt;style&gt;</span>
+     <span class="d">… +289 lines (ctrl+r to expand)</span>
+
+<span class="cc">●</span> <span class="w">Write</span>(spec/shell-sessions.html)
+  <span class="d">⎿  Wrote 152 lines to spec/shell-sessions.html</span>
+
+<span class="cc">●</span> <span class="w">Bash</span>(python3 -I dc_lint.py test/T.dc.html test/bad.html)
+  <span class="d">⎿  == test/T.dc.html: 0 error(s), 0 warning(s)</span>
+     <span class="d">== test/bad.html: 8 error(s), 1 warning(s)</span>
+
+<span class="cc">●</span> lint 會抓到 emoji、未閉合標籤和運算式 hole，接著寫主規格。
+
+<span class="cc mn-blink">●</span> <span class="w">Write</span>(spec/SPEC.md)
+
+<span class="cc"><span class="mn-spin">✻</span> Writing…</span> <span class="d">(2m 04s · ↓ 3.4k tokens · esc to interrupt)</span></pre></sc-if>
+
+        <sc-if value="{{ v.busy7 }}" hint-placeholder-val="{{ false }}"><pre class="mn-pre"><span class="d">&gt;</span> 現場示範：用 MCP Inspector 連上 demo server，列出它提供的 tools
+
+<span class="cc">●</span> 先確認 demo server 的設定，再開 Inspector。
+
+<span class="cc">●</span> <span class="w">Read</span>(demo/mcp.json)
+  <span class="d">⎿  Read 18 lines</span>
+
+<span class="cc">●</span> <span class="w">Bash</span>(node demo/server.js --check)
+  <span class="d">⎿  demo-weather MCP server v0.3.1 · stdio · 3 tools</span>
+
+<span class="cc mn-blink">●</span> <span class="w">Bash</span>(npx @modelcontextprotocol/inspector node demo/server.js)
+  <span class="d">⎿  Starting MCP inspector...</span>
+     <span class="d">Proxy server listening on localhost:6277</span>
+     <span class="d">Session token: 3f9c0b7e…e21a</span>
+     <span class="d">MCP Inspector is up and running at:</span>
+     <span class="d">  http://localhost:6274/?MCP_PROXY_AUTH_TOKEN=3f9c0b7e…e21a</span>
+     <span class="d">Running…</span>
+
+<span class="cc"><span class="mn-spin">✻</span> Running…</span> <span class="d">(1m 12s · ↓ 640 tokens · esc to interrupt)</span></pre></sc-if>
+
+        <sc-if value="{{ v.busy9 }}" hint-placeholder-val="{{ false }}"><pre class="mn-pre"><span class="d">&gt;</span> 照 codd://note/rwd-punch-k7x2 修打卡頁：iPhone SE 按鈕被導覽列蓋住、橫向表格溢出
+  <span class="d">⎿  codd：已展開 codd://note/rwd-punch-k7x2（打卡頁 RWD 跑版紀錄 · 2 張圖片）</span>
+
+<span class="cc">●</span> 我先讀打卡頁和按鈕元件，確認底部導覽列的高度。
+
+<span class="cc">●</span> <span class="w">Read</span>(src/pages/punch.vue)
+  <span class="d">⎿  Read 186 lines</span>
+
+<span class="cc">●</span> <span class="w">Read</span>(src/components/PunchButton.vue)
+  <span class="d">⎿  Read 64 lines</span>
+
+<span class="cc">●</span> <span class="w">Update</span>(tailwind.config.js)
+  <span class="d">⎿  Updated tailwind.config.js with 3 additions</span>
+
+<span class="cc">●</span> <span class="w">Update</span>(src/components/PunchButton.vue)
+  <span class="d">⎿  Updated src/components/PunchButton.vue with 3 additions and 2 removals</span>
+     <span class="del"> 12 -  &lt;div class="fixed bottom-0 w-full p-4"&gt;                        </span>
+     <span class="del"> 13 -    &lt;button class="punch-btn" @click="punch"&gt;                    </span>
+     <span class="add"> 12 +  &lt;div class="sticky w-full p-4"                                 </span>
+     <span class="add"> 13 +       :style="{ bottom: 'env(safe-area-inset-bottom)' }"&gt;       </span>
+     <span class="add"> 14 +    &lt;button class="punch-btn min-h-12" @click="punch"&gt;           </span>
+
+<span class="cc mn-blink">●</span> <span class="w">Update</span>(src/pages/punch.vue)
+
+<span class="cc"><span class="mn-spin">✻</span> Editing…</span> <span class="d">(6m 02s · ↓ 1.2k tokens · esc to interrupt)</span></pre></sc-if>
+
+        <sc-if value="{{ v.isCompact }}" hint-placeholder-val="{{ false }}"><pre class="mn-pre"><span class="d">&gt;</span> 麵包店老闆的對話要依好感度分三段，好感度存在 NPC 狀態裡
+
+<span class="cc">●</span> <span class="w">Read</span>(src/npc/state.ts)
+  <span class="d">⎿  Read 98 lines</span>
+
+<span class="cc">●</span> <span class="w">Update</span>(src/npc/dialogue/baker.ts)
+  <span class="d">⎿  Updated src/npc/dialogue/baker.ts with 38 additions and 6 removals</span>
+
+<span class="cc">●</span> <span class="w">Task</span>(檢查其他 NPC 是否沿用同一套對話格式)
+  <span class="d">⎿  Done (6 tool uses · 14.2k tokens · 48s)</span>
+
+<span class="cc">●</span> 其他 5 個 NPC 還是舊格式，我把好感度分支抽成共用的 branchByAffinity()。
+
+<span class="cc">●</span> <span class="w">Write</span>(src/npc/dialogue/branch.ts)
+  <span class="d">⎿  Wrote 54 lines to src/npc/dialogue/branch.ts</span>
+
+  <span class="a">Context low (9% remaining) · auto-compacting</span>
+
+<span class="cc"><span class="mn-spin">✻</span> Compacting conversation…</span> <span class="d">(CTX 9%)</span></pre></sc-if>
+
+        <sc-if value="{{ v.isIdle }}" hint-placeholder-val="{{ false }}"><pre class="mn-pre"><span class="d">&gt;</span> {{ v.ip }}
+
+<span class="cc">●</span> <span class="w">{{ v.itn }}</span>({{ v.ita }})
+  <span class="d">⎿  {{ v.itr }}</span>
+
+<span class="cc">●</span> {{ v.ir1 }}
+  {{ v.ir2 }}</pre></sc-if>
+
+        <sc-if value="{{ v.isShell }}" hint-placeholder-val="{{ false }}"><pre class="mn-pre"><span class="g">dev@mbp</span> <span class="c">orb-toolkit-backend</span> % npm run dev
+
+&gt; orb-toolkit-backend@3.0.0 dev
+&gt; vite --port 3001
+
+  <span class="g">VITE v7.1.4</span>  <span class="d">ready in</span> <span class="w">412</span> <span class="d">ms</span>
+
+  <span class="g">→</span>  <span class="w">Local</span>:   <span class="c">http://localhost:3001/</span>
+  <span class="g">→</span>  <span class="d">Network: use --host to expose</span>
+  <span class="g">→</span>  <span class="d">press h + enter to show help</span>
+<span class="d">10:00:31</span> <span class="c">[vite]</span> <span class="g">(ssr) page reload</span> <span class="d">src/routes/auth.ts</span>
+<span class="d">10:21:07</span> <span class="c">[vite]</span> <span class="g">(ssr) page reload</span> <span class="d">src/middleware/auth.ts</span>
+<span class="d">10:38:52</span> <span class="c">[vite]</span> <span class="g">(ssr) page reload</span> <span class="d">src/middleware/auth.ts</span>
+<span class="d">10:38:53</span> <span class="c">[vite]</span> <span class="g">(ssr) page reload</span> <span class="d">test/auth.spec.ts</span> <span class="d">(x2)</span>
+<span class="d">10:39:20</span> <span class="r">[vite] Internal server error: Cannot find module './refreshSession'</span>
+         <span class="d">at src/middleware/auth.ts:3:29</span>
+<span class="d">10:39:41</span> <span class="c">[vite]</span> <span class="g">(ssr) page reload</span> <span class="d">src/middleware/auth.ts</span>
+<span class="d">10:39:41</span> <span class="c">[vite]</span> <span class="g">hmr update</span> <span class="d">/src/routes/auth.ts</span>
+<span class="cur mn-bl"> </span></pre></sc-if>
+
+        <sc-if value="{{ v.isExited }}" hint-placeholder-val="{{ false }}"><pre class="mn-pre mn-ended"><span class="d">&gt;</span> UsageBar 選單列要顯示 Claude 5h 剩餘額度，低於 20% 變紅
+
+<span class="cc">●</span> <span class="w">Read</span>(Sources/UsageBar/StatusItemController.swift)
+  <span class="d">⎿  Read 132 lines</span>
+
+<span class="cc">●</span> <span class="w">Update</span>(Sources/UsageBar/StatusItemController.swift)
+  <span class="d">⎿  Updated Sources/UsageBar/StatusItemController.swift with 24 additions and 5 removals</span>
+
+<span class="cc">●</span> <span class="w">Bash</span>(swift build -c release)
+  <span class="d">⎿  Build complete! (38.12s)</span>
+
+<span class="cc">●</span> 選單列會顯示 5h 剩餘百分比，低於 20% 改成紅色，點開可看重置時間。
+
+<span class="d">&gt;</span> /exit
+  <span class="d">⎿  Goodbye!</span>
+
+<span class="d">Resume this session with:</span>
+<span class="d">claude --resume 2f8d3b1e-6c4a-4d17-9e2b-5a0c71f3d8e6</span>
+
+<span class="d">[process exited with code 0]</span></pre></sc-if>
+
+        <!-- shared Claude Code input box -->
+        <sc-if value="{{ v.showBox }}" hint-placeholder-val="{{ false }}"><pre class="mn-pre mn-box"><span class="d">╭──────────────────────────────────────────────────────────────────────╮</span>
+<span class="d">│</span> <span class="a">&gt;</span> <span class="cur mn-bl"> </span>                                                                  <span class="d">│</span>
+<span class="d">╰──────────────────────────────────────────────────────────────────────╯</span>
+  <span class="d">{{ v.modeLine }}</span></pre></sc-if>
+        <sc-if value="{{ v.isExt }}" hint-placeholder-val="{{ false }}"><pre class="mn-pre mn-box"><span class="d">// 唯讀：這個 session 在其他終端機執行，畫面由對話紀錄重建 · 接管後才能在這裡輸入</span></pre></sc-if>
+      </div>
+    </sc-if>
+
+    <!-- ZSH tab: plain shell in the session's cwd -->
+    <sc-if value="{{ onZsh }}" hint-placeholder-val="{{ false }}">
+      <div class="term mn-col" aria-label="zsh 終端機">
+        <div class="d">Last login: Thu Oct 15 09:58:12 on ttys004</div>
+        <div><span class="g">dev@mbp</span> <span class="c">{{ v.zdir }}</span> % pwd</div>
+        <div>{{ v.zpwd }}</div>
+        <sc-if value="{{ v.hasGit }}" hint-placeholder-val="{{ true }}">
+          <div><span class="g">dev@mbp</span> <span class="c">{{ v.zdir }}</span> % git status -sb</div>
+          <div>## <span class="g">{{ v.gb }}</span>...<span class="r">{{ v.gup }}</span> {{ v.gahead }}</div>
+          <sc-for list="{{ v.mods }}" as="f" hint-placeholder-count="2"><div><span class="r">{{ f.c }}</span> {{ f.p }}</div></sc-for>
+        </sc-if>
+        <sc-if value="{{ v.noGit }}" hint-placeholder-val="{{ false }}">
+          <div><span class="g">dev@mbp</span> <span class="c">{{ v.zdir }}</span> % git status -sb</div>
+          <div>fatal: not a git repository (or any of the parent directories): .git</div>
+        </sc-if>
+        <div><span class="g">dev@mbp</span> <span class="c">{{ v.zdir }}</span> % <span class="cur mn-bl"> </span></div>
+      </div>
+    </sc-if>
+  </div>
+
+  <!-- answer bar: only while Claude is waiting -->
+  <sc-if value="{{ v.isPerm }}" hint-placeholder-val="{{ true }}">
+    <div class="answerbar" role="group" aria-label="回應 Claude"><span class="lamp st-waiting">◆</span><span>Claude 需要授權 · <code>Bash: npm test -- auth.spec.ts</code></span><span style="flex:1"></span><button class="keybtn" type="button"><span class="k">1</span>Yes</button><button class="keybtn" type="button"><span class="k">2</span>Always</button><button class="keybtn danger" type="button"><span class="k">3</span>No</button><button class="keybtn" type="button"><span class="k">ESC</span>取消</button><span class="kbd">⌘⏎</span></div>
+  </sc-if>
+  <sc-if value="{{ v.isAsk }}" hint-placeholder-val="{{ false }}">
+    <div class="answerbar" role="group" aria-label="回答 Claude 的問題"><span class="lamp st-waiting">◆</span><span>Claude 在問你 · 回答問題</span><span class="mn-q ell">CSV 要用 UTF-8 BOM 還是 Big5？</span><span style="flex:1"></span><button class="keybtn" type="button"><span class="k">1</span>UTF-8 BOM</button><button class="keybtn" type="button"><span class="k">2</span>Big5</button><button class="keybtn" type="button"><span class="k">3</span>UTF-8</button><button class="keybtn" type="button"><span class="k">4</span>自行輸入</button><button class="keybtn" type="button"><span class="k">ESC</span>取消</button></div>
+  </sc-if>
+
+<!--@STATUSBAR-->
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"crt":{"editor":"enum","options":["subtle","full","off"],"default":"subtle","section":"Look"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { cur: 's1', collapsed: { codd: true }, tab: 'claude', pcol: { skills: true, usagebar: true }, seen: {}, footOpen: false, acct: '3', toast: null };
+  }
+
+  renderVals() {
+    const crt = this.props.crt ?? 'subtle';
+    const st = this.state || {};
+    const cur = st.cur ?? 's1';
+    const collapsed = st.collapsed ?? { codd: true };
+    const pcol = st.pcol ?? { skills: true, usagebar: true };
+    const tab = st.tab ?? 'claude';
+    const seen = st.seen ?? {};
+    const footOpen = !!st.footOpen;
+    const acct = st.acct ?? '3';
+    const toast = st.toast ?? null;
+
+    const GLYPH = { waiting: '◆', error: '▲', done: '◇', busy: '●', compacting: '◌', idle: '○', shell: '$', exited: '✕' };
+    const PILL = { waiting: 'Waiting', error: 'Error', done: 'Done', busy: 'Busy', compacting: 'Compact', idle: 'Idle', shell: 'Shell', exited: 'Exited' };
+    const LABEL = { waiting: 'WAITING', error: 'ERROR', done: 'DONE', busy: 'BUSY', compacting: 'COMPACTING', idle: 'IDLE', shell: 'SHELL', exited: 'EXITED' };
+    const ORDER = ['waiting', 'error', 'done', 'busy', 'compacting', 'idle', 'shell', 'exited'];
+
+    // ---- canonical sessions (SPEC §5) ----
+    const S = {
+      s1:  { st: 'waiting', reason: 'PERMISSION', np: 'Perm', title: '修正登入 API 401', tag: 'red', d: '3m', rowDur: 'perm · 3m', up: '42m', branch: 'fix/login-401', model: 'opus-5.5', ctx: 58, cost: '2.14', acct: '#3 工作', rc: true, notes: 2, view: 'perm' },
+      s2:  { st: 'waiting', reason: 'QUESTION', np: 'Ask', title: '發票匯出 CSV', d: '12m', rowDur: 'ask · 12m', up: '1h05m', branch: 'main', model: 'sonnet-5.5', ctx: 71, cost: '0.62', acct: '#3 工作', view: 'ask' },
+      s3:  { st: 'error', reason: 'OVERLOADED', np: 'Error', needsPre: 'overloaded · ', title: '場景載入優化', tag: 'yellow', d: '1m', rowDur: 'overloaded · 1m', up: '2h12m', branch: 'perf/scene-load', model: 'opus-5.5', ctx: 34, cost: '4.80', acct: '#3 工作', notes: 1, view: 'error' },
+      s4:  { st: 'done', title: '第二版原型 · 審查流程', d: '4m', rowDur: '4m', up: '38m', branch: 'main', model: 'sonnet-5.5', ctx: 62, cost: '1.07', acct: '#3 工作', view: 'done' },
+      s5:  { st: 'busy', tool: 'Write', title: 'CODD Desktop 設計稿', tag: 'purple', d: '2m', rowDur: 'Write · 2m', up: '3h20m', model: 'opus-5.5', ctx: 47, cost: '6.31', acct: '#3 工作', view: 'busy5' },
+      s6:  { st: 'idle', title: '產生程式碼審查清單', d: '2h', rowDur: '2h', up: '3h10m', branch: 'main', model: 'sonnet-5.5', ctx: 80, cost: '0.41', acct: '#3 工作', notes: 1, view: 'idle' },
+      s7:  { st: 'busy', tool: 'Bash', title: '現場示範：連線 MCP', d: '1m12s', rowDur: 'Bash · 1m12s', up: '51m', branch: 'main', model: 'opus-5.5', ctx: 66, cost: '1.88', acct: '#2 藍鵲 · cswap run', acctCy: true, rowAcct: '#2', notes: 1, view: 'busy7' },
+      s8:  { st: 'shell', kind: 'shell', title: 'npm run dev', d: 'zsh', rowDur: 'zsh', dimDur: true, up: '42m', branch: 'fix/login-401', pid: '48211', view: 'shell' },
+      s9:  { st: 'busy', tool: 'Edit', title: '打卡頁 RWD 調整', tag: 'pink', d: '6m', rowDur: 'Edit · 6m', up: '1h18m', branch: 'feat/punch-rwd', model: 'sonnet-5.5', ctx: 49, cost: '1.36', acct: '#3 工作', notes: 2, view: 'busy9' },
+      s10: { st: 'compacting', title: '像素小鎮 NPC 對話', d: '20s', rowDur: '20s', up: '4h02m', model: 'opus-5.5', ctx: 9, cost: '5.12', acct: '#3 工作', view: 'compact' },
+      s11: { st: 'idle', title: 'keynote 第 3 章', d: '1d', rowDur: '1d', stale: true, rowX: ['stale'], up: '1d02h', model: 'sonnet-5.5', ctx: 55, cost: '0.93', acct: '#3 工作', notes: 1, view: 'idle' },
+      s12: { st: 'exited', title: '選單列額度顯示', d: '3h', chipX: 'code 0', rowDur: 'code 0 · 3h', view: 'exited' },
+      s13: { st: 'idle', title: 'web: session 側欄', d: '5h', rowDur: '5h', rowX: [], model: 'sonnet-5.5', acct: '#3 工作', view: 'idle' },
+      s14: { st: 'idle', ext: true, title: 'LINE bot 測試', d: '25m', rowDur: '25m', rowX: ['外部啟動'], metaX: ['外部啟動'], acct: '#3 工作', view: 'idle' },
+    };
+
+    // last exchange for idle sessions (calm prompt after it)
+    const IDLE = {
+      s6:  { ip: '依第二版原型的需求產生程式碼審查清單，四個面向、每項列出檢查重點', itn: 'Write', ita: 'checklist/v2-review.md', itr: 'Wrote 64 lines to checklist/v2-review.md', ir1: '審查清單寫好了：需求理解、錯誤處理、驗證方式、文件，', ir2: '每項列出檢查重點，各附一個範例。' },
+      s11: { ip: '第 3 章改成三段：問題、做法、示範，每段一張投影片', itn: 'Update', ita: 'chapters/03.md', itr: 'Updated chapters/03.md with 42 additions and 18 removals', ir1: '第 3 章拆成三段了，示範那段先留了螢幕截圖的位置，', ir2: '等你補圖再調整版面。' },
+      s13: { ip: '側欄 session 依群組分層，等待中的放最上面，但不要打亂原本順序', itn: 'Update', ita: 'apps/web/src/components/SessionSidebar.vue', itr: 'Updated apps/web/src/components/SessionSidebar.vue with 86 additions and 12 removals', ir1: '改好了：NEEDS YOU 只做鏡像，原本的順序不動；', ir2: '群組可以收合，收合狀態存在 localStorage。' },
+      s14: { ip: '幫我測 LINE webhook 的簽章驗證，用 channel secret 算 HMAC-SHA256', itn: 'Bash', ita: 'npm test -- signature', itr: 'PASS  test/signature.test.js (3 tests)', ir1: '簽章驗證通過，3 個測試都是綠的。', ir2: '.env 裡的 LINE_CHANNEL_SECRET 記得不要進版控。' },
+    };
+
+    // ---- groups → projects (= cwd) → sessions ----
+    const GROUPS = [
+      { id: 'northlab', name: '藍鵲 · 實驗室', short: '藍鵲·實驗室', tag: 'orange', projects: [
+        { id: 'proto', name: '原型試做', cwd: '~/Project/Northstar/lab/agent-lab-2026/原型試做', ss: ['s4', 's6'],
+          git: { b: 'main', up: 'origin/main', ahead: '', mods: [[' M', 'review/README.md'], ['??', 'checklist/'], ['??', 'review/flow.md']] } },
+        { id: 'mcp', name: 'MCP 整合範例', cwd: '~/Project/Northstar/lab/agent-lab-2026/整合範例/MCP', ss: ['s7'],
+          git: { b: 'main', up: 'origin/main', ahead: '', mods: [] } },
+        { id: 'skills', name: 'Skills 整合範例', cwd: '~/Project/Northstar/lab/agent-lab-2026/整合範例/Skills', ss: [], count: '封存 3', emptyMsg: '// 沒有執行中的 session · 封存 3' },
+      ] },
+      { id: 'northweb', name: '藍鵲 · 網站', short: '藍鵲·網站', tag: 'blue', projects: [
+        { id: 'backend', name: 'orb-toolkit-backend', cwd: '~/Project/Northstar/websites/orb-toolkit-suite/orb-toolkit-backend', ss: ['s1', 's8'],
+          git: { b: 'fix/login-401', up: 'origin/fix/login-401', ahead: '[ahead 2]', mods: [[' M', 'src/middleware/auth.ts'], [' M', 'test/auth.spec.ts']] } },
+        { id: 'frontend', name: 'orb-toolkit-frontend', cwd: '~/Project/Northstar/websites/orb-toolkit-suite/orb-toolkit-frontend', ss: ['s9'],
+          git: { b: 'feat/punch-rwd', up: 'origin/feat/punch-rwd', ahead: '', mods: [[' M', 'src/components/PunchButton.vue'], [' M', 'src/pages/punch.vue'], [' M', 'tailwind.config.js']] } },
+        { id: 'invoice', name: 'Northstar invoice system', cwd: '~/Project/Northstar/websites/業主/Northstar invoice system', ss: ['s2'],
+          git: { b: 'main', up: 'origin/main', ahead: '', mods: [['??', 'src/export/']] } },
+      ] },
+      { id: 'github', name: '個人 · Github', short: '個人·Github', tag: 'green', projects: [
+        { id: 'gear', name: 'Gear3D', cwd: '~/Github/Gear3D', ss: ['s3'],
+          git: { b: 'perf/scene-load', up: 'origin/perf/scene-load', ahead: '[ahead 1]', mods: [[' M', 'src/scene/loader.ts']] } },
+        { id: 'pixel', name: 'pixel-town-demo', cwd: '~/Github/pixel-town-demo', ss: ['s10'] },
+        { id: 'keynote', name: 'keynote-deck', cwd: '~/Github/keynote-deck', ss: ['s11'] },
+        { id: 'usagebar', name: 'UsageBar', cwd: '~/Github/UsageBar', ss: ['s12'], count: '✕ 1' },
+      ] },
+      { id: 'codd', name: 'CODD', short: 'CODD', tag: 'purple', projects: [
+        { id: 'coddweb', name: 'codd-web', cwd: '~/Github/codd-web', ss: ['s13'] },
+        { id: 'desk', name: 'codd-desktop', cwd: '~/Github/codd-desktop', ss: ['s5'], nogit: true },
+      ] },
+      { id: 'ungrouped', name: '未分類', short: '未分類', tag: null, projects: [
+        { id: 'line', name: 'claude-line-test', cwd: '~/Desktop/temp_測試專案/claude-line-test', ss: ['s14'] },
+      ] },
+    ];
+
+    const where = {};
+    GROUPS.forEach((g) => g.projects.forEach((p) => p.ss.forEach((id) => { where[id] = { g, p }; })));
+
+    // DONE turns into IDLE once you have opened it and moved on (unseen → seen)
+    const eff = (id) => (S[id].st === 'done' && seen[id] && id !== cur ? 'idle' : S[id].st);
+
+    const pick = (id) => (ev) => {
+      if (ev && ev.preventDefault) ev.preventDefault();
+      const nextSeen = Object.assign({}, seen);
+      nextSeen[id] = true;
+      this.setState({ cur: id, tab: 'claude', seen: nextSeen });
+    };
+
+    const row = (id, flat) => {
+      const s = S[id];
+      const e = eff(id);
+      const w = where[id];
+      const extra = s.rowX ? s.rowX : (s.up ? ['up ' + s.up] : []);
+      return {
+        id,
+        glyph: GLYPH[e],
+        title: s.title,
+        pill: flat && s.np ? s.np : PILL[e],
+        cls: 'st-' + e + (id === cur ? ' current' : '') + (s.stale ? ' mn-stale' : ''),
+        ariaCur: id === cur ? 'page' : 'false',
+        hasTag: !!s.tag,
+        tagCls: 'mn-tg-' + (s.tag || 'none'),
+        hasAcct: !!s.rowAcct,
+        rowAcct: s.rowAcct || '',
+        ext: !!s.ext,
+        rowDur: e === s.st ? s.rowDur : s.d,
+        fd: s.np ? s.d : s.rowDur,
+        durCls: s.dimDur || e === 'idle' ? 'mn-dimdur' : '',
+        l2x: extra.concat(s.rc ? ['◉ rc'] : []).map((t) => ({ t })),
+        where: (s.needsPre || '') + w.g.short + ' / ' + w.p.name,
+        pick: pick(id),
+      };
+    };
+
+    const needs = ['s1', 's2', 's3'].filter((id) => eff(id) === 'waiting' || eff(id) === 'error').map((id) => row(id, true));
+    const doneIds = Object.keys(S).filter((id) => eff(id) === 'done');
+    const done1 = doneIds.length ? row(doneIds[0], true) : { id: 's4', cls: '', ariaCur: 'false', pick: pick('s4') };
+    const doneLine = doneIds.length ? doneIds.length + ' 個待看 · ' + S[doneIds[0]].title : '';
+    const pinned = ['s5'].map((id) => row(id, true));
+
+    const groups = GROUPS.map((g) => {
+      const open = !collapsed[g.id];
+      const counts = {};
+      g.projects.forEach((p) => p.ss.forEach((id) => { const e = eff(id); counts[e] = (counts[e] || 0) + 1; }));
+      return {
+        name: g.name,
+        blkCls: (g.tag ? 'g-' + g.tag : 'none') + (open ? '' : ' closed'),
+        open,
+        expanded: open ? 'true' : 'false',
+        caretCls: open ? 'open' : '',
+        agg: ORDER.filter((k) => counts[k]).map((k) => ({ cls: 'st-' + k, glyph: GLYPH[k], n: String(counts[k]) })),
+        toggle: () => { const next = Object.assign({}, collapsed); next[g.id] = open; this.setState({ collapsed: next }); },
+        projects: g.projects.map((p) => {
+          const popen = !pcol[p.id];
+          return {
+            name: p.name,
+            cwd: p.cwd,
+            count: p.count || String(p.ss.length),
+            expanded: popen ? 'true' : 'false',
+            caretCls: popen ? 'open' : '',
+            rows: popen ? p.ss.map((id) => row(id, false)) : [],
+            empty: popen && p.ss.length === 0,
+            emptyMsg: p.emptyMsg || '',
+            toggle: () => { const next = Object.assign({}, pcol); next[p.id] = popen; this.setState({ pcol: next }); },
+          };
+        }),
+      };
+    });
+
+    // ---- sidebar footer: accounts (SPEC §5), expandable, direct switch + undo toast ----
+    const ACCTS = [
+      { id: '3', no: '#3', alias: '工作', src: 'statusline · 12s 前', p5: 91, t5: 'ok', v5: '91%', p1: 15, t1: 'crit', v1: '15%', rsL: '5h 重置 13:39', rsR: '2h57m後', s5: '5 小時剩 91%', s1: '本週剩 15%' },
+      { id: '2', no: '#2', alias: '藍鵲', src: 'cswap cache · 3m 前', p5: 98, t5: 'ok', v5: '98%', p1: 46, t1: 'warn', v1: '46%', rsL: '5h 重置 13:19', rsR: '2h37m後', s5: '5 小時剩 98%', s1: '本週剩 46%' },
+      { id: '1', no: '#1', alias: '個人', src: 'cswap cache · 3m 前', p5: 100, t5: 'muted', v5: '100%', p1: 100, t1: 'ok', v1: '100%', rsL: '5h 未開始', rsR: '第一則訊息後起算', s5: '5 小時未開始', s1: '本週剩 100%' },
+    ];
+    const acView = (a) => Object.assign({}, a, { name: a.no + ' ' + a.alias, c5: 'tone-' + a.t5, c1: 'tone-' + a.t1 });
+    const acById = {};
+    ACCTS.forEach((a) => { acById[a.id] = a; });
+    const ac = acView(acById[acct] || ACCTS[0]);
+    const switchTo = (id) => () => {
+      if (id === acct) return;
+      this.setState({ acct: id, toast: { to: id, from: acct } });
+    };
+    const accts = ACCTS.map((a) => {
+      const on = a.id === acct;
+      return Object.assign(acView(a), {
+        cls: on ? 'on' : '',
+        pressed: on ? 'true' : 'false',
+        go: on ? '✓ ACTIVE' : '切換 →',
+        label: (on ? '目前帳號 ' : '切換到 ') + a.no + ' ' + a.alias + '，' + a.s5 + '，' + a.s1,
+        pick: switchTo(a.id),
+      });
+    });
+    const toastTo = toast ? acById[toast.to] : null;
+
+    // ---- main pane, bound to the selected session ----
+    const s = S[cur] || S.s1;
+    const e = eff(cur);
+    const w = where[cur] || where.s1;
+    const shellKind = s.kind === 'shell';
+    const segs = w.p.cwd.split('/');
+    const meta = [];
+    if (s.branch) meta.push({ t: '⎇ ' + s.branch, c: '' });
+    if (s.pid) meta.push({ t: 'pid ' + s.pid, c: '' });
+    if (s.model) meta.push({ t: s.model, c: '' });
+    if (s.ctx != null) meta.push({ t: 'CTX ' + s.ctx + '%', c: s.ctx < 20 ? 'bad' : '' });
+    if (s.cost) meta.push({ t: '$' + s.cost, c: '' });
+    if (s.up) meta.push({ t: 'UP ' + s.up, c: '' });
+    (s.metaX || []).forEach((t) => meta.push({ t, c: '' }));
+
+    const chipParts = [GLYPH[e] + ' ' + LABEL[e]].concat(e === s.st ? [s.reason, s.tool, s.chipX] : []).concat([s.d]);
+    const idle = IDLE[cur] || { ip: '', itn: '', ita: '', itr: '', ir1: '', ir2: '' };
+    const git = w.p.git;
+    const vw = s.view;
+    const onZsh = !shellKind && tab === 'zsh';
+
+    const v = Object.assign({
+      stc: 'st-' + e,
+      glyph: GLYPH[e],
+      title: s.title,
+      hasTag: !!s.tag,
+      tagCls: 'mn-tg-' + (s.tag || 'none'),
+      chip: chipParts.filter(Boolean).join(' · '),
+      isExt: !!s.ext,
+      cwd: w.p.cwd,
+      cwdShort: segs.length > 3 ? '~/…/' + segs.slice(-2).join('/') : w.p.cwd,
+      meta,
+      hasAcct: !!s.acct,
+      acct: s.acct || '',
+      acctCls: s.acctCy ? 'cy' : '',
+      rc: !!s.rc,
+      hasNotes: !!s.notes,
+      notes: String(s.notes || 0),
+      tabGlyph: shellKind ? '$' : GLYPH[e],
+      tabStc: shellKind ? 'st-shell' : 'st-' + e,
+      tab1: shellKind ? 'zsh' : 'Claude',
+      hasZshTab: !shellKind,
+      isPerm: vw === 'perm',
+      isAsk: vw === 'ask',
+      isError: vw === 'error',
+      isDone: vw === 'done',
+      isBusy: vw.indexOf('busy') === 0,
+      busy5: vw === 'busy5',
+      busy7: vw === 'busy7',
+      busy9: vw === 'busy9',
+      isIdle: vw === 'idle',
+      isCompact: vw === 'compact',
+      isShell: vw === 'shell',
+      isExited: vw === 'exited',
+      showDoneNote: e === 'done',
+      showBox: ['error', 'done', 'busy5', 'busy7', 'busy9', 'compact'].indexOf(vw) >= 0 || (vw === 'idle' && !s.ext),
+      modeLine: vw === 'busy5' || vw === 'busy9' ? '▸▸ accept edits on (shift+tab to cycle)' : '? for shortcuts',
+      zdir: segs[segs.length - 1],
+      zpwd: w.p.cwd.replace(/^~/, '/Users/me'),
+      hasGit: !!git,
+      noGit: !!w.p.nogit,
+      gb: git ? git.b : '',
+      gup: git ? git.up : '',
+      gahead: git ? git.ahead : '',
+      mods: git ? git.mods.map((m) => ({ c: m[0], p: m[1] })) : [],
+    }, idle);
+
+    return {
+      crtClass: crt === 'off' ? '' : 'crt-' + crt,
+      needs,
+      needsCount: String(needs.length),
+      hasDone: doneIds.length > 0,
+      done1,
+      doneLine,
+      pinned,
+      groups,
+      footOpen,
+      footClosed: !footOpen,
+      footExpanded: footOpen ? 'true' : 'false',
+      footCaret: footOpen ? 'open' : '',
+      footLabel: footOpen ? '收合全部帳號的用量' : '展開全部帳號的用量',
+      toggleFoot: () => this.setState({ footOpen: !footOpen }),
+      ac,
+      accts,
+      hasToast: !!toastTo,
+      toastText: toastTo ? '已切換到 ' + toastTo.no + ' ' + toastTo.alias + ' · 12 個 session 約 30 秒內套用' : '',
+      undoSwitch: () => this.setState({ acct: toast ? toast.from : acct, toast: null }),
+      dismissToast: () => this.setState({ toast: null }),
+      v,
+      onClaude: !onZsh,
+      onZsh,
+      tabClaudeCls: onZsh ? '' : 'on',
+      tabZshCls: onZsh ? 'on' : '',
+      tabClaudeSel: onZsh ? 'false' : 'true',
+      tabZshSel: onZsh ? 'true' : 'false',
+      tabClaude: () => this.setState({ tab: 'claude' }),
+      tabZsh: () => this.setState({ tab: 'zsh' }),
+    };
+  }
+}
+</script>
+</body>
+</html>

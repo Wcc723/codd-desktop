@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>筆記本 · Notebook</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<!--@HELMET-->
+<style>
+/* ===== Notebook board (.nb-) ===== */
+.codd .nb-lists{flex:0 0 220px;height:900px;background:var(--bg);border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0}
+.codd .nb-brand{margin:0;font-size:14px;letter-spacing:.12em}
+.codd .nb-search{display:flex;align-items:center;gap:6px;padding:8px 8px 4px}
+.codd .nb-search label{flex:1;display:flex;align-items:center;gap:6px;height:26px;border:1px solid var(--line-bright);background:var(--bg-soft);padding:0 6px 0 8px;color:var(--dimmer);font-size:11.5px;min-width:0}
+.codd .nb-search input{all:unset;flex:1;min-width:0;color:var(--cream);font-size:11.5px;font-family:var(--mono)}
+.codd .nb-search input::placeholder{color:var(--dimmer)}
+.codd .nb-smart{display:flex;flex-direction:column;gap:1px;padding:2px 0 4px}
+.codd .nb-li{display:flex;align-items:center;gap:9px;min-height:28px;padding:0 8px 0 10px;color:var(--bone);text-decoration:none;font-size:11px;letter-spacing:.14em;text-transform:uppercase;border-left:2px solid transparent}
+.codd .nb-li svg,.codd .nb-li .gl{width:14px;height:14px;flex:none;color:var(--dim)}
+.codd .nb-li .gl{display:inline-flex;align-items:center;justify-content:center;font-size:12px;letter-spacing:0}
+.codd .nb-li .n{margin-left:auto;font-size:10.5px;color:var(--dim);letter-spacing:0;font-variant-numeric:tabular-nums}
+.codd .nb-li .n.warn{color:var(--amber-dim)}
+.codd .nb-li:hover{background:var(--bg-soft);color:var(--cream)}
+.codd .nb-li.on{background:var(--bg-lift);border-left-color:var(--amber);color:var(--amber);text-shadow:0 0 6px var(--amber-glow)}
+.codd .nb-li.on svg,.codd .nb-li.on .n{color:var(--amber)}
+.codd .nb-li.two{padding-top:5px;padding-bottom:5px;align-items:flex-start}
+.codd .nb-li.two svg{margin-top:1px}
+.codd .nb-lit{display:flex;flex-direction:column;gap:1px}
+.codd .nb-lit .hint{font-size:10.5px;letter-spacing:.02em;text-transform:none}
+.codd .nb-pj{display:flex;align-items:center;gap:8px;height:24px;padding:0 8px 0 14px;font-size:11.5px;color:var(--bone);text-decoration:none}
+.codd .nb-pj:hover,.codd .nb-fr:hover{background:var(--bg-soft);color:var(--cream)}
+.codd .nb-pj .n{margin-left:auto;font-size:10.5px;color:var(--dimmer);font-variant-numeric:tabular-nums}
+.codd .nb-fr{display:flex;align-items:center;gap:7px;height:24px;padding:0 8px 0 12px;font-size:11.5px;color:var(--bone);text-decoration:none;min-width:0}
+.codd .nb-fr svg{width:13px;height:13px;flex:none;color:var(--dim)}
+.codd .nb-fr .d{margin-left:auto;font-size:10.5px;color:var(--dimmer);flex:none}
+.codd .nb-openf{margin:6px 8px 0 12px;align-self:flex-start}
+.codd .nb-cln{display:flex;align-items:center;gap:7px;color:var(--bone);text-decoration:none;font-size:11px;padding-bottom:6px;border-bottom:1px dashed var(--line)}
+.codd .nb-cln:hover{color:var(--amber)}
+.codd .nb-frow{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:10.5px}
+
+.codd .nb-notes{flex:0 0 300px;height:900px;background:var(--bg);border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0}
+.codd .nb-nhead{height:52px;flex:none;display:flex;align-items:center;gap:8px;padding:0 8px 0 14px;border-bottom:1px dashed var(--line)}
+.codd .nb-nlist{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+.codd .nb-day{display:flex;align-items:center;gap:8px;padding:8px 14px 4px;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+.codd .nb-day::after{content:'';flex:1;border-top:1px dashed var(--line)}
+.codd .nb-nrow{display:flex;flex-direction:column;gap:5px;padding:9px 12px 10px 14px;border-bottom:1px dashed var(--line);border-left:2px solid transparent;text-decoration:none;color:var(--bone)}
+.codd .nb-nrow:hover{background:var(--bg-soft)}
+.codd .nb-nrow.on{background:var(--bg-lift);border-left-color:var(--amber)}
+.codd .nb-nrow .t{display:flex;align-items:center;gap:6px;min-width:0}
+.codd .nb-nrow .tt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;color:var(--cream)}
+.codd .nb-nrow.on .tt{color:var(--amber)}
+.codd .nb-nrow .tm{font-size:10.5px;color:var(--dimmer);font-variant-numeric:tabular-nums;flex:none}
+.codd .nb-nrow.on .tm{color:var(--dim)}
+.codd .nb-nrow .sn{font-size:11.5px;line-height:1.55;color:var(--dim);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-wrap:pretty}
+.codd .nb-nrow .ch{display:flex;align-items:center;gap:5px;min-width:0}
+.codd .nb-pin{width:12px;height:12px;flex:none;color:var(--amber)}
+.codd .chip.nb-xs{height:17px;font-size:9.5px;padding:0 5px;gap:4px;letter-spacing:.04em}
+.codd .chip.nb-xs.caps{letter-spacing:.12em}
+.codd .chip.nb-xs .lamp{width:auto;font-size:9px}
+.codd .chip.nb-dash{border-style:dashed}
+.codd .nb-ai{margin-left:auto;display:inline-flex;align-items:center;gap:4px;font-size:10.5px;letter-spacing:.08em;color:var(--dim);flex:none}
+.codd .nb-ai svg{width:13px;height:13px}
+.codd .nb-ai.off{color:var(--dimmer)}
+.codd .nb-end{padding:14px;text-align:center}
+
+.codd .nb-top{height:52px;flex:none;display:flex;align-items:center;gap:12px;padding:0 10px 0 20px;background:var(--bg-soft);border-bottom:1px solid var(--line-bright);position:relative;z-index:10}
+.codd .nb-ident{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.codd .nb-crumb{display:flex;align-items:center;gap:7px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);white-space:nowrap;min-width:0}
+.codd .nb-crumb a{color:var(--dim);text-decoration:none}
+.codd .nb-crumb a:hover{color:var(--amber)}
+.codd .nb-crumb .sl{color:var(--dimmer)}
+.codd .nb-crumb .cur{color:var(--cream);letter-spacing:.02em;text-transform:none;font-size:12px}
+.codd .nb-props{display:flex;align-items:center;gap:6px;min-width:0;white-space:nowrap}
+.codd .pillbtn.nb-sm{height:20px;font-size:10px;padding:0 7px;gap:5px}
+.codd .pillbtn.nb-sm svg{width:13px;height:13px;flex:none}
+.codd .pillbtn .nm{text-transform:none;letter-spacing:.01em;color:var(--cream)}
+.codd .pillbtn.nb-ai-on{color:var(--cyan);border-color:rgba(110,224,240,.4)}
+.codd .nb-acts{display:flex;align-items:center;gap:6px;flex:none}
+.codd .nb-split{display:inline-flex;align-items:stretch;height:24px;border:1px solid var(--amber-dim)}
+.codd .nb-split button{background:transparent;border:0;color:var(--amber);font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:0 8px;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.codd .nb-split button+button{border-left:1px solid var(--amber-dim);padding:0 7px}
+.codd .nb-split button:hover{color:var(--cream)}
+.codd .nb-split button.on{background:rgba(255,184,74,.14);box-shadow:inset 0 0 8px var(--amber-glow)}
+.codd .nb-split .bk{color:var(--amber-dim)}
+.codd .nb-refmenu{position:absolute;top:46px;right:10px;width:404px}
+.codd .nb-refmenu .mh{display:flex;align-items:center;gap:8px}
+.codd .nb-refmenu .mh .r{margin-left:auto;letter-spacing:.04em;text-transform:none;color:var(--dim);font-size:10.5px}
+.codd .menu .mi.nb-mi2{height:auto;padding:7px 10px;align-items:flex-start;gap:10px}
+.codd .menu .mi.nb-mi2 .g{padding-top:1px}
+.codd .menu .mi .g svg{width:14px;height:14px;display:block}
+.codd .nb-mtx{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.codd .nb-mref{display:flex;align-items:center;gap:6px;min-width:0;font-size:11.5px;color:var(--cream)}
+.codd .nb-mref .v{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.codd .nb-mref .v.am{color:var(--amber)}
+.codd .nb-mhint{font-size:10.5px;color:var(--dim);white-space:normal;line-height:1.45;text-wrap:pretty}
+.codd .menu .mi.nb-mi2 .k{padding-top:2px}
+
+.codd .nb-body{flex:1;min-height:0;display:flex}
+.codd .nb-doccol{flex:1;min-width:0;display:flex;flex-direction:column;background:var(--bg-soft)}
+.codd .nb-doc{flex:1;min-height:0;overflow:hidden;padding:22px 40px 0 44px;display:flex;flex-direction:column;gap:10px}
+.codd .nb-title{font-family:var(--display);font-weight:700;font-size:22px;line-height:1.3;color:var(--cream);margin:0;letter-spacing:.01em}
+.codd .nb-meta{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.codd .nb-meta .chip{font-size:10.5px;padding:0 5px}
+.codd .nb-meta a.chip{text-decoration:none}
+.codd .nb-meta a.chip:hover{border-color:var(--amber-dim);color:var(--cream)}
+.codd .nb-meta .chip .lamp{width:auto;font-size:9px}
+.codd .nb-upd{font-size:10.5px;color:var(--dimmer);font-variant-numeric:tabular-nums}
+.codd .nb-h2{font-family:var(--display);font-weight:700;font-size:16px;line-height:1.4;color:var(--amber);border-top:1px dashed var(--line-bright);padding-top:12px;margin:8px 0 0;letter-spacing:.04em;position:relative}
+.codd .nb-h2 .fold{position:absolute;left:-24px;top:15px;color:var(--dimmer);font-size:10.5px;font-family:var(--mono);font-weight:400}
+.codd .nb-p{font-size:13px;line-height:1.75;color:var(--bone);text-wrap:pretty}
+.codd .nb-p b,.codd .nb-ul b{color:var(--cream);font-weight:700}
+.codd .nb-ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.codd .nb-ul li{position:relative;padding-left:18px;line-height:1.75;color:var(--bone);font-size:13px}
+.codd .nb-ul li::before{content:'';position:absolute;left:4px;top:.78em;width:5px;height:5px;background:var(--amber-dim)}
+.codd .nb-ul li.nb-raw{margin:0 -40px 0 -44px;padding:0 40px 0 62px;background:linear-gradient(90deg,rgba(255,184,74,.08),rgba(255,184,74,.015) 70%);box-shadow:inset 2px 0 0 var(--amber-dim)}
+.codd .nb-ul li.nb-raw::before{left:48px}
+.codd .nb-mk{color:var(--dimmer)}
+.codd .nb-caret{display:inline-block;width:2px;height:1.2em;background:var(--amber);vertical-align:-.25em;margin-left:1px;box-shadow:0 0 6px var(--amber-glow);animation:codd-blink 1s steps(1) infinite}
+.codd .nb-figrow{display:flex;align-items:flex-start;gap:18px;padding:2px 0}
+.codd .nb-fig{margin:0;display:flex;flex-direction:column;gap:6px;flex:none}
+.codd .nb-shot{display:flex;padding:7px;background:#000;border:1px solid var(--amber-dim);box-shadow:0 0 0 3px rgba(255,184,74,.08);align-self:flex-start}
+.codd .nb-ph{width:124px;height:220px;position:relative;overflow:hidden;background:#ecebe6;font-family:var(--cjk);color:#2a2a2a;filter:brightness(.86) saturate(.9);display:flex;flex-direction:column}
+.codd .nb-ph-sb{height:12px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 6px;font-size:6.5px;font-family:var(--mono);background:#fff;color:#111}
+.codd .nb-ph-bt{width:12px;height:5px;border:1px solid #111;position:relative}
+.codd .nb-ph-bt::after{content:'';position:absolute;inset:1px 3px 1px 1px;background:#111}
+.codd .nb-ph-hd{height:20px;flex:none;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;background:#fff;border-bottom:1px solid #d9d6ce;position:relative}
+.codd .nb-ph-hd::before{content:'';position:absolute;left:7px;top:7px;width:5px;height:5px;border-left:1.2px solid #555;border-bottom:1.2px solid #555;transform:rotate(45deg)}
+.codd .nb-ph-clock{display:flex;flex-direction:column;align-items:center;padding:11px 0 8px;gap:3px}
+.codd .nb-ph-clock b{font-family:var(--mono);font-size:21px;line-height:1;color:#1d1d1d;letter-spacing:.02em}
+.codd .nb-ph-clock span{font-size:6.5px;color:#6b6760}
+.codd .nb-ph-card{margin:0 8px;background:#fff;border:1px solid #dcd8cf;padding:6px;display:flex;flex-direction:column;gap:4px}
+.codd .nb-ph-card i{display:block;height:4px;background:#cfcabf}
+.codd .nb-ph-rows{margin:7px 8px 0;display:flex;flex-direction:column;gap:3px}
+.codd .nb-ph-rows i{display:flex;height:10px;background:#fff;border:1px solid #e0ddd5}
+.codd .nb-ph-btn{position:absolute;left:10px;right:10px;bottom:13px;height:30px;background:#2f6fe0;color:#fff;font-size:8px;font-weight:700;display:flex;justify-content:center;padding-top:3px;letter-spacing:.1em}
+.codd .nb-ph-nav{position:absolute;left:0;right:0;bottom:0;height:30px;background:rgba(255,255,255,.97);border-top:1px solid #d6d2c8;display:flex;justify-content:space-around;align-items:center}
+.codd .nb-ph-nav span{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:6px;color:#77736b}
+.codd .nb-ph-nav i{width:9px;height:9px;border:1.2px solid currentColor;display:block}
+.codd .nb-ph-nav .on{color:#2f6fe0}
+/* annotations over the pasted screenshot: positions in % of the 750×1334 original; arrow svg uses original-pixel viewBox */
+.codd .nb-annsvg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.codd .nb-annsvg .halo{stroke:#000;stroke-width:3.5;stroke-linecap:square}
+.codd .nb-annsvg .ln{stroke:var(--amber);stroke-width:1.5;stroke-linecap:square}
+.codd .nb-annsvg .hd{fill:var(--amber);stroke:#000;stroke-width:1}
+.codd .nb-cap{font-size:11px;color:var(--dim);white-space:nowrap}
+.codd .nb-annp{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;padding:8px 10px 9px 12px;background:var(--bg);border:1px solid var(--line-bright);box-shadow:inset 2px 0 0 var(--amber-dim)}
+.codd .nb-annh{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--bone);white-space:nowrap}
+.codd .nb-annh .n{color:var(--amber);font-weight:700}
+.codd .nb-annp .hint{font-size:11px}
+.codd .nb-tasks{display:flex;flex-direction:column}
+.codd .nb-task{display:flex;align-items:baseline;gap:6px;line-height:1.8;color:var(--bone);cursor:pointer;position:relative;font-size:13px}
+.codd .nb-vh{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none;left:0;top:0}
+.codd .nb-box{font-family:var(--mono);color:var(--dim);flex:none;width:30px}
+.codd .nb-box b{color:var(--amber);font-weight:700}
+.codd .nb-task.done .tx{color:var(--dimmer);text-decoration:line-through;text-decoration-color:var(--line-bright)}
+.codd .nb-code{position:relative;background:#000;border:1px solid var(--line-bright)}
+.codd .nb-code pre{margin:0;padding:10px 14px;font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--cream);white-space:pre}
+.codd .nb-code .lang{position:absolute;top:0;right:0;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);padding:2px 8px;border-left:1px solid var(--line);border-bottom:1px solid var(--line)}
+.codd .nb-ck{color:var(--amber)}
+.codd .nb-cs{color:var(--cyan)}
+.codd .nb-cp{color:var(--dim)}
+.codd .nb-docstat{height:22px;flex:none;display:flex;align-items:center;gap:8px;padding:0 14px 0 44px;font-size:10.5px;letter-spacing:.06em;color:var(--dimmer);border-top:1px dashed var(--line);white-space:nowrap;font-variant-numeric:tabular-nums}
+.codd .nb-docstat .md{color:var(--amber-dim);letter-spacing:.16em}
+.codd .nb-send{flex:none;display:flex;align-items:center;gap:8px;padding:8px 12px 8px 16px;border-top:1px solid var(--line-bright);background:var(--bg)}
+.codd .nb-send .lbl{display:inline;flex:none}
+.codd .nb-send .pillbtn .lamp{width:auto;font-size:10px}
+.codd .nb-send .pillbtn .nm{text-transform:none}
+
+.codd .nb-info{flex:0 0 240px;border-left:1px solid var(--line);background:var(--bg);display:flex;flex-direction:column;overflow:hidden}
+.codd .nb-isec{padding:12px 14px 13px;border-bottom:1px dashed var(--line);display:flex;flex-direction:column;gap:7px}
+.codd .nb-ih{margin:0;font-weight:500;justify-content:space-between}
+.codd .nb-ih .c{letter-spacing:.04em;text-transform:none;color:var(--dimmer);font-size:10.5px}
+.codd .nb-irow{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--bone);min-width:0;text-decoration:none}
+.codd a.nb-irow:hover{color:var(--cream)}
+.codd .nb-irow .r{margin-left:auto;font-size:10.5px;color:var(--dimmer);flex:none;font-variant-numeric:tabular-nums}
+.codd .nb-irow svg{width:13px;height:13px;flex:none;color:var(--dim)}
+.codd .nb-irow .lamp{width:13px}
+.codd .nb-ilist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.codd .nb-addl{display:flex;align-items:center;gap:6px;height:24px;padding:0 8px;border:1px dashed var(--line-bright);background:transparent;color:var(--dim);font-size:10.5px;letter-spacing:.06em;cursor:pointer;font-family:var(--mono);width:100%}
+.codd .nb-addl:hover{color:var(--amber);border-color:var(--amber-dim)}
+.codd .nb-hist{position:relative}
+.codd .nb-hist::before{content:'';position:absolute;left:3px;top:8px;bottom:8px;border-left:1px dashed var(--line-bright)}
+.codd .nb-hdot{width:7px;height:7px;border:1px solid var(--dim);background:var(--bg);flex:none;position:relative;z-index:1}
+.codd .nb-hdot.on{background:var(--amber);border-color:var(--amber);box-shadow:0 0 6px var(--amber-glow)}
+.codd .nb-hdot.sel{border-color:var(--amber)}
+.codd .nb-assets{display:flex;gap:8px}
+.codd .nb-asset{display:flex;flex-direction:column;gap:4px;font-size:10px;color:var(--dim);text-decoration:none;flex:1;min-width:0}
+.codd .nb-asset:hover{color:var(--cream)}
+.codd .nb-thumb{height:58px;background:#000;border:1px solid var(--line-bright);display:flex;align-items:center;justify-content:center}
+.codd .nb-thumb i{display:block;background:#d9d7d0;filter:brightness(.82);position:relative}
+.codd .nb-thumb i::before{content:'';position:absolute;left:0;right:0;top:0;height:3px;background:#fff}
+.codd .nb-thumb i::after{content:'';position:absolute;left:3px;right:3px;bottom:3px;height:4px;background:#2f6fe0}
+.codd .nb-thumb .pt{width:26px;height:46px}
+.codd .nb-thumb .ls{width:62px;height:35px}
+.codd .nb-ret{display:grid;grid-template-columns:auto 1fr;gap:5px 10px;font-size:11px;margin:0}
+.codd .nb-ret dt{color:var(--dim)}
+.codd .nb-ret dd{margin:0;color:var(--bone);text-align:right;font-variant-numeric:tabular-nums}
+.codd .nb-ret dd.ok{color:var(--success)}
+</style>
+</helmet>
+<div class="codd win {{ crtClass }}">
+<!--@RAIL on=notes-->
+
+<!-- ===== LISTS COLUMN ===== -->
+<aside class="nb-lists" aria-label="筆記本清單">
+  <div class="side-head">
+    <h1 class="brand nb-brand">NOTEBOOK</h1>
+    <span style="flex:1"></span>
+    <button class="btn sm accent" type="button" aria-label="新增筆記 ⌘⇧N">+ ⌘⇧N</button>
+  </div>
+  <div class="nb-search">
+    <label><span aria-hidden="true">/</span><input type="text" placeholder="搜尋筆記、#標籤…" aria-label="搜尋筆記"><span class="kbd">⌘F</span></label>
+  </div>
+  <div class="side-scroll">
+    <nav class="nb-smart" aria-label="智慧清單">
+      <a class="nb-li on" href="#inbox" aria-current="page">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2.75 11.5h4.25l1 2h4l1-2h4.25"></path><path d="M2.75 11.5L5 4.25h10l2.25 7.25v4.25H2.75z"></path></svg>
+        Inbox<span class="n">6</span></a>
+      <a class="nb-li" href="#pinned">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M10 2.75l2.2 4.6 5.05.55-3.75 3.45 1.05 5L10 13.75l-4.55 2.6 1.05-5L2.75 7.9l5.05-.55z"></path></svg>
+        Pinned<span class="n">2</span></a>
+      <a class="nb-li" href="#prompts"><span class="gl" aria-hidden="true">❯</span>Prompts<span class="n">3</span></a>
+      <a class="nb-li" href="#stale">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><circle cx="10" cy="10" r="7.25"></circle><path d="M10 6v4.5l3 1.75"></path></svg>
+        Stale<span class="n warn">4</span></a>
+      <a class="nb-li" href="#archive">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="2.75" y="3.75" width="14.5" height="3.5"></rect><path d="M4 7.25v9h12v-9M8 10.5h4"></path></svg>
+        Archive<span class="n">34</span></a>
+      <a class="nb-li two" href="#trash">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M3.5 5.5h13M8 5.5V3.25h4V5.5M5 5.5l.75 11.25h8.5L15 5.5M8.5 8.5v5.5M11.5 8.5v5.5"></path></svg>
+        <span class="nb-lit"><span>Trash</span><span class="hint">30 天後永久刪除</span></span><span class="n">3</span></a>
+    </nav>
+
+    <button class="sbsec" type="button" aria-expanded="true"><span class="caret open">▸</span>By project<span class="rule"></span></button>
+    <a class="nb-pj" href="#proj-orb-toolkit-frontend"><span class="tag" style="background:var(--t-blue)"></span><span class="ell">orb-toolkit-frontend</span><span class="n">2</span></a>
+    <a class="nb-pj" href="#proj-orb-toolkit-backend"><span class="tag" style="background:var(--t-blue)"></span><span class="ell">orb-toolkit-backend</span><span class="n">1</span></a>
+    <a class="nb-pj" href="#proj-mcp"><span class="tag" style="background:var(--t-orange)"></span><span class="ell">MCP 整合範例</span><span class="n">1</span></a>
+    <a class="nb-pj" href="#proj-gear3d"><span class="tag" style="background:var(--t-green)"></span><span class="ell">Gear3D</span><span class="n">1</span></a>
+
+    <button class="sbsec" type="button" aria-expanded="true" style="margin-top:6px"><span class="caret open">▸</span>Local files <span class="cnt">最近 4</span><span class="rule"></span></button>
+    <a class="nb-fr" href="#file-punch-vue"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M5 2.75h7l3 3v11.5H5z"></path><path d="M11.75 2.75V6H15"></path></svg><span class="ell">punch.vue</span><span class="d">frontend</span></a>
+    <a class="nb-fr" href="#file-punchbutton"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M5 2.75h7l3 3v11.5H5z"></path><path d="M11.75 2.75V6H15"></path></svg><span class="ell">PunchButton.vue</span><span class="d">frontend</span></a>
+    <a class="nb-fr" href="#file-tailwind"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M5 2.75h7l3 3v11.5H5z"></path><path d="M11.75 2.75V6H15"></path></svg><span class="ell">tailwind.config.js</span><span class="d">frontend</span></a>
+    <a class="nb-fr" href="#file-auth-spec"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M5 2.75h7l3 3v11.5H5z"></path><path d="M11.75 2.75V6H15"></path></svg><span class="ell">auth.spec.ts</span><span class="d">backend</span></a>
+    <button class="btn sm nb-openf" type="button">開啟資料夾…</button>
+  </div>
+  <div class="side-foot">
+    <a class="nb-cln" href="#cleanup"><span>清理建議</span><span class="badge dim">15</span><span style="flex:1"></span><span class="faint">→</span></a>
+    <div class="nb-frow"><span class="faint">~/.codd/notebook</span></div>
+    <div class="nb-frow"><span><span class="lamp st-busy" style="width:auto;font-size:9px">●</span> MCP <span class="faint">codd</span></span><span class="num">3 clients</span></div>
+  </div>
+</aside>
+
+<!-- ===== NOTE LIST ===== -->
+<section class="nb-notes" aria-label="INBOX 筆記列表">
+  <div class="nb-nhead">
+    <h2 class="h-sub">Inbox</h2><span class="faint num" style="font-size:11px">6</span>
+    <span style="flex:1"></span>
+    <button class="btn sm plain" type="button" aria-label="排序方式：最近更新">最近更新 ▾</button>
+  </div>
+  <div class="nb-nlist">
+    <div class="nb-day">Today · 10/15</div>
+    <a class="nb-nrow on" href="#n1" aria-current="true">
+      <span class="t"><span class="tt">打卡頁 RWD 跑版紀錄</span><span class="tm">10:05</span></span>
+      <span class="sn">iPhone SE（375×667）下打卡按鈕被底部導覽列蓋住；橫向時表格溢出。想請 AI 先重現，再把按鈕改成 sticky。</span>
+      <span class="ch"><span class="chip nb-xs caps">Note</span><span class="chip nb-xs st-busy"><span class="lamp">●</span>打卡頁 RWD 調整</span>
+        <span class="nb-ai"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2 10s3-5.25 8-5.25S18 10 18 10s-3 5.25-8 5.25S2 10 2 10z"></path><circle cx="10" cy="10" r="2.25"></circle></svg>READ</span></span>
+    </a>
+    <a class="nb-nrow" href="#n2">
+      <span class="t"><span class="tt">給後端的 prompt：401 修正條件</span><span class="tm">已送出 10:02</span></span>
+      <span class="sn">token 過期先走 refresh，失敗才回 401 並帶 code: EXPIRED；補 auth.spec.ts 三種情境的測試。</span>
+      <span class="ch"><span class="chip nb-xs caps amber">Prompt</span><span class="chip nb-xs st-waiting"><span class="lamp" style="animation:none">◆</span>修正登入 API 401</span>
+        <span class="nb-ai"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2 10s3-5.25 8-5.25S18 10 18 10s-3 5.25-8 5.25S2 10 2 10z"></path><circle cx="10" cy="10" r="2.25"></circle></svg>READ</span></span>
+    </a>
+    <a class="nb-nrow" href="#n3">
+      <span class="t"><svg class="nb-pin" viewBox="0 0 20 20" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" role="img" aria-label="已釘選"><path d="M10 2.75l2.2 4.6 5.05.55-3.75 3.45 1.05 5L10 13.75l-4.55 2.6 1.05-5L2.75 7.9l5.05-.55z"></path></svg><span class="tt">MCP 示範腳本重點</span><span class="tm">09:40</span></span>
+      <span class="sn">開場先示範 claude mcp add，再連 codd server 讀筆記；示範前關掉通知，帳號切到 #2 藍鵲。</span>
+      <span class="ch"><span class="chip nb-xs caps">Note</span><span class="chip nb-xs"><span class="tag" style="background:var(--t-orange)"></span>MCP 整合範例</span>
+        <span class="nb-ai"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2 10s3-5.25 8-5.25S18 10 18 10s-3 5.25-8 5.25S2 10 2 10z"></path><circle cx="10" cy="10" r="2.25"></circle></svg>READ</span></span>
+    </a>
+    <a class="nb-nrow" href="#n4">
+      <span class="t"><span class="tt">程式碼審查標準 v2</span><span class="tm">09:12</span></span>
+      <span class="sn">四個面向：需求理解、錯誤處理、驗證方式、文件。v1 的「程式碼風格」拿掉。</span>
+      <span class="ch"><span class="chip nb-xs caps">Note</span><span class="chip nb-xs st-idle"><span class="lamp">○</span>產生程式碼審查清單</span>
+        <span class="nb-ai"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2 10s3-5.25 8-5.25S18 10 18 10s-3 5.25-8 5.25S2 10 2 10z"></path><circle cx="10" cy="10" r="2.25"></circle></svg>READ</span></span>
+    </a>
+    <a class="nb-nrow" href="#n5">
+      <span class="t"><span class="tt">隨手記 10/15</span><span class="tm">08:47</span></span>
+      <span class="sn">#3 本週額度只剩 15%，重的工作先改用 #2 藍鵲；下午記得回頭看 Gear3D 那個卡住的 session。</span>
+      <span class="ch"><span class="chip nb-xs caps nb-dash">Scratch</span><span class="faint" style="font-size:10.5px">7d 後封存</span>
+        <span class="nb-ai off"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="4.75" y="9" width="10.5" height="8"></rect><path d="M7 9V6.5a3 3 0 0 1 6 0V9"></path></svg>OFF</span></span>
+    </a>
+    <div class="nb-day">Yesterday</div>
+    <a class="nb-nrow" href="#n6">
+      <span class="t"><span class="tt">keynote 第 3 章大綱</span><span class="tm">21:30</span></span>
+      <span class="sn">3-1 為什麼要同時開多個 session · 3-2 NEEDS YOU 與狀態燈 · 3-3 筆記怎麼交給 AI。</span>
+      <span class="ch"><span class="chip nb-xs caps amber nb-dash">Prompt · 草稿</span><span class="chip nb-xs st-idle"><span class="lamp">○</span>keynote 第 3 章</span>
+        <span class="nb-ai"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2 10s3-5.25 8-5.25S18 10 18 10s-3 5.25-8 5.25S2 10 2 10z"></path><circle cx="10" cy="10" r="2.25"></circle></svg>READ</span></span>
+    </a>
+    <p class="comment nb-end">// INBOX 6 則 · 已全部顯示</p>
+  </div>
+</section>
+
+<!-- ===== EDITOR ===== -->
+<div class="main">
+  <header class="nb-top">
+    <div class="nb-ident">
+      <nav class="nb-crumb" aria-label="位置"><a href="#inbox">Inbox</a><span class="sl">/</span><span class="cur">打卡頁 RWD 跑版紀錄</span></nav>
+      <div class="nb-props">
+        <button class="pillbtn nb-sm nb-ai-on" type="button" aria-haspopup="menu" aria-label="AI 存取權限：可讀 READ">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2 10s3-5.25 8-5.25S18 10 18 10s-3 5.25-8 5.25S2 10 2 10z"></path><circle cx="10" cy="10" r="2.25"></circle></svg>AI 可讀 READ ▾</button>
+        <button class="pillbtn nb-sm" type="button" aria-haspopup="menu" aria-label="範圍：PROJECT orb-toolkit-frontend"><span>Project:</span><span class="nm">orb-toolkit-frontend</span>▾</button>
+        <span class="faint" style="font-size:10.5px">id rwd-punch-k7x2</span>
+      </div>
+    </div>
+    <div class="nb-acts">
+      <div class="nb-split" role="group" aria-label="複製引用">
+        <button type="button"><span class="bk">[</span>
+          <svg viewBox="0 0 20 20" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="6.75" y="6.75" width="10.5" height="10.5"></rect><path d="M4 13.25H2.75V2.75h10.5V4"></path></svg>Copy ref</button>
+        <button class="on" type="button" aria-haspopup="menu" aria-expanded="true" aria-label="選擇引用格式">▾<span class="bk">]</span></button>
+      </div>
+      <button class="btn sm" type="button" aria-haspopup="menu">Send to session ▾</button>
+      <button class="icon-btn" type="button" aria-label="更多動作">⋯</button>
+    </div>
+
+    <!-- COPY REF menu (open) -->
+    <div class="menu nb-refmenu" role="menu" aria-label="複製引用格式">
+      <div class="mh"><span>Copy reference · 複製引用</span><span class="r">rwd-punch-k7x2</span></div>
+      <button class="mi hl nb-mi2" type="button" role="menuitem">
+        <span class="g"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M8.5 11.5l3-3M7.25 9.25l-2 2a2.5 2.5 0 0 0 3.5 3.5l2-2M12.75 10.75l2-2a2.5 2.5 0 0 0-3.5-3.5l-2 2"></path></svg></span>
+        <span class="nb-mtx"><span class="nb-mref"><span class="v am">codd://note/rwd-punch-k7x2</span><span class="chip fill nb-xs">推薦</span></span><span class="nb-mhint">CODD 啟動的 session 會由 UserPromptSubmit hook 自動展開內容</span></span>
+        <span class="k">⌘⇧C</span>
+      </button>
+      <button class="mi nb-mi2" type="button" role="menuitem">
+        <span class="g" aria-hidden="true">@</span>
+        <span class="nb-mtx"><span class="nb-mref"><span class="v">@codd:codd://note/rwd-punch-k7x2</span></span><span class="nb-mhint">在 Claude Code 輸入框用 @ 附加（MCP resource）</span></span>
+      </button>
+      <button class="mi nb-mi2" type="button" role="menuitem">
+        <span class="g"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M5 2.75h7l3 3v11.5H5z"></path><path d="M11.75 2.75V6H15"></path></svg></span>
+        <span class="nb-mtx"><span class="nb-mref"><span class="v">~/.codd/notebook/2026-10-15-打卡頁-rwd-跑版紀錄.md</span></span><span class="nb-mhint">檔案路徑 · 任何 agent 都能用 Read 讀取</span></span>
+      </button>
+      <button class="mi nb-mi2" type="button" role="menuitem">
+        <span class="g"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="6.75" y="6.75" width="10.5" height="10.5"></rect><path d="M4 13.25H2.75V2.75h10.5V4"></path></svg></span>
+        <span class="nb-mtx"><span class="nb-mref"><span class="v">複製全文 Markdown</span></span><span class="nb-mhint">貼到任何地方；圖片改寫成絕對路徑</span></span>
+      </button>
+      <div class="sep"></div>
+      <button class="mi nb-mi2" type="button" role="menuitem">
+        <span class="g"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><circle cx="10" cy="10" r="7.25"></circle><path d="M2.75 10h14.5M10 2.75c2.25 2 2.25 12.5 0 14.5M10 2.75c-2.25 2-2.25 12.5 0 14.5"></path></svg></span>
+        <span class="nb-mtx"><span class="nb-mref"><span class="v" style="color:var(--dim)">http://127.0.0.1:47821/n/rwd-punch-k7x2.md?t=••••</span></span><span class="nb-mhint">瀏覽器 / curl 用；Claude 的 WebFetch 讀不到 localhost</span></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="nb-body">
+    <div class="nb-doccol">
+      <article class="nb-doc" aria-label="筆記內容（即時預覽）">
+        <h1 class="nb-title">打卡頁 RWD 跑版紀錄</h1>
+        <div class="nb-meta">
+          <span class="chip caps">Note</span>
+          <span class="chip">#rwd</span>
+          <span class="chip">#punch</span>
+          <a class="chip st-busy" href="#s9"><span class="lamp">●</span>打卡頁 RWD 調整</a>
+          <a class="chip" href="#proj-orb-toolkit-frontend"><span class="tag" style="background:var(--t-blue)"></span>orb-toolkit-frontend</a>
+          <span class="nb-upd">updated 10:05</span>
+        </div>
+
+        <h2 class="nb-h2"><span class="fold" aria-hidden="true">▾</span>問題</h2>
+        <p class="nb-p">iPhone SE（375×667）下打卡按鈕被底部導覽列蓋住；橫向時表格溢出。</p>
+        <ul class="nb-ul">
+          <li>影響頁面：<code>/punch</code>（打卡）與 <code>/punch/history</code>（打卡紀錄表格）</li>
+          <li class="nb-raw"><span class="nb-mk">**</span><b>Safari 底部工具列展開時</b><span class="nb-mk">**</span>才會完全蓋住，收起後還露出上半截<span class="nb-caret" aria-hidden="true"></span></li>
+        </ul>
+
+        <div class="nb-figrow">
+          <figure class="nb-fig">
+            <div class="nb-shot" role="img" aria-label="截圖：iPhone SE 打卡頁，上班打卡按鈕被底部導覽列蓋住；含 3 個標註">
+              <div class="ann-wrap">
+                <div class="nb-ph" aria-hidden="true">
+                  <div class="nb-ph-sb"><span>9:32</span><span class="nb-ph-bt"></span></div>
+                  <div class="nb-ph-hd">打卡</div>
+                  <div class="nb-ph-clock"><b>09:32</b><span>10/15（四）· 台北辦公室</span></div>
+                  <div class="nb-ph-card"><i style="width:72%"></i><i style="width:48%"></i></div>
+                  <div class="nb-ph-rows"><i></i><i></i><i></i></div>
+                  <div class="nb-ph-btn">上班打卡</div>
+                  <div class="nb-ph-nav"><span><i></i>首頁</span><span class="on"><i></i>打卡</span><span><i></i>紀錄</span><span><i></i>我的</span></div>
+                </div>
+                <!-- ① rect x20 y1150 710×120 · ② point 375,330 · ③ arrow 600,760 → 700,1080 (original px, 750×1334) -->
+                <div class="ann-box" style="left:2.667%;top:86.207%;width:94.667%;height:8.996%"><span class="ann-pin">1</span></div>
+                <span class="ann-pin" style="left:50%;top:24.738%">2</span>
+                <svg class="nb-annsvg" viewBox="0 0 750 1334" preserveAspectRatio="none" aria-hidden="true">
+                  <line class="halo" x1="600" y1="760" x2="689" y2="1045" vector-effect="non-scaling-stroke"></line>
+                  <line class="ln" x1="600" y1="760" x2="689" y2="1045" vector-effect="non-scaling-stroke"></line>
+                  <polygon class="hd" points="700,1080 669,1052 709,1039" vector-effect="non-scaling-stroke"></polygon>
+                </svg>
+                <span class="ann-pin" style="left:80%;top:56.972%">3</span>
+              </div>
+            </div>
+            <figcaption class="nb-cap">截圖 2026-10-15 09:32 · iPhone SE</figcaption>
+          </figure>
+          <section class="nb-annp" aria-label="圖片標註">
+            <div class="nb-annh">
+              <span>標註</span><span class="n num">3</span><span class="faint">·</span><span class="kbd">⌘⇧A</span>
+              <span style="flex:1"></span>
+              <button class="btn sm" type="button">編輯標註</button>
+            </div>
+            <ol class="ann-list">
+              <li class="ann-item"><span class="no">1</span><span>上班打卡按鈕被底部導覽列蓋住 → 改 position: sticky，底部留 env(safe-area-inset-bottom)</span><span class="xy">rect · x 20 y 1150 · 710×120</span></li>
+              <li class="ann-item"><span class="no">2</span><span>時鐘數字在 SE 上太大，會擠到下方卡片 → 改 48px</span><span class="xy">point · x 375 y 330</span></li>
+              <li class="ann-item"><span class="no">3</span><span>打卡紀錄卡片離按鈕太近，間距加到 16px</span><span class="xy">arrow · x 600 y 760 → x 700 y 1080</span></li>
+            </ol>
+            <p class="hint">AI 會收到標註後的圖與座標清單</p>
+          </section>
+        </div>
+
+        <h2 class="nb-h2"><span class="fold" aria-hidden="true">▾</span>想請 AI 做的</h2>
+        <div class="nb-tasks">
+          <label class="nb-task done"><input class="nb-vh" type="checkbox" checked="checked"><span class="nb-box" aria-hidden="true">[<b>x</b>]</span><span class="tx">先重現（Chrome DevTools 375 寬）</span></label>
+          <label class="nb-task"><input class="nb-vh" type="checkbox"><span class="nb-box" aria-hidden="true">[&nbsp;]</span><span class="tx">按鈕改 <code>position: sticky; bottom: env(safe-area-inset-bottom)</code></span></label>
+          <label class="nb-task"><input class="nb-vh" type="checkbox"><span class="nb-box" aria-hidden="true">[&nbsp;]</span><span class="tx">表格改卡片式（&lt;640px）</span></label>
+        </div>
+        <div class="nb-code">
+          <span class="lang">css</span>
+<pre><span class="nb-ck">@media</span> (max-width: <span class="nb-cs">640px</span>) <span class="nb-cp">{</span>
+  .punch-table <span class="nb-cp">{</span> <span class="nb-ck">display</span>: <span class="nb-cs">block</span>; <span class="nb-cp">}</span>
+<span class="nb-cp">}</span></pre>
+        </div>
+      </article>
+
+      <div class="nb-docstat">
+        <span class="md">LIVE PREVIEW</span><span>·</span><span>⌘E 原始碼</span>
+        <span style="flex:1"></span>
+        <span>Ln 14, Col 38</span><span>·</span><span>Markdown</span><span>·</span><span><span class="ok">●</span> 已儲存 10:05</span>
+      </div>
+
+      <div class="nb-send" role="group" aria-label="送到 session">
+        <span class="lbl">送到</span>
+        <button class="pillbtn st-busy" type="button" aria-haspopup="menu" aria-label="目標 session：打卡頁 RWD 調整"><span class="lamp">●</span><span class="nm">打卡頁 RWD 調整</span>▾</button>
+        <span class="faint ell" style="font-size:10.5px">orb-toolkit-frontend · busy 6m</span>
+        <span style="flex:1"></span>
+        <button class="btn sm" type="button">插入引用</button>
+        <button class="btn sm" type="button">插入全文</button>
+        <button class="btn sm primary" type="button">送出 ⌘⏎</button>
+      </div>
+    </div>
+
+    <!-- INFO PANEL -->
+    <aside class="nb-info" aria-label="筆記資訊">
+      <section class="nb-isec">
+        <h3 class="sec nb-ih">Links <span class="c">2</span></h3>
+        <a class="nb-irow st-busy" href="#s9"><span class="lamp">●</span><span class="ell">打卡頁 RWD 調整</span><span class="r">session</span></a>
+        <a class="nb-irow" href="#proj-orb-toolkit-frontend"><span class="lamp"><span class="tag" style="background:var(--t-blue)"></span></span><span class="ell">orb-toolkit-frontend</span><span class="r">project</span></a>
+        <button class="nb-addl" type="button">+ 連結 session / 專案</button>
+      </section>
+      <section class="nb-isec">
+        <h3 class="sec nb-ih">AI activity <span class="c">codd MCP</span></h3>
+        <ul class="nb-ilist">
+          <li class="nb-irow"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2 10s3-5.25 8-5.25S18 10 18 10s-3 5.25-8 5.25S2 10 2 10z"></path><circle cx="10" cy="10" r="2.25"></circle></svg><span>讀取</span><span class="ell muted">打卡頁 RWD 調整</span><span class="r">10:12</span></li>
+          <li class="nb-irow"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M10 4v12M4 10h12"></path></svg><span>附加</span><span class="faint">—</span></li>
+        </ul>
+        <span class="hint" style="font-size:10.5px">AI 讀取不計入活動時間</span>
+      </section>
+      <section class="nb-isec">
+        <h3 class="sec nb-ih">History <span class="c">3 版</span></h3>
+        <ul class="nb-ilist nb-hist">
+          <li class="nb-irow"><span class="nb-hdot on"></span><span class="num">10:05</span><span class="muted">你 · 目前</span></li>
+          <li class="nb-irow"><span class="nb-hdot sel"></span><span class="num">09:41</span><span class="muted">你</span></li>
+          <li class="nb-irow"><span class="nb-hdot"></span><span class="num">昨天 18:20</span><span class="muted">建立</span></li>
+        </ul>
+        <button class="btn sm" type="button" style="align-self:flex-start">比較</button>
+      </section>
+      <section class="nb-isec">
+        <h3 class="sec nb-ih">Assets <span class="c">2 張 · 1.4 MB</span></h3>
+        <div class="nb-assets">
+          <a class="nb-asset" href="#asset-9f3a1c"><span class="nb-thumb"><i class="pt"></i></span><span class="ell">9f3a1c.png</span></a>
+          <a class="nb-asset" href="#asset-2b7e04"><span class="nb-thumb"><i class="ls"></i></span><span class="ell">2b7e04.png</span></a>
+        </div>
+      </section>
+      <section class="nb-isec" style="border-bottom:0">
+        <h3 class="sec nb-ih">Retention</h3>
+        <dl class="nb-ret">
+          <dt>最後活動</dt><dd>37m 前</dd>
+          <dt>標示 stale</dt><dd>14 天後</dd>
+          <dt>自動封存</dt><dd class="ok">豁免 · session 使用中</dd>
+        </dl>
+        <button class="btn sm" type="button" style="align-self:flex-start">釘選以保留</button>
+      </section>
+    </aside>
+  </div>
+<!--@STATUSBAR-->
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"crt":{"editor":"enum","options":["subtle","full","off"],"default":"subtle","section":"Look"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const crt = this.props.crt ?? 'subtle';
+    return { crtClass: crt === 'off' ? '' : 'crt-' + crt };
+  }
+}
+</script>
+</body>
+</html>

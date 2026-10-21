@@ -1,0 +1,1 @@
+{"schemaVersion": 1, "switched": true, "from": {"number": 3, "email": "account-three@example.invalid"}, "to": {"number": 2, "email": "account-two@example.invalid"}, "strategy": null, "reason": "switched", "message": "Switched to account 2", "warnings": ["Running sessions pick up the new account within about 30 seconds.", 7]}

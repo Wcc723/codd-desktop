@@ -1,0 +1,717 @@
+{
+  "build" : "Release",
+  "engines" : [
+    {
+      "answers" : [
+        {
+          "answered" : true,
+          "meaning" : "identifies as \"ghostty 1.3.2-HEAD+1e9e14af5\"",
+          "probeID" : "xtversion",
+          "raw" : "\\eP>|ghostty 1.3.2-HEAD+1e9e14af5\\e\\\\"
+        },
+        {
+          "answered" : true,
+          "meaning" : "kitty keyboard flags = 0",
+          "probeID" : "kitty-keyboard",
+          "raw" : "\\e[?0u"
+        },
+        {
+          "answered" : true,
+          "meaning" : "mode 2026 = 2 reset",
+          "probeID" : "decrqm-2026",
+          "raw" : "\\e[?2026;2$y"
+        },
+        {
+          "answered" : true,
+          "meaning" : "mode 1016 = 2 reset",
+          "probeID" : "decrqm-1016",
+          "raw" : "\\e[?1016;2$y"
+        },
+        {
+          "answered" : false,
+          "meaning" : "no reply",
+          "probeID" : "osc-7501",
+          "raw" : ""
+        },
+        {
+          "answered" : true,
+          "meaning" : "kitty graphics supported (Gi=31;OK)",
+          "probeID" : "kitty-graphics",
+          "raw" : "\\e_Gi=31;OK\\e\\\\"
+        },
+        {
+          "answered" : true,
+          "meaning" : "cell 8×17 px",
+          "probeID" : "csi-16t",
+          "raw" : "\\e[6;17;8t"
+        },
+        {
+          "answered" : true,
+          "meaning" : "DA1 attributes 62;22;52",
+          "probeID" : "da1",
+          "raw" : "\\e[?62;22;52c"
+        }
+      ],
+      "backingScale" : 1,
+      "claude" : [
+        {
+          "capability" : "kittyKeyboard",
+          "enabled" : true,
+          "reason" : "CSI ? u answered (\\e[?0u)"
+        },
+        {
+          "capability" : "extendedKeys",
+          "enabled" : true,
+          "reason" : "CSI ? u answered (\\e[?0u)"
+        },
+        {
+          "capability" : "programStatus",
+          "enabled" : false,
+          "reason" : "no OSC 7501 ; ? reply"
+        },
+        {
+          "capability" : "synchronizedOutput",
+          "enabled" : true,
+          "reason" : "DECRPM status 2"
+        },
+        {
+          "capability" : "kittyGraphics",
+          "enabled" : true,
+          "reason" : "graphics reply and XTVERSION \"ghostty 1.3.2-HEAD+1e9e14af5\" is on the allow-list"
+        },
+        {
+          "capability" : "mousePixels",
+          "enabled" : true,
+          "reason" : "DECRPM status 2"
+        }
+      ],
+      "engine" : "GHOSTTY",
+      "engineVersion" : "libghostty-spm 2.2.2026101301 (rev d403978; Ghostty main 1e9e14af5df1)",
+      "firstReplyMs" : 0.936,
+      "grid" : "123×37",
+      "inputAfterExit" : [
+        {
+          "bytes" : "(nothing)",
+          "key" : "a #1 after exit",
+          "ok" : false
+        },
+        {
+          "bytes" : "(nothing)",
+          "key" : "a #2 after exit",
+          "ok" : false
+        }
+      ],
+      "keyModes" : [
+        {
+          "inputSource" : "com.apple.keylayout.ABC",
+          "keys" : [
+            {
+              "bytes" : "\\r",
+              "key" : "Enter",
+              "latencyMs" : 5.715542,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[27;2;13~",
+              "key" : "Shift+Enter",
+              "latencyMs" : 0.499209,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e\\r",
+              "key" : "Option+Enter",
+              "latencyMs" : 0.263,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\x16",
+              "key" : "Ctrl+V",
+              "latencyMs" : 5.561417,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\x03",
+              "key" : "Ctrl+C",
+              "latencyMs" : 0.756375,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e",
+              "key" : "Esc",
+              "latencyMs" : 0.356833,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[Z",
+              "key" : "Shift+Tab",
+              "latencyMs" : 3.04475,
+              "ok" : true
+            },
+            {
+              "bytes" : "a",
+              "key" : "a",
+              "latencyMs" : 0.331209,
+              "ok" : true
+            }
+          ],
+          "kittyFlagsReply" : "\\e[?0u",
+          "mode" : "legacy",
+          "setup" : ""
+        },
+        {
+          "inputSource" : "com.apple.keylayout.ABC",
+          "keys" : [
+            {
+              "bytes" : "\\r",
+              "key" : "Enter",
+              "latencyMs" : 0.952708,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[13;2u",
+              "key" : "Shift+Enter",
+              "latencyMs" : 0.551125,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[13;3u",
+              "key" : "Option+Enter",
+              "latencyMs" : 1.040208,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[118;5u",
+              "key" : "Ctrl+V",
+              "latencyMs" : 1.846084,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[99;5u",
+              "key" : "Ctrl+C",
+              "latencyMs" : 1.585417,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[27u",
+              "key" : "Esc",
+              "latencyMs" : 1.476916,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[9;2u",
+              "key" : "Shift+Tab",
+              "latencyMs" : 0.1775,
+              "ok" : true
+            },
+            {
+              "bytes" : "a",
+              "key" : "a",
+              "latencyMs" : 0.129333,
+              "ok" : true
+            }
+          ],
+          "kittyFlagsReply" : "\\e[?1u",
+          "mode" : "kitty >1u",
+          "setup" : "\\e[>1u"
+        },
+        {
+          "inputSource" : "com.apple.keylayout.ABC",
+          "keys" : [
+            {
+              "bytes" : "\\r",
+              "key" : "Enter",
+              "latencyMs" : 0.139208,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[27;2;13~",
+              "key" : "Shift+Enter",
+              "latencyMs" : 0.120125,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[27;3;13~",
+              "key" : "Option+Enter",
+              "latencyMs" : 0.158833,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\x16",
+              "key" : "Ctrl+V",
+              "latencyMs" : 0.602,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\x03",
+              "key" : "Ctrl+C",
+              "latencyMs" : 0.740708,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e",
+              "key" : "Esc",
+              "latencyMs" : 0.165042,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[27;2;9~",
+              "key" : "Shift+Tab",
+              "latencyMs" : 0.109583,
+              "ok" : true
+            },
+            {
+              "bytes" : "a",
+              "key" : "a",
+              "latencyMs" : 0.119792,
+              "ok" : true
+            }
+          ],
+          "kittyFlagsReply" : "\\e[?0u",
+          "mode" : "modifyOtherKeys 2",
+          "setup" : "\\e[>4;2m"
+        },
+        {
+          "inputSource" : "com.apple.keylayout.ABC",
+          "keys" : [
+            {
+              "bytes" : "\\r",
+              "key" : "Enter",
+              "latencyMs" : 0.099208,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[13;2u",
+              "key" : "Shift+Enter",
+              "latencyMs" : 0.098834,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[13;3u",
+              "key" : "Option+Enter",
+              "latencyMs" : 0.098958,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[118;5u",
+              "key" : "Ctrl+V",
+              "latencyMs" : 0.837709,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[99;5u",
+              "key" : "Ctrl+C",
+              "latencyMs" : 0.357167,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[27u",
+              "key" : "Esc",
+              "latencyMs" : 0.10925,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[9;2u",
+              "key" : "Shift+Tab",
+              "latencyMs" : 0.092667,
+              "ok" : true
+            },
+            {
+              "bytes" : "a",
+              "key" : "a",
+              "latencyMs" : 0.105125,
+              "ok" : true
+            }
+          ],
+          "kittyFlagsReply" : "\\e[?1u",
+          "mode" : "claude (>1u + >4;2m)",
+          "setup" : "\\e[>1u\\e[>4;2m"
+        }
+      ],
+      "notes" : [
+        "input source com.apple.inputmethod.TCIM.Zhuyin did not stay selected (now com.apple.keylayout.ABC, secure event input is on (screen locked or a password field focused)); its key pass was skipped, rerun --probe with the screen unlocked"
+      ],
+      "rawReplies" : "\\eP>|ghostty 1.3.2-HEAD+1e9e14af5\\e\\\\e[?0u\\e[?2026;2$y\\e[?1016;2$y\\e_Gi=31;OK\\e\\\\e[6;17;8t\\e[?62;22;52c",
+      "replay" : {
+        "altScreenConfirmed" : true,
+        "markerShown" : true,
+        "note" : "ghostty_surface_write_buffer_replay (raw surface reached via reflection; the Swift wrapper does not expose it)",
+        "replyBytes" : 0,
+        "supported" : true,
+        "verdict" : {
+          "kittyFlags" : "1",
+          "modeReports" : {
+            "1000" : "1",
+            "1006" : "1",
+            "1049" : "1",
+            "2004" : "1"
+          },
+          "sentinelAnswered" : true
+        }
+      },
+      "unclaimed" : [
+
+      ]
+    },
+    {
+      "answers" : [
+        {
+          "answered" : true,
+          "meaning" : "identifies as \"SwiftTerm 1.99.0+v1.99.0:\"",
+          "probeID" : "xtversion",
+          "raw" : "\\eP>|SwiftTerm 1.99.0+v1.99.0:\\e\\\\"
+        },
+        {
+          "answered" : true,
+          "meaning" : "kitty keyboard flags = 0",
+          "probeID" : "kitty-keyboard",
+          "raw" : "\\e[?0u"
+        },
+        {
+          "answered" : true,
+          "meaning" : "mode 2026 = 2 reset",
+          "probeID" : "decrqm-2026",
+          "raw" : "\\e[?2026;2$y"
+        },
+        {
+          "answered" : true,
+          "meaning" : "mode 1016 = 2 reset",
+          "probeID" : "decrqm-1016",
+          "raw" : "\\e[?1016;2$y"
+        },
+        {
+          "answered" : true,
+          "meaning" : "program status: 7501;?",
+          "probeID" : "osc-7501",
+          "raw" : "\\e]7501;?\\e\\\\"
+        },
+        {
+          "answered" : true,
+          "meaning" : "kitty graphics supported (Gi=31;OK)",
+          "probeID" : "kitty-graphics",
+          "raw" : "\\e_Gi=31;OK\\e\\\\"
+        },
+        {
+          "answered" : true,
+          "meaning" : "cell 8×18 px",
+          "probeID" : "csi-16t",
+          "raw" : "\\e[6;18;8t"
+        },
+        {
+          "answered" : true,
+          "meaning" : "DA1 attributes 65;4;1;2;6;21;22;17;28",
+          "probeID" : "da1",
+          "raw" : "\\e[?65;4;1;2;6;21;22;17;28c"
+        }
+      ],
+      "backingScale" : 1,
+      "claude" : [
+        {
+          "capability" : "kittyKeyboard",
+          "enabled" : true,
+          "reason" : "CSI ? u answered (\\e[?0u)"
+        },
+        {
+          "capability" : "extendedKeys",
+          "enabled" : true,
+          "reason" : "CSI ? u answered (\\e[?0u)"
+        },
+        {
+          "capability" : "programStatus",
+          "enabled" : true,
+          "reason" : "OSC 7501 reply with data starting `?`"
+        },
+        {
+          "capability" : "synchronizedOutput",
+          "enabled" : true,
+          "reason" : "DECRPM status 2"
+        },
+        {
+          "capability" : "kittyGraphics",
+          "enabled" : false,
+          "reason" : "graphics reply, but XTVERSION \"SwiftTerm 1.99.0+v1.99.0:\" is not kitty / ghostty"
+        },
+        {
+          "capability" : "mousePixels",
+          "enabled" : true,
+          "reason" : "DECRPM status 2"
+        }
+      ],
+      "engine" : "SWIFTTERM",
+      "engineVersion" : "SwiftTerm 1.99.0 (rev 2dad6a1)",
+      "firstReplyMs" : 0.185291,
+      "grid" : "125×35",
+      "inputAfterExit" : [
+        {
+          "bytes" : "a",
+          "key" : "a #1 after exit",
+          "ok" : true
+        },
+        {
+          "bytes" : "a",
+          "key" : "a #2 after exit",
+          "ok" : true
+        }
+      ],
+      "keyModes" : [
+        {
+          "inputSource" : "com.apple.keylayout.ABC",
+          "keys" : [
+            {
+              "bytes" : "\\r",
+              "key" : "Enter",
+              "latencyMs" : 0.212417,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\r",
+              "key" : "Shift+Enter",
+              "latencyMs" : 0.116417,
+              "ok" : false
+            },
+            {
+              "bytes" : "\\e\\r",
+              "key" : "Option+Enter",
+              "latencyMs" : 0.075084,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\x16",
+              "key" : "Ctrl+V",
+              "latencyMs" : 0.331,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\x03",
+              "key" : "Ctrl+C",
+              "latencyMs" : 0.321459,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e",
+              "key" : "Esc",
+              "latencyMs" : 0.098875,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[Z",
+              "key" : "Shift+Tab",
+              "latencyMs" : 0.090584,
+              "ok" : true
+            },
+            {
+              "bytes" : "a",
+              "key" : "a",
+              "latencyMs" : 0.102959,
+              "ok" : true
+            }
+          ],
+          "kittyFlagsReply" : "\\e[?0u",
+          "mode" : "legacy",
+          "setup" : ""
+        },
+        {
+          "inputSource" : "com.apple.keylayout.ABC",
+          "keys" : [
+            {
+              "bytes" : "\\r",
+              "key" : "Enter",
+              "latencyMs" : 0.101542,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[13;2u",
+              "key" : "Shift+Enter",
+              "latencyMs" : 0.101375,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[13;3u",
+              "key" : "Option+Enter",
+              "latencyMs" : 0.106458,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[118;5u",
+              "key" : "Ctrl+V",
+              "latencyMs" : 0.334834,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[99;5u",
+              "key" : "Ctrl+C",
+              "latencyMs" : 0.3495,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[27u",
+              "key" : "Esc",
+              "latencyMs" : 0.098833,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[9;2u",
+              "key" : "Shift+Tab",
+              "latencyMs" : 0.075,
+              "ok" : true
+            },
+            {
+              "bytes" : "a",
+              "key" : "a",
+              "latencyMs" : 0.099208,
+              "ok" : true
+            }
+          ],
+          "kittyFlagsReply" : "\\e[?1u",
+          "mode" : "kitty >1u",
+          "setup" : "\\e[>1u"
+        },
+        {
+          "inputSource" : "com.apple.keylayout.ABC",
+          "keys" : [
+            {
+              "bytes" : "\\r",
+              "key" : "Enter",
+              "latencyMs" : 0.093375,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\r",
+              "key" : "Shift+Enter",
+              "latencyMs" : 0.062041,
+              "ok" : false
+            },
+            {
+              "bytes" : "\\e\\r",
+              "key" : "Option+Enter",
+              "latencyMs" : 0.066625,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\x16",
+              "key" : "Ctrl+V",
+              "latencyMs" : 0.327583,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\x03",
+              "key" : "Ctrl+C",
+              "latencyMs" : 0.328083,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e",
+              "key" : "Esc",
+              "latencyMs" : 0.068416,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[Z",
+              "key" : "Shift+Tab",
+              "latencyMs" : 0.073333,
+              "ok" : true
+            },
+            {
+              "bytes" : "a",
+              "key" : "a",
+              "latencyMs" : 0.067584,
+              "ok" : true
+            }
+          ],
+          "kittyFlagsReply" : "\\e[?0u",
+          "mode" : "modifyOtherKeys 2",
+          "setup" : "\\e[>4;2m"
+        },
+        {
+          "inputSource" : "com.apple.keylayout.ABC",
+          "keys" : [
+            {
+              "bytes" : "\\r",
+              "key" : "Enter",
+              "latencyMs" : 0.092958,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[13;2u",
+              "key" : "Shift+Enter",
+              "latencyMs" : 0.103625,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[13;3u",
+              "key" : "Option+Enter",
+              "latencyMs" : 0.049667,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[118;5u",
+              "key" : "Ctrl+V",
+              "latencyMs" : 0.33625,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[99;5u",
+              "key" : "Ctrl+C",
+              "latencyMs" : 0.340042,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[27u",
+              "key" : "Esc",
+              "latencyMs" : 0.094959,
+              "ok" : true
+            },
+            {
+              "bytes" : "\\e[9;2u",
+              "key" : "Shift+Tab",
+              "latencyMs" : 0.083042,
+              "ok" : true
+            },
+            {
+              "bytes" : "a",
+              "key" : "a",
+              "latencyMs" : 0.096042,
+              "ok" : true
+            }
+          ],
+          "kittyFlagsReply" : "\\e[?1u",
+          "mode" : "claude (>1u + >4;2m)",
+          "setup" : "\\e[>1u\\e[>4;2m"
+        }
+      ],
+      "notes" : [
+        "input source com.apple.inputmethod.TCIM.Zhuyin did not stay selected (now com.apple.keylayout.ABC, secure event input is on (screen locked or a password field focused)); its key pass was skipped, rerun --probe with the screen unlocked",
+        "renderer: Metal"
+      ],
+      "rawReplies" : "\\eP>|SwiftTerm 1.99.0+v1.99.0:\\e\\\\e[?0u\\e[?2026;2$y\\e[?1016;2$y\\e]7501;?\\e\\\\e_Gi=31;OK\\e\\\\e[6;18;8t\\e[?65;4;1;2;6;21;22;17;28c",
+      "replay" : {
+        "altScreenConfirmed" : true,
+        "markerShown" : true,
+        "note" : "host-side: TerminalView subclass drops send(source: Terminal) while the history parses (keys use another path)",
+        "replyBytes" : 0,
+        "supported" : true,
+        "verdict" : {
+          "kittyFlags" : "1",
+          "modeReports" : {
+            "1000" : "1",
+            "1006" : "1",
+            "1049" : "0",
+            "2004" : "1"
+          },
+          "sentinelAnswered" : true
+        }
+      },
+      "unclaimed" : [
+
+      ]
+    }
+  ],
+  "generatedAt" : "2026-10-15T15:43:09Z",
+  "machine" : {
+    "cpu" : "Apple M4 Max",
+    "loadAverage" : "9.98 / 8.25 / 6.25",
+    "memoryGiB" : 64,
+    "model" : "Mac16,6",
+    "os" : "Version 27.0.1 (Build 26A434)",
+    "screens" : ""
+  }
+}

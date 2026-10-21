@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>對話框 · 帳號與結束</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<!--@HELMET-->
+<style>
+/* ===== StatusDialogs board (sd-) ===== */
+.codd .sd-page{display:flex;flex-direction:column;gap:24px}
+.codd .sd-head{display:flex;flex-direction:column;gap:10px}
+.codd .sd-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(560px,100%),1fr));gap:28px 40px;align-items:stretch}
+.codd .sd-cell{display:flex;flex-direction:column;gap:10px;min-width:0}
+.codd .sd-cap{display:flex;align-items:center;gap:10px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);white-space:nowrap;min-width:0}
+.codd .sd-l{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;flex:none;border:1px solid var(--amber-dim);color:var(--amber);font-family:var(--display);font-weight:700;letter-spacing:0}
+.codd .sd-trig{margin-left:auto;letter-spacing:.06em;color:var(--dimmer);overflow:hidden;text-overflow:ellipsis}
+.codd .sd-nt{text-transform:none;letter-spacing:.04em}
+.codd .sd-modal{width:100%;max-width:none;flex:1}
+.codd .sd-modal .m-h{padding:12px 12px 11px 20px}
+.codd .sd-modal .m-b{flex:1}
+.codd .sd-modal .hint{text-wrap:pretty}
+.codd .sd-q{font-family:var(--display);font-weight:700;font-size:17px;line-height:1.3;color:var(--cream);letter-spacing:.01em}
+.codd .sd-q code{font-size:13.5px;padding:1px 6px}
+.codd .sd-vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.codd .sd-check{position:relative;display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--bone);cursor:pointer;min-width:0}
+.codd .sd-box{width:14px;height:14px;flex:none;border:1px solid var(--line-bright);background:var(--bg);display:inline-flex;align-items:center;justify-content:center;font-size:10px;line-height:1;color:#000}
+.codd .sd-check input:checked + .sd-box{background:var(--amber);border-color:var(--amber)}
+.codd .sd-check input:checked + .sd-box::after{content:'✓'}
+.codd .sd-check input:focus-visible + .sd-box{outline:1px solid var(--amber);outline-offset:2px}
+.codd .sd-row{display:flex;align-items:center;gap:10px;min-width:0}
+
+/* (a) switch account */
+.codd .sd-swap{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:center}
+.codd .sd-acct{display:flex;flex-direction:column;gap:6px;min-width:0;padding:10px 12px;border:1px solid var(--line-bright);background:var(--bg)}
+.codd .sd-acct.to{border-color:var(--amber-dim);box-shadow:inset 0 0 14px rgba(255,184,74,.06)}
+.codd .sd-ah{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.codd .sd-an{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--cream)}
+.codd .sd-an b{font-family:var(--display);font-weight:700}
+.codd .sd-an .chip{margin-left:auto}
+.codd .sd-reset{display:flex;flex-direction:column;gap:1px;font-size:10.5px;color:var(--dimmer);font-variant-numeric:tabular-nums}
+.codd .sd-arrow{color:var(--amber);font-size:16px;text-shadow:0 0 8px var(--amber-glow)}
+.codd .sd-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.codd .sd-list li{display:flex;align-items:baseline;gap:8px;font-size:12.5px;color:var(--bone);text-wrap:pretty}
+.codd .sd-list li .g{width:12px;flex:none;color:var(--amber-dim)}
+.codd .sd-list li .g.faint{color:var(--dimmer)}
+.codd .sd-list b{font-weight:600;color:var(--cream)}
+.codd .sd-prog{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px dashed var(--line-bright);background:var(--bg);font-size:12px;color:var(--bone)}
+.codd .sd-prog .faint{margin-left:auto;font-size:10.5px}
+
+/* (b) hook diff */
+.codd .sd-chips{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.codd .sd-chips .lbl{margin-right:4px}
+.codd .sd-diff{flex:none;white-space:normal;padding:8px 0;font-size:11px;line-height:1.45;border:1px solid var(--line-bright)}
+.codd .sd-ln{display:flex;white-space:pre;min-width:0}
+.codd .sd-ln .no{width:34px;flex:none;padding-right:8px;text-align:right;color:var(--dimmer);font-variant-numeric:tabular-nums}
+.codd .sd-ln .sg{width:14px;flex:none;color:var(--dimmer)}
+.codd .sd-ln .tx{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;padding-right:12px}
+.codd .sd-ln .el{color:var(--dimmer)}
+.codd .sd-ln .ev{color:#fff;font-weight:600}
+.codd .sd-ln.is-ctx .tx{color:#9c978a}
+.codd .sd-ln.is-hunk .tx{color:var(--cyan)}
+.codd .sd-ln.is-add{background:rgba(124,255,154,.08)}
+.codd .sd-ln.is-add .no,.codd .sd-ln.is-add .sg{color:var(--success-dim)}
+.codd .sd-ln.is-add .tx{color:#b8f5c6}
+.codd .sd-ln.is-del{background:rgba(255,112,88,.10)}
+.codd .sd-ln.is-del .no,.codd .sd-ln.is-del .sg{color:var(--danger)}
+.codd .sd-ln.is-del .tx{color:#ffb1a3}
+.codd .sd-kvs{display:flex;flex-direction:column;gap:6px}
+.codd .sd-kv{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--bone);min-width:0}
+.codd .sd-kv .lbl{width:64px;flex:none}
+.codd .sd-kv b{font-weight:600;color:var(--cream)}
+.codd .sd-fnote{margin-right:auto;font-size:11px;color:var(--dimmer)}
+
+/* (c) add account steps */
+.codd .sd-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.codd .sd-step{display:grid;grid-template-columns:22px minmax(0,1fr);gap:0 12px}
+.codd .sd-rail{display:flex;flex-direction:column;align-items:center}
+.codd .sd-rail::after{content:'';flex:1;width:0;border-left:1px dashed var(--line-bright);margin:4px 0}
+.codd .sd-step:last-child .sd-rail::after{content:none}
+.codd .sd-n{width:22px;height:22px;flex:none;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line-bright);font-size:11px;font-weight:700;color:var(--dim);font-variant-numeric:tabular-nums}
+.codd .sd-step.done .sd-n{border-color:rgba(124,255,154,.45);color:var(--success)}
+.codd .sd-step.cur .sd-n{background:var(--amber);border-color:var(--amber);color:#000;box-shadow:0 0 10px var(--amber-glow)}
+.codd .sd-sb{display:flex;flex-direction:column;gap:7px;padding:2px 0 16px;min-width:0}
+.codd .sd-step:last-child .sd-sb{padding-bottom:0}
+.codd .sd-st{font-size:12.5px;color:var(--cream);line-height:1.45}
+.codd .sd-step.done .sd-st{color:var(--bone)}
+.codd .sd-detect{display:flex;align-items:center;gap:8px;padding:5px 10px;border:1px solid rgba(124,255,154,.3);background:rgba(124,255,154,.04);font-size:12px;color:var(--bone)}
+.codd .sd-detect b{font-weight:600;color:var(--cream)}
+.codd .sd-fields{display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:10px}
+
+/* (d) quit */
+.codd .sd-sum{font-size:12.5px;color:var(--bone);font-variant-numeric:tabular-nums}
+.codd .sd-needs{padding:3px 0}
+.codd .sd-choices{display:flex;flex-direction:column;gap:10px}
+.codd .sd-choice{display:flex;flex-direction:column;gap:5px}
+.codd .sd-wide{width:100%;justify-content:center;min-height:34px}
+.codd .sd-choice .hint{padding-left:2px}
+</style>
+</helmet>
+<div class="codd {{ crtClass }}" style="width:100%; min-height:1300px; padding:48px 56px">
+<div class="sd-page">
+  <header class="sd-head">
+    <h1 class="h-page">對話框 DIALOGS</h1>
+    <div class="meta-rule">Switch account · Hook diff · Add account · Quit</div>
+  </header>
+
+  <div class="sd-grid">
+    <!-- ============ (a) SWITCH ACCOUNT ============ -->
+    <section class="sd-cell" aria-labelledby="sd-a-cap">
+      <div class="sd-cap"><span class="sd-l">A</span><span id="sd-a-cap">切換帳號 · Switch account</span><span class="sd-trig">只在 設定 › 帳號 › 切換前確認 開啟時出現（預設關閉）</span></div>
+      <div class="modal sd-modal" role="dialog" aria-labelledby="sd-a-t">
+        <div class="m-h">
+          <span id="sd-a-t">Switch account · 切換帳號</span>
+          <span style="flex:1"></span>
+          <span class="chip sd-nt">cswap 0.26.0</span>
+          <button class="icon-btn" type="button" aria-label="關閉">✕</button>
+        </div>
+        <div class="m-b">
+          <p class="sd-q">切換到 <span class="cy">#2 藍鵲</span>？</p>
+          <div class="sd-swap">
+            <div class="sd-acct">
+              <div class="sd-ah"><span class="lbl">From · 剩餘</span><span class="chip caps amber">Active</span></div>
+              <div class="sd-an"><b class="amber">#3</b>工作<span class="chip">MAX 20x</span></div>
+              <div class="qrow tone-ok"><span class="k">5h</span><span class="bar10"><b style="width:91%"></b></span><span class="v">91%</span></div>
+              <div class="qrow tone-crit"><span class="k">1w</span><span class="bar10"><b style="width:15%"></b></span><span class="v">15%</span></div>
+              <div class="sd-reset"><span>1w 重置 10/18 12:00 · 3d01h後</span><span>statusline · 12s 前</span></div>
+            </div>
+            <span class="sd-arrow" aria-hidden="true">→</span>
+            <div class="sd-acct to">
+              <div class="sd-ah"><span class="lbl">To · 剩餘</span><span class="chip cy">1 個 session 固定</span></div>
+              <div class="sd-an"><b class="cy">#2</b>藍鵲<span class="chip">MAX 20x</span></div>
+              <div class="qrow tone-ok"><span class="k">5h</span><span class="bar10"><b style="width:98%"></b></span><span class="v">98%</span></div>
+              <div class="qrow tone-warn"><span class="k">1w</span><span class="bar10"><b style="width:46%"></b></span><span class="v">46%</span></div>
+              <div class="sd-reset"><span>1w 重置 10/16 22:59</span><span>cswap cache · 3m 前</span></div>
+            </div>
+          </div>
+          <div class="field">
+            <span class="sec">切換後</span>
+            <ul class="sd-list">
+              <li><span class="g" aria-hidden="true">▸</span><span><b>12 個</b>跟隨全域登入的 session 約 <b>30 秒</b>內改用 #2</span></li>
+              <li><span class="g" aria-hidden="true">▸</span><span>第一則訊息可能需要重建快取</span></li>
+              <li><span class="g faint" aria-hidden="true">▸</span><span>固定帳號的 session（現場示範：連線 MCP）不受影響</span></li>
+            </ul>
+          </div>
+          <label class="sd-check"><input class="sd-vh" type="checkbox"><span class="sd-box" aria-hidden="true"></span><span>同時暫停自動切換</span><span class="faint" style="font-size:10.5px">AUTO-SWITCH 目前 OFF</span></label>
+          <div class="sd-prog" role="status"><span class="lamp st-starting">◌</span><span>等待 Claude Code credential lock… <span class="num">9s</span>（1/3）</span></div>
+        </div>
+        <div class="m-f">
+          <span class="sd-fnote">⏎ 切換 · ⎋ 取消</span>
+          <button class="btn" type="button">取消</button>
+          <button class="btn primary" type="button">切換</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ (b) HOOK DIFF ============ -->
+    <section class="sd-cell" aria-labelledby="sd-b-cap">
+      <div class="sd-cap"><span class="sd-l">B</span><span id="sd-b-cap">Hook 差異 · Hook diff</span><span class="sd-trig">STATUS › HOOKS › [預覽變更]</span></div>
+      <div class="modal sd-modal" role="dialog" aria-labelledby="sd-b-t">
+        <div class="m-h">
+          <span id="sd-b-t">Hook diff · 預覽變更</span>
+          <span style="flex:1"></span>
+          <span class="chip ok">+9</span><span class="chip bad">−1</span>
+          <button class="icon-btn" type="button" aria-label="關閉">✕</button>
+        </div>
+        <div class="m-b">
+          <p class="sd-q">預覽 <code>~/.claude/settings.json</code> 變更</p>
+          <div class="sd-chips"><span class="lbl">補上 4 個 event</span><span class="chip ok">+ PreCompact</span><span class="chip ok">+ PostCompact</span><span class="chip ok">+ SubagentStart</span><span class="chip ok">+ SubagentStop</span></div>
+          <div class="term sd-diff" role="region" aria-label="settings.json 差異">
+            <div class="sd-ln is-hunk"><span class="no"></span><span class="sg"></span><span class="tx">@@ -38,5 +38,13 @@  "hooks"</span></div>
+            <div class="sd-ln is-ctx"><span class="no">38</span><span class="sg"></span><span class="tx">    "StopFailure": [{ "hooks": [{ "type": "command", "timeout": 5, <span class="el">…</span> }] }],</span></div>
+            <div class="sd-ln is-ctx"><span class="no">39</span><span class="sg"></span><span class="tx">    "SessionEnd": [{ "hooks": [{ "type": "command", "timeout": 5,</span></div>
+            <div class="sd-ln is-del"><span class="no">40</span><span class="sg">-</span><span class="tx">      "command": "[ -z \"$CODD_TERMINAL_ID\" ] || <span class="el">…</span> status-writer.js'" }] }]</span></div>
+            <div class="sd-ln is-add"><span class="no">40</span><span class="sg">+</span><span class="tx">      "command": "[ -z \"$CODD_TERMINAL_ID\" ] || <span class="el">…</span> status-writer.js'" }] }],</span></div>
+            <div class="sd-ln is-add"><span class="no">41</span><span class="sg">+</span><span class="tx">    <span class="ev">"PreCompact"</span>: [{ "hooks": [{ "type": "command", "timeout": 5,</span></div>
+            <div class="sd-ln is-add"><span class="no">42</span><span class="sg">+</span><span class="tx">      "command": "[ -z \"$CODD_TERMINAL_ID\" ] || <span class="el">…</span> status-writer.js'" }] }],</span></div>
+            <div class="sd-ln is-add"><span class="no">43</span><span class="sg">+</span><span class="tx">    <span class="ev">"PostCompact"</span>: [{ "hooks": [{ "type": "command", "timeout": 5,</span></div>
+            <div class="sd-ln is-add"><span class="no">44</span><span class="sg">+</span><span class="tx">      "command": "[ -z \"$CODD_TERMINAL_ID\" ] || <span class="el">…</span> status-writer.js'" }] }],</span></div>
+            <div class="sd-ln is-add"><span class="no">45</span><span class="sg">+</span><span class="tx">    <span class="ev">"SubagentStart"</span>: [{ "hooks": [{ "type": "command", "timeout": 5,</span></div>
+            <div class="sd-ln is-add"><span class="no">46</span><span class="sg">+</span><span class="tx">      "command": "[ -z \"$CODD_TERMINAL_ID\" ] || <span class="el">…</span> status-writer.js'" }] }],</span></div>
+            <div class="sd-ln is-add"><span class="no">47</span><span class="sg">+</span><span class="tx">    <span class="ev">"SubagentStop"</span>: [{ "hooks": [{ "type": "command", "timeout": 5,</span></div>
+            <div class="sd-ln is-add"><span class="no">48</span><span class="sg">+</span><span class="tx">      "command": "[ -z \"$CODD_TERMINAL_ID\" ] || <span class="el">…</span> status-writer.js'" }] }]</span></div>
+            <div class="sd-ln is-ctx"><span class="no">49</span><span class="sg"></span><span class="tx">  },</span></div>
+            <div class="sd-ln is-ctx"><span class="no">50</span><span class="sg"></span><span class="tx">  "statusLine": { "type": "command", "command": "<span class="el">…</span> codd-statusline.js <span class="el">…</span>" }</span></div>
+          </div>
+          <div class="sd-kvs">
+            <div class="sd-kv"><span class="lbl">Foreign</span><span><span class="ok">✓</span> foreign hooks 保持不動：<b>hook-tap ×11</b> · <b>osascript ×2</b></span></div>
+            <div class="sd-kv"><span class="lbl">Backup</span><span class="path ell">~/.claude/settings.json.codd-bak-20261015-104210</span></div>
+          </div>
+        </div>
+        <div class="m-f">
+          <span class="sd-fnote">只動 hooks 與 statusLine，其他 key 不碰</span>
+          <button class="btn" type="button">取消</button>
+          <button class="btn primary" type="button">套用並備份</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ (c) ADD ACCOUNT ============ -->
+    <section class="sd-cell" aria-labelledby="sd-c-cap">
+      <div class="sd-cap"><span class="sd-l">C</span><span id="sd-c-cap">新增帳號 · Add account</span><span class="sd-trig">STATUS › ACCOUNTS › [+ 加入帳號]</span></div>
+      <div class="modal sd-modal" role="dialog" aria-labelledby="sd-c-t">
+        <div class="m-h">
+          <span id="sd-c-t">Add account · 加入帳號</span>
+          <span style="flex:1"></span>
+          <span class="chip sd-nt">cswap 0.26.0</span>
+          <button class="icon-btn" type="button" aria-label="關閉">✕</button>
+        </div>
+        <div class="m-b">
+          <div class="field">
+            <p class="sd-q">加入帳號（cswap add）</p>
+            <p class="hint">CODD 只呼叫 cswap，不讀取也不顯示 email；帳號一律以編號與別名顯示。</p>
+          </div>
+          <ol class="sd-steps">
+            <li class="sd-step done">
+              <span class="sd-rail"><span class="sd-n" aria-label="已完成">✓</span></span>
+              <div class="sd-sb">
+                <p class="sd-st">在終端機執行 <code>claude /login</code> 登入新帳號</p>
+                <div class="sd-row"><button class="btn sm" type="button">開啟登入終端機</button><span class="faint" style="font-size:10.5px">已完成 · 10:41</span></div>
+              </div>
+            </li>
+            <li class="sd-step done">
+              <span class="sd-rail"><span class="sd-n" aria-label="已完成">✓</span></span>
+              <div class="sd-sb">
+                <p class="sd-st">擷取目前登入</p>
+                <div class="sd-row"><button class="btn sm" type="button">擷取目前登入</button><span class="faint" aria-hidden="true">→</span>
+                  <div class="sd-detect" role="status"><span class="ok">●</span>偵測到 <b>新帳號</b> · <span class="chip">MAX 20x</span></div>
+                </div>
+              </div>
+            </li>
+            <li class="sd-step cur">
+              <span class="sd-rail"><span class="sd-n">3</span></span>
+              <div class="sd-sb">
+                <p class="sd-st">設定別名與編號</p>
+                <div class="sd-fields">
+                  <div class="field"><label class="lbl" for="sd-alias">別名 Alias</label><input class="input focus" id="sd-alias" type="text" placeholder="例如：工作室"></div>
+                  <div class="field"><label class="lbl" for="sd-slot">編號 Slot</label><select class="select" id="sd-slot"><option selected>#4</option><option>#5</option></select></div>
+                </div>
+                <p class="hint">別名只用來顯示，像 #3 工作、#2 藍鵲；之後可在 設定 › 帳號 修改</p>
+              </div>
+            </li>
+          </ol>
+          <a href="#add-token" style="font-size:12px">改用 setup-token / API key（cswap add-token）→</a>
+        </div>
+        <div class="m-f">
+          <button class="btn" type="button">取消</button>
+          <button class="btn primary" type="button">加入 #4</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ (d) QUIT ============ -->
+    <section class="sd-cell" aria-labelledby="sd-d-cap">
+      <div class="sd-cap"><span class="sd-l">D</span><span id="sd-d-cap">結束 · Quit</span><span class="sd-trig">⌘Q · 選單列 › 結束</span></div>
+      <div class="modal sd-modal" role="dialog" aria-labelledby="sd-d-t">
+        <div class="m-h">
+          <span id="sd-d-t">Quit · 結束</span>
+          <span style="flex:1"></span>
+          <span class="kbd">⌘Q</span>
+          <button class="icon-btn" type="button" aria-label="關閉">✕</button>
+        </div>
+        <div class="m-b">
+          <div class="field">
+            <p class="sd-q">結束 FANCY/CODD？</p>
+            <p class="sd-sum"><span class="num">13</span> 個 session 執行中 · <span class="amber">◆ 3 需要你</span></p>
+          </div>
+          <div class="panel sd-needs">
+            <a class="srow flat st-waiting" href="#s1">
+              <span class="l1"><span class="lamp">◆</span><span class="tag" style="background:var(--t-red)"></span><span class="title">修正登入 API 401</span><span class="state">Perm</span></span>
+              <span class="l2"><span class="dur">3m</span><span>·</span><span class="ell">藍鵲·網站 / orb-toolkit-backend</span></span>
+            </a>
+            <a class="srow flat st-waiting" href="#s2">
+              <span class="l1"><span class="lamp">◆</span><span class="title">發票匯出 CSV</span><span class="state">Ask</span></span>
+              <span class="l2"><span class="dur">12m</span><span>·</span><span class="ell">藍鵲·網站 / Northstar invoice system</span></span>
+            </a>
+            <a class="srow flat st-error" href="#s3">
+              <span class="l1"><span class="lamp">▲</span><span class="tag" style="background:var(--t-yellow)"></span><span class="title">場景載入優化</span><span class="state">Error</span></span>
+              <span class="l2"><span class="dur">1m</span><span>·</span><span class="ell">overloaded · 個人·Github / Gear3D</span></span>
+            </a>
+          </div>
+          <div class="sd-choices">
+            <div class="sd-choice">
+              <button class="btn danger sd-wide" type="button">全部停止並結束</button>
+              <p class="hint">停止 CODD 啟動的 12 個 session（外部 session 不受影響），下次開啟可 ⟲ 接續</p>
+            </div>
+            <div class="sd-choice">
+              <button class="btn primary sd-wide" type="button">保留在選單列（關閉視窗）</button>
+              <p class="hint">session 繼續在背景執行，選單列圖示亮琥珀色提醒你</p>
+            </div>
+            <button class="btn sd-wide" type="button">取消</button>
+          </div>
+        </div>
+        <div class="m-f" style="justify-content:space-between">
+          <label class="sd-check"><input class="sd-vh" type="checkbox"><span class="sd-box" aria-hidden="true"></span><span>下次直接保留在選單列</span></label>
+          <span class="sd-fnote" style="margin-right:0">設定 › 一般 › 結束時</span>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"crt":{"editor":"enum","options":["subtle","full","off"],"default":"subtle","section":"Look"},"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const crt = this.props.crt ?? 'subtle';
+    return { crtClass: crt === 'off' ? '' : 'crt-' + crt };
+  }
+}
+</script>
+</body>
+</html>

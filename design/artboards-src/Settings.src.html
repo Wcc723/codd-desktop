@@ -1,0 +1,1182 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>設定 · Settings</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<!--@HELMET-->
+<style>
+/* ===== Settings board (prefix sx-) ===== */
+.codd .sx-navh{cursor:default;padding:10px 8px 4px}
+.codd .sx-nav{display:flex;align-items:center;gap:8px;height:30px;flex:none;padding:0 10px 0 12px;border:0;background:transparent;color:var(--bone);width:100%;text-align:left;cursor:pointer;font-family:var(--mono);font-size:12.5px}
+.codd .sx-nav:hover{background:var(--bg-soft);color:var(--cream)}
+.codd .sx-nav.on{color:var(--amber);background:linear-gradient(90deg,rgba(255,184,74,.10),transparent 85%);box-shadow:inset 2px 0 0 var(--amber)}
+.codd .sx-nav .sx-idx{width:18px;flex:none;font-size:10.5px;color:var(--dimmer);font-variant-numeric:tabular-nums}
+.codd .sx-nav.on .sx-idx{color:var(--amber-dim)}
+.codd .sx-nav .sx-zh{white-space:nowrap}
+.codd .sx-nav.on .sx-zh{text-shadow:0 0 8px var(--amber-glow)}
+.codd .sx-nav.on .sx-en{color:var(--amber-dim)}
+.codd .sx-nav.on .sx-en::after{content:'_';color:var(--amber);margin-left:2px;animation:codd-blink 1s steps(1) infinite}
+.codd .sx-nav .sx-tail{margin-left:auto;font-size:10.5px;color:var(--dimmer);white-space:nowrap;font-variant-numeric:tabular-nums}
+.codd .sx-nav .sx-tail.warn{color:var(--amber)}
+.codd .sx-nav .sx-tail.fut{border:1px dashed var(--line-bright);color:var(--dim);font-size:9px;letter-spacing:.12em;padding:0 4px;line-height:13px}
+
+.codd .sx-body{flex:1;min-height:0;overflow:hidden;padding:26px 40px 0}
+.codd .sx-sec{max-width:880px;display:flex;flex-direction:column;gap:20px}
+.codd .sx-ph{display:flex;flex-direction:column;gap:6px}
+.codd .sx-ph .l1{display:flex;align-items:center;gap:12px;min-height:32px}
+.codd .sx-ph .zh{font-family:var(--cjk);font-size:15px;font-weight:500;color:var(--bone);letter-spacing:.04em}
+.codd .sx-lead{font-size:12px;color:var(--dim);text-wrap:pretty}
+.codd .sx-acts{margin-left:auto;display:flex;align-items:center;gap:8px}
+.codd .sx-grp{display:flex;flex-direction:column;gap:8px}
+.codd .sx-gh{display:flex;align-items:center;gap:8px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.codd .sx-gh::after{content:'';flex:1;order:1;border-top:1px dashed var(--line-bright)}
+.codd .sx-gh .cjk{letter-spacing:.06em;color:var(--dimmer);text-transform:none}
+.codd .sx-gh .cnt{color:var(--amber-dim);letter-spacing:0}
+.codd .sx-gh .r{order:2;letter-spacing:.06em;color:var(--dimmer);font-variant-numeric:tabular-nums}
+.codd .sx-card{background:var(--bg-soft);border:1px solid var(--line-bright);overflow:hidden}
+.codd .sx-card.danger{border:1px dashed rgba(255,112,88,.45)}
+.codd .sx-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:24px;padding:9px 16px;min-height:52px;border-top:1px dashed var(--line-bright);margin-top:-1px}
+.codd .sx-row.tight{min-height:42px;padding:6px 16px}
+.codd .sx-lab{display:flex;flex-direction:column;gap:2px;min-width:0}
+.codd .sx-lab .hint{line-height:1.45;text-wrap:pretty}
+.codd .sx-name{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--cream);line-height:1.4;min-width:0}
+.codd .sx-en{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dimmer);white-space:nowrap}
+.codd .sx-ctl{display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.codd .sx-dim{opacity:.55}
+.codd .sx-dim .btn[disabled]{opacity:1}
+.codd .sx-dim .sw[disabled],.codd .sx-dim .seg button[disabled]{cursor:not-allowed}
+.codd .sx-mini{height:16px;font-size:9.5px;padding:0 5px}
+.codd .sx-link{background:transparent;border:0;padding:0;color:var(--amber);font-family:var(--mono);font-size:12px;cursor:pointer;text-decoration:underline;text-decoration-style:dashed;text-underline-offset:3px;white-space:nowrap}
+.codd .sx-link:hover{color:var(--cream)}
+.codd .sx-info{border:1px dashed var(--line-bright);background:var(--bg);padding:10px 14px;display:flex;flex-direction:column;gap:6px;font-size:11.5px;color:var(--dim)}
+.codd .sx-info .ln{display:flex;align-items:center;gap:8px;min-width:0}
+.codd .sx-step{display:inline-flex;align-items:stretch;border:1px solid var(--line-bright);height:26px;background:var(--bg)}
+.codd .sx-step button{background:transparent;border:0;color:var(--dim);padding:0 9px;cursor:pointer;font-family:var(--mono);font-size:11.5px}
+.codd .sx-step button:hover{color:var(--amber)}
+.codd .sx-step .v{display:inline-flex;align-items:center;justify-content:center;min-width:40px;padding:0 8px;border-left:1px solid var(--line-bright);border-right:1px solid var(--line-bright);color:var(--cream);font-variant-numeric:tabular-nums}
+.codd .sx-hk{height:24px;font-size:12px;padding:0 9px;color:var(--cream);border-color:var(--amber-dim)}
+
+/* appearance preview */
+.codd .sx-prev{display:grid;grid-template-columns:270px minmax(0,1fr);height:116px;border:1px solid var(--line-bright);background:var(--bg);overflow:hidden}
+.codd .sx-pside{border-right:1px solid var(--line);padding:8px 6px;display:flex;flex-direction:column;gap:2px}
+.codd .sx-pside .srow{cursor:default}
+.codd .sx-prev .term{padding:10px 14px}
+
+/* sessions: state source chain */
+.codd .sx-flow{display:flex;align-items:stretch;gap:10px}
+.codd .sx-node{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;border:1px solid var(--line-bright);background:var(--bg-soft);padding:8px 10px}
+.codd .sx-node .t{display:flex;align-items:center;gap:7px;color:var(--cream);font-size:12px}
+.codd .sx-node .i{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;background:var(--amber);color:#000;font-size:10px;font-weight:700}
+.codd .sx-arr{display:flex;align-items:center;color:var(--amber-dim)}
+
+/* profiles */
+.codd .sx-pn{font-weight:600;color:var(--cream)}
+.codd .sx-pg{width:12px;text-align:center;flex:none}
+.codd .sx-meta{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--dimmer);white-space:nowrap}
+.codd .sx-meta b{font-weight:400;color:var(--bone)}
+
+/* notifications matrix */
+.codd .sx-mrow{display:grid;grid-template-columns:150px minmax(0,1fr) 150px 44px 44px;align-items:center;gap:16px;padding:7px 16px;min-height:46px;border-top:1px dashed var(--line-bright);margin-top:-1px}
+.codd .sx-mrow.h{min-height:30px;background:var(--bg-lift);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);border-top:0}
+.codd .sx-ev{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.14em;color:var(--cream)}
+.codd .sx-gchips{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.codd .sx-gchip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 9px;border:1px solid var(--line-bright);background:transparent;color:var(--bone);font-size:11px;cursor:pointer;font-family:var(--mono);white-space:nowrap}
+.codd .sx-gchip:hover{color:var(--cream);border-color:var(--dim)}
+.codd .sx-gchip.on{border-color:var(--amber-dim);color:var(--amber);background:rgba(255,184,74,.06)}
+.codd .sx-gchip.on::after{content:'靜音';font-size:9.5px;letter-spacing:.1em;color:var(--amber-dim)}
+
+/* accounts */
+.codd .sx-arow{display:grid;grid-template-columns:34px 120px 70px 120px 120px 112px minmax(0,1fr);align-items:center;gap:14px;padding:8px 16px;border-top:1px dashed var(--line-bright);margin-top:-1px}
+.codd .sx-arow.act{background:var(--bg-lift);box-shadow:inset 2px 0 0 var(--amber)}
+.codd .sx-slot{font-family:var(--display);font-weight:700;font-size:14px;color:var(--cyan)}
+.codd .sx-slot.act{color:var(--amber);text-shadow:0 0 8px var(--amber-glow)}
+.codd .sx-ses{display:flex;align-items:center;justify-content:flex-end;gap:8px;font-size:11px;color:var(--dim);white-space:nowrap}
+.codd .sx-rst{display:flex;flex-direction:column;gap:1px;font-size:11px;line-height:1.3;color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+.codd .sx-rst b{font-weight:400;color:var(--cream)}
+.codd .sx-rst .d{font-size:10.5px;color:var(--dimmer)}
+.codd .sx-arow.act .sx-rst .d{color:var(--dim)}
+/* accounts · auto-switch (v3) */
+.codd .sx-acol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.codd .sx-stack{display:flex;flex-direction:column;gap:20px;min-width:0}
+.codd .sx-cb{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 9px 0 7px;border:1px solid var(--line-bright);background:var(--bg);color:var(--dim);font-family:var(--mono);font-size:12px;cursor:pointer;white-space:nowrap}
+.codd .sx-cb .box{display:inline-flex;align-items:center;justify-content:center;width:12px;height:12px;border:1px solid var(--dim);font-size:9px;line-height:1;color:transparent}
+.codd .sx-cb:hover{color:var(--amber)}
+.codd .sx-cb.on{color:var(--cream);border-color:var(--amber-dim)}
+.codd .sx-cb.on .box{background:var(--amber);border-color:var(--amber);color:#000}
+.codd .sx-pvrow{display:flex;flex-direction:column;gap:4px;padding:6px 12px 7px 14px;border-top:1px dashed var(--line-bright);margin-top:-1px}
+.codd .sx-pvrow.act{background:var(--bg-lift);box-shadow:inset 2px 0 0 var(--amber)}
+.codd .sx-pvrow .p1{display:flex;align-items:center;gap:8px;min-width:0;font-size:11px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.codd .sx-pvrow .p1 .sx-slot{font-size:12.5px}
+.codd .sx-pvrow .nm{color:var(--cream)}
+.codd .sx-pvrow .rs{font-size:10.5px;color:var(--dimmer)}
+.codd .sx-pvrow.act .rs{color:var(--dim)}
+.codd .sx-pvrow .dist{margin-left:auto;color:var(--bone)}
+.codd .sx-pvrow .dist.warn{color:var(--amber)}
+.codd .sx-pvrow .dist.crit{color:var(--danger)}
+.codd .sx-pvrow .q2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.codd .sx-pvrow .qrow{font-size:10.5px}
+.codd .sx-pvf{display:flex;align-items:center;gap:6px;padding:7px 14px;border-top:1px dashed var(--line-bright);margin-top:-1px;background:var(--bg);font-size:11.5px;color:var(--dim);white-space:nowrap}
+.codd .sx-pvf b{font-weight:400}
+
+/* hooks */
+.codd .sx-part{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--cream);min-width:96px}
+.codd .sx-chips{display:flex;flex-wrap:wrap;gap:6px;padding:12px 16px}
+.codd .sx-chips .chip{height:22px;font-size:11px}
+
+/* notebook registrations */
+.codd .sx-regs{width:440px;display:flex;flex-direction:column;border:1px solid var(--line);background:var(--bg)}
+.codd .sx-reg{display:grid;grid-template-columns:14px 120px minmax(0,1fr) auto;align-items:center;gap:10px;height:34px;padding:0 6px 0 10px;border-top:1px dashed var(--line-bright);margin-top:-1px;font-size:12px}
+
+/* cleanup */
+.codd .sx-2col{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.codd .sx-2col .sx-row{gap:14px;padding:8px 14px;min-height:50px}
+.codd .sx-life{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11px;letter-spacing:.1em;color:var(--bone);border:1px dashed var(--line-bright);background:var(--bg);padding:8px 14px}
+.codd .sx-life .n{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 8px;border:1px solid var(--line-bright);background:var(--bg-soft)}
+.codd .sx-life .n b{font-weight:400;color:var(--amber)}
+.codd .sx-life .a{color:var(--amber-dim)}
+
+/* shortcuts */
+.codd .sx-krow{display:grid;grid-template-columns:210px minmax(0,1fr) 120px 64px;align-items:center;gap:16px;padding:0 16px;height:34px;border-top:1px dashed var(--line-bright);margin-top:-1px;font-size:12.5px}
+.codd .sx-krow.h{height:30px;background:var(--bg-lift);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);border-top:0}
+.codd .sx-krow.g{display:flex;height:26px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--amber-dim);background:var(--bg)}
+.codd .sx-kbd{height:22px;font-size:11.5px;padding:0 8px;color:var(--cream)}
+
+/* about */
+.codd .sx-hero{display:flex;align-items:center;gap:20px;padding:18px 20px}
+.codd .sx-icon{width:76px;height:76px;flex:none;border-radius:17px;background:#000;border:1px solid var(--line-bright);display:flex;align-items:center;justify-content:center;color:var(--amber);position:relative;overflow:hidden;box-shadow:0 0 28px rgba(255,184,74,.12)}
+.codd .sx-icon::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(to bottom,rgba(255,176,0,.07) 0,rgba(255,176,0,.07) 1px,transparent 1px,transparent 3px)}
+.codd .sx-icon svg{width:42px;height:42px;filter:drop-shadow(0 0 6px rgba(255,184,74,.55))}
+.codd .sx-vers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px dashed var(--line-bright)}
+.codd .sx-ver{display:flex;flex-direction:column;gap:3px;padding:12px 16px;border-left:1px dashed var(--line-bright);margin-left:-1px}
+.codd .sx-ver .k{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.codd .sx-ver .v{font-family:var(--display);font-weight:700;font-size:17px;color:var(--cream);font-variant-numeric:tabular-nums}
+</style>
+</helmet>
+<div class="codd win {{ crtClass }}">
+<!--@RAIL on=settings-->
+
+<aside class="side" aria-label="設定分類">
+  <div class="side-head">
+    <a class="brand" href="#home">FANCY/CODD</a>
+    <span class="sec" style="font-size:9.5px">/ Settings</span>
+    <span style="flex:1"></span>
+    <span class="kbd">⌘,</span>
+  </div>
+  <div style="padding:8px 8px 2px">
+    <label style="display:flex;align-items:center;gap:6px;height:26px;border:1px solid var(--line-bright);background:var(--bg-soft);padding:0 8px;color:var(--dimmer);font-size:11.5px"><span aria-hidden="true">/</span><input type="text" placeholder="搜尋設定…" aria-label="搜尋設定" style="all:unset;flex:1;color:var(--cream);font-size:11.5px;min-width:0"></label>
+  </div>
+  <nav class="side-scroll" aria-label="設定分類">
+    <sc-for list="{{ nav }}" as="it" hint-placeholder-count="13">
+      <sc-if value="{{ it.head }}" hint-placeholder-val="{{ true }}"><div class="sbsec sx-navh">{{ it.head }}<span class="rule"></span></div></sc-if>
+      <button type="button" class="sx-nav {{ it.cls }}" aria-current="{{ it.aria }}" onClick="{{ it.pick }}"><span class="sx-idx">{{ it.idx }}</span><span class="sx-zh">{{ it.zh }}</span><span class="sx-en">{{ it.en }}</span><span class="sx-tail {{ it.tcls }}">{{ it.tail }}</span></button>
+    </sc-for>
+  </nav>
+  <div class="side-foot">
+    <div style="display:flex;justify-content:space-between;align-items:center"><span class="sec" style="font-size:9.5px">Saved</span><span class="num"><span class="ok">●</span> 變更即時儲存 · 10:41</span></div>
+    <div class="faint ell" style="font-size:10.5px">~/Library/Application Support/CODD/codd.db</div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="sx-body">
+
+    <!-- ================= 01 GENERAL ================= -->
+    <sc-if value="{{ is.general }}" hint-placeholder-val="{{ true }}">
+    <section class="sx-sec" aria-labelledby="sx-t-general">
+      <div class="sx-ph">
+        <div class="l1"><h1 class="h-page" id="sx-t-general">GENERAL</h1><span class="zh">一般</span><span class="sx-acts"><button class="btn sm" type="button">還原本頁預設</button></span></div>
+        <p class="sx-lead">啟動、視窗與結束時的行為。所有變更立即生效。</p>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Startup <span class="cjk">啟動</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">登入時啟動<span class="sx-en">Launch at login</span></span><span class="hint">登入 macOS 後在背景啟動，只顯示選單列圖示 [■]。</span></div>
+            <div class="sx-ctl"><button class="sw {{ sw.login.cls }}" type="button" role="switch" aria-checked="{{ sw.login.aria }}" aria-label="登入時啟動" onClick="{{ sw.login.flip }}"></button></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">顯示於 Dock<span class="sx-en">Show in Dock</span></span><span class="hint">關閉後只留選單列圖示，⌘Tab 也不會出現。</span></div>
+            <div class="sx-ctl"><button class="sw {{ sw.dock.cls }}" type="button" role="switch" aria-checked="{{ sw.dock.aria }}" aria-label="顯示於 Dock" onClick="{{ sw.dock.flip }}"></button></div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Window <span class="cjk">視窗</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">關閉視窗時保留在選單列<span class="sx-en">Keep in menu bar</span></span><span class="hint">⌘W 關閉視窗後，session 繼續在背景執行。</span></div>
+            <div class="sx-ctl"><button class="sw {{ sw.keepbar.cls }}" type="button" role="switch" aria-checked="{{ sw.keepbar.aria }}" aria-label="關閉視窗時保留在選單列" onClick="{{ sw.keepbar.flip }}"></button></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">結束時<span class="sx-en">On quit</span></span><span class="hint">⌘Q 時還有 session 執行中，要怎麼處理。</span></div>
+            <div class="sx-ctl"><div class="seg" role="group" aria-label="結束時"><button type="button" class="{{ sg.quit.ask.cls }}" aria-pressed="{{ sg.quit.ask.pr }}" onClick="{{ sg.quit.ask.pick }}">詢問</button><button type="button" class="{{ sg.quit.stop.cls }}" aria-pressed="{{ sg.quit.stop.pr }}" onClick="{{ sg.quit.stop.pick }}">全部停止</button><button type="button" class="{{ sg.quit.keep.cls }}" aria-pressed="{{ sg.quit.keep.pr }}" onClick="{{ sg.quit.keep.pick }}">保留</button></div></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">全域快捷鍵<span class="sx-en">Global hotkey</span></span><span class="hint">在任何 App 中叫出 FANCY/CODD 視窗。</span></div>
+            <div class="sx-ctl"><span class="kbd sx-hk">⌥ Space</span><button class="btn sm" type="button" aria-label="修改全域快捷鍵">修改</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Defaults <span class="cjk">預設</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">預設專案根目錄<span class="sx-en">Project root</span></span><span class="hint">新增專案、選擇資料夾時從這裡開始。</span></div>
+            <div class="sx-ctl"><input class="input" type="text" value="~/Github" aria-label="預設專案根目錄" style="width:240px"><button class="btn sm" type="button">選擇…</button></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">語言<span class="sx-en">Language</span></span><span class="hint">結構標籤（SESSIONS、NEEDS YOU…）維持英文大寫。</span></div>
+            <div class="sx-ctl"><select class="select" aria-label="語言" style="width:180px"><option>繁體中文</option><option>English</option><option>跟隨系統</option></select></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ================= 02 APPEARANCE ================= -->
+    <sc-if value="{{ is.appearance }}" hint-placeholder-val="{{ true }}">
+    <section class="sx-sec" aria-labelledby="sx-t-appearance">
+      <div class="sx-ph">
+        <div class="l1"><h1 class="h-page" id="sx-t-appearance">APPEARANCE</h1><span class="zh">外觀</span><span class="sx-acts"><button class="btn sm" type="button">還原本頁預設</button></span></div>
+        <p class="sx-lead">Phosphor Console 的螢幕效果、密度與字級。</p>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Preview <span class="cjk">預覽</span><span class="r">UI 13px · TERM {{ tfs }}px · CRT {{ crtLabel }}</span></div>
+        <div class="sx-prev" aria-hidden="true">
+          <div class="sx-pside">
+            <div class="srow flat st-waiting">
+              <span class="l1"><span class="lamp">◆</span><span class="tag" style="background:var(--t-red)"></span><span class="title">修正登入 API 401</span><span class="state">Perm</span></span>
+              <span class="l2"><span class="dur">3m</span><span>·</span><span class="ell">藍鵲·網站 / orb-toolkit-backend</span></span>
+            </div>
+            <div class="srow flat st-busy">
+              <span class="l1"><span class="lamp">●</span><span class="tag" style="background:var(--t-pink)"></span><span class="title">打卡頁 RWD 調整</span><span class="state">Busy</span></span>
+              <span class="l2"><span class="dur">Edit · 6m</span><span>·</span><span>up 1h18m</span></span>
+            </div>
+          </div>
+<pre class="term" style="font-size: {{ tfs }}px"><span class="d">&gt;</span> 登入 API 在 token 過期後會回 401，幫我修好並補測試
+<span class="cc">●</span> <span class="w">Update</span>(src/middleware/auth.ts)
+  <span class="d">⎿  Updated src/middleware/auth.ts with 12 additions and 3 removals</span>
+<span class="cc">●</span> <span class="w">Bash</span>(npm test -- auth.spec.ts)
+  Do you want to proceed?  <span class="a">❯ 1. Yes</span></pre>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Display <span class="cjk">畫面</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">CRT 效果<span class="sx-en">CRT effect</span></span><span class="hint">掃描線與暗角；OFF 時仍保留琥珀光暈。</span></div>
+            <div class="sx-ctl"><div class="seg" role="group" aria-label="CRT 效果"><button type="button" class="{{ crtSeg.full.cls }}" aria-pressed="{{ crtSeg.full.pr }}" onClick="{{ crtSeg.full.pick }}">Full</button><button type="button" class="{{ crtSeg.subtle.cls }}" aria-pressed="{{ crtSeg.subtle.pr }}" onClick="{{ crtSeg.subtle.pick }}">Subtle</button><button type="button" class="{{ crtSeg.off.cls }}" aria-pressed="{{ crtSeg.off.pr }}" onClick="{{ crtSeg.off.pick }}">Off</button></div></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">介面密度<span class="sx-en">Density</span></span><span class="hint">COMPACT 側欄每列 38px；COMFORT 46px。</span></div>
+            <div class="sx-ctl"><div class="seg" role="group" aria-label="介面密度"><button type="button" class="{{ sg.density.compact.cls }}" aria-pressed="{{ sg.density.compact.pr }}" onClick="{{ sg.density.compact.pick }}">Compact</button><button type="button" class="{{ sg.density.comfort.cls }}" aria-pressed="{{ sg.density.comfort.pr }}" onClick="{{ sg.density.comfort.pick }}">Comfort</button></div></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">UI 字級<span class="sx-en">UI font size</span></span><span class="hint">介面文字大小；終端機另外設定。</span></div>
+            <div class="sx-ctl"><select class="select" aria-label="UI 字級" style="width:160px"><option>13 px（預設）</option><option>12 px</option><option>14 px</option></select></div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Terminal <span class="cjk">終端機</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">終端機字型<span class="sx-en">Terminal font</span></span><span class="hint">等寬字型；中文自動改用 PingFang TC。</span></div>
+            <div class="sx-ctl"><select class="select" aria-label="終端機字型" style="width:200px"><option>JetBrains Mono</option><option>SF Mono</option><option>Menlo</option></select></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">終端機字級<span class="sx-en">Terminal font size</span></span><span class="hint">也可在 session 標題列用 A− / A+ 調整，範圍 10–24。</span></div>
+            <div class="sx-ctl"><div class="sx-step" role="group" aria-label="終端機字級"><button type="button" aria-label="縮小終端機字級" onClick="{{ tfsDown }}">A−</button><span class="v" aria-live="polite">{{ tfs }}</span><button type="button" aria-label="放大終端機字級" onClick="{{ tfsUp }}">A+</button></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">System <span class="cjk">系統</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">原生玻璃側欄<span class="sx-en">Native vibrancy</span><span class="chip amber sx-mini">實驗</span></span><span class="hint">側欄改用 macOS 毛玻璃材質；與 CRT 同時開啟較耗 GPU。</span></div>
+            <div class="sx-ctl"><button class="sw {{ sw.vibrancy.cls }}" type="button" role="switch" aria-checked="{{ sw.vibrancy.aria }}" aria-label="原生玻璃側欄" onClick="{{ sw.vibrancy.flip }}"></button></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">減少動態<span class="sx-en">Reduce motion</span></span><span class="hint">關閉燈號脈動、游標閃爍與掃描動畫。</span></div>
+            <div class="sx-ctl"><select class="select" aria-label="減少動態" style="width:160px"><option>跟隨系統</option><option>開啟</option><option>關閉</option></select></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ================= 03 SESSIONS ================= -->
+    <sc-if value="{{ is.sessions }}" hint-placeholder-val="{{ true }}">
+    <section class="sx-sec" aria-labelledby="sx-t-sessions">
+      <div class="sx-ph">
+        <div class="l1"><h1 class="h-page" id="sx-t-sessions">SESSIONS</h1><span class="zh">工作階段</span><span class="sx-acts"><button class="btn sm" type="button">還原本頁預設</button></span></div>
+        <p class="sx-lead">新 session 的預設值、狀態怎麼判定，以及外部 session 的顯示方式。</p>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Launch <span class="cjk">啟動</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">預設啟動設定檔<span class="sx-en">Default profile</span></span><span class="hint">⌘N 與 [+ NEW ▾] 預選的設定檔。</span></div>
+            <div class="sx-ctl"><select class="select" aria-label="預設啟動設定檔" style="width:240px"><option>claude-default · claude</option><option>claude-plan · --permission-mode plan</option><option>claude-rc · --remote-control</option><option>zsh · shell</option></select></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">自動加上 <code>--session-id</code><span class="sx-en">Auto session id</span></span><span class="hint">讓 hook 事件對到正確的分頁；關閉後只能用 cwd 推測。</span></div>
+            <div class="sx-ctl"><button class="sw {{ sw.sid.cls }}" type="button" role="switch" aria-checked="{{ sw.sid.aria }}" aria-label="自動加上 --session-id" onClick="{{ sw.sid.flip }}"></button></div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">State <span class="cjk">狀態判定</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">NO HOOK 警示<span class="sx-en">No-hook warning</span></span><span class="hint">啟動後超過這個時間仍沒有 hook 資料，列上標示 <span class="amber">! NO HOOK</span>。</span></div>
+            <div class="sx-ctl"><select class="select" aria-label="NO HOOK 警示時間" style="width:120px"><option>20 秒</option><option>10 秒</option><option>60 秒</option></select></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">STALE 判定<span class="sx-en">Stale after</span></span><span class="hint">IDLE 超過這個時間，側欄列變暗為 75%。</span></div>
+            <div class="sx-ctl"><select class="select" aria-label="STALE 判定時間" style="width:120px"><option>1 小時</option><option>30 分鐘</option><option>4 小時</option><option>永不</option></select></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">App 重開後恢復<span class="sx-en">Restore on relaunch</span></span><span class="hint">上次執行中的 session 顯示為 <span class="faint">⟲</span> STOPPED · 可接續，不會自動重啟。</span></div>
+            <div class="sx-ctl"><button class="sw {{ sw.restore.cls }}" type="button" role="switch" aria-checked="{{ sw.restore.aria }}" aria-label="App 重開後恢復為 STOPPED 可接續" onClick="{{ sw.restore.flip }}"></button></div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">External <span class="cjk">外部 session</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">外部 session<span class="sx-en">External</span></span><span class="hint">不是 CODD 啟動、由 <code>claude agents --json</code> 偵測到的 session（目前 1 個）。</span></div>
+            <div class="sx-ctl"><div class="seg" role="group" aria-label="外部 session 顯示方式"><button type="button" class="{{ sg.ext.project.cls }}" aria-pressed="{{ sg.ext.project.pr }}" onClick="{{ sg.ext.project.pick }}">顯示在專案下</button><button type="button" class="{{ sg.ext.detected.cls }}" aria-pressed="{{ sg.ext.detected.pr }}" onClick="{{ sg.ext.detected.pick }}">Detected 區</button><button type="button" class="{{ sg.ext.hide.cls }}" aria-pressed="{{ sg.ext.hide.pr }}" onClick="{{ sg.ext.hide.pick }}">不顯示</button></div></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">隱藏 SDK / Desktop 來源<span class="sx-en">Hide SDK &amp; Desktop</span></span><span class="hint">Agent SDK 與 Claude Desktop 建立的 session 不列入側欄。</span></div>
+            <div class="sx-ctl"><button class="sw {{ sw.hidesdk.cls }}" type="button" role="switch" aria-checked="{{ sw.hidesdk.aria }}" aria-label="隱藏 SDK 與 Desktop 來源" onClick="{{ sw.hidesdk.flip }}"></button></div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">State source <span class="cjk">狀態來源</span><span class="r">依序採用 · 前一層沒資料才往下找</span></div>
+        <div class="sx-flow">
+          <div class="sx-node"><span class="t"><span class="i">1</span>hook</span><span class="hint">事件即時寫入 status dir，最準</span></div>
+          <span class="sx-arr" aria-hidden="true">→</span>
+          <div class="sx-node"><span class="t"><span class="i">2</span>registry</span><span class="hint">Claude Code 的 session 註冊檔，補 busy / idle</span></div>
+          <span class="sx-arr" aria-hidden="true">→</span>
+          <div class="sx-node"><span class="t"><span class="i">3</span>claude agents --json</span><span class="hint">補抓外部啟動的 session</span></div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ================= 04 PROFILES ================= -->
+    <sc-if value="{{ is.profiles }}" hint-placeholder-val="{{ true }}">
+    <section class="sx-sec" aria-labelledby="sx-t-profiles">
+      <div class="sx-ph">
+        <div class="l1"><h1 class="h-page" id="sx-t-profiles">PROFILES</h1><span class="zh">啟動設定檔</span><span class="sx-acts"><button class="btn sm accent" type="button">+ New profile</button></span></div>
+        <p class="sx-lead">⌘N 新增 session 時可選的啟動方式。CODD 會自動補上 <code>--session-id</code> 與 <code>-n</code> 名稱。</p>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Launch profiles <span class="cnt">4</span></div>
+        <div class="sx-card">
+          <sc-for list="{{ profiles }}" as="p" hint-placeholder-count="4">
+            <div class="sx-row" style="padding:11px 16px">
+              <div class="sx-lab" style="gap:5px">
+                <span class="sx-name"><span class="sx-pg {{ p.gcls }}" aria-hidden="true">{{ p.glyph }}</span><span class="sx-pn">{{ p.name }}</span><span class="chip caps sx-mini">{{ p.kind }}</span><sc-if value="{{ p.def }}" hint-placeholder-val="{{ true }}"><span class="chip amber caps sx-mini">Default</span></sc-if></span>
+                <span style="padding-left:20px"><code>{{ p.cmd }}</code></span>
+                <span class="sx-meta" style="padding-left:20px"><span>cwd <b>{{ p.cwd }}</b></span><span>·</span><span>帳號 <b>{{ p.acct }}</b></span><span>·</span><span>模型 <b>{{ p.model }}</b></span></span>
+              </div>
+              <div class="sx-ctl"><button class="btn sm" type="button" aria-label="{{ p.aCopy }}">複製</button><button class="btn sm" type="button" aria-label="{{ p.aEdit }}">編輯</button><button class="btn sm danger" type="button" aria-label="{{ p.aDel }}">刪除</button></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Preview <span class="cjk">實際啟動指令</span><span class="r">claude-default + ⌘N 對話框的選項</span></div>
+<pre class="term" style="flex:none;padding:10px 14px;border:1px solid var(--line-bright)"><span class="d">$</span> claude <span class="a">--session-id</span> 7c1e9a04-… <span class="a">--model</span> opus-5.5 <span class="a">--permission-mode</span> acceptEdits <span class="a">-n</span> <span class="c">"修正登入 API 401"</span></pre>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ================= 05 NOTIFICATIONS ================= -->
+    <sc-if value="{{ is.notifications }}" hint-placeholder-val="{{ true }}">
+    <section class="sx-sec" aria-labelledby="sx-t-notifications">
+      <div class="sx-ph">
+        <div class="l1"><h1 class="h-page" id="sx-t-notifications">NOTIFICATIONS</h1><span class="zh">通知</span><span class="sx-acts"><button class="btn sm" type="button">傳送測試通知</button></span></div>
+        <p class="sx-lead">哪些狀態要跳 macOS 通知、要不要出聲，以及徽章顯示什麼。</p>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Events <span class="cjk">事件</span></div>
+        <div class="sx-card">
+          <div class="sx-mrow h"><span>Event</span><span>說明</span><span>條件</span><span>通知</span><span>聲音</span></div>
+          <div class="sx-mrow">
+            <span class="sx-ev st-waiting"><span class="lamp" style="animation:none">◆</span>WAITING</span>
+            <span class="hint">需要授權、回答問題或核准計畫</span>
+            <select class="select" aria-label="WAITING 通知條件"><option>一律通知</option><option>僅在未聚焦時</option></select>
+            <button class="sw {{ sw.nWait.cls }}" type="button" role="switch" aria-checked="{{ sw.nWait.aria }}" aria-label="WAITING 通知" onClick="{{ sw.nWait.flip }}"></button>
+            <button class="sw {{ sw.sWait.cls }}" type="button" role="switch" aria-checked="{{ sw.sWait.aria }}" aria-label="WAITING 聲音" onClick="{{ sw.sWait.flip }}"></button>
+          </div>
+          <div class="sx-mrow">
+            <span class="sx-ev st-error"><span class="lamp">▲</span>ERROR</span>
+            <span class="hint">API 過載、額度用完或驗證失敗</span>
+            <select class="select" aria-label="ERROR 通知條件"><option>一律通知</option><option>僅在未聚焦時</option></select>
+            <button class="sw {{ sw.nErr.cls }}" type="button" role="switch" aria-checked="{{ sw.nErr.aria }}" aria-label="ERROR 通知" onClick="{{ sw.nErr.flip }}"></button>
+            <button class="sw {{ sw.sErr.cls }}" type="button" role="switch" aria-checked="{{ sw.sErr.aria }}" aria-label="ERROR 聲音" onClick="{{ sw.sErr.flip }}"></button>
+          </div>
+          <div class="sx-mrow">
+            <span class="sx-ev st-done"><span class="lamp">◇</span>DONE</span>
+            <span class="hint">一輪結束，結果還沒看過</span>
+            <select class="select" aria-label="DONE 通知條件"><option>僅在未聚焦時</option><option>一律通知</option></select>
+            <button class="sw {{ sw.nDone.cls }}" type="button" role="switch" aria-checked="{{ sw.nDone.aria }}" aria-label="DONE 通知" onClick="{{ sw.nDone.flip }}"></button>
+            <button class="sw {{ sw.sDone.cls }}" type="button" role="switch" aria-checked="{{ sw.sDone.aria }}" aria-label="DONE 聲音" onClick="{{ sw.sDone.flip }}"></button>
+          </div>
+          <div class="sx-mrow">
+            <span class="sx-ev st-exited"><span class="lamp">✕</span>EXITED<span class="faint" style="letter-spacing:.04em">非 0</span></span>
+            <span class="hint">process 異常結束（exit code 不是 0）</span>
+            <select class="select" aria-label="EXITED 通知條件"><option>一律通知</option><option>僅在未聚焦時</option></select>
+            <button class="sw {{ sw.nExit.cls }}" type="button" role="switch" aria-checked="{{ sw.nExit.aria }}" aria-label="EXITED 非 0 通知" onClick="{{ sw.nExit.flip }}"></button>
+            <button class="sw {{ sw.sExit.cls }}" type="button" role="switch" aria-checked="{{ sw.sExit.aria }}" aria-label="EXITED 非 0 聲音" onClick="{{ sw.sExit.flip }}"></button>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Quiet <span class="cjk">勿擾</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">勿擾時段<span class="sx-en">Do not disturb</span></span><span class="hint">期間只更新徽章，不跳通知也不出聲。</span></div>
+            <div class="sx-ctl"><span class="sx-ctl {{ dndDim }}" style="gap:6px"><input class="input num" type="text" value="23:00" aria-label="勿擾開始時間" style="width:68px;text-align:center"><span class="faint">–</span><input class="input num" type="text" value="08:00" aria-label="勿擾結束時間" style="width:68px;text-align:center"></span><button class="sw {{ sw.dnd.cls }}" type="button" role="switch" aria-checked="{{ sw.dnd.aria }}" aria-label="勿擾時段" onClick="{{ sw.dnd.flip }}"></button></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">依群組靜音<span class="sx-en">Mute by group</span></span><span class="hint">靜音的群組仍會出現在 NEEDS YOU。</span></div>
+            <div class="sx-gchips">
+              <button class="sx-gchip {{ sw.muLab.cls }}" type="button" aria-pressed="{{ sw.muLab.aria }}" onClick="{{ sw.muLab.flip }}"><span class="tag" style="background:var(--t-orange)"></span>藍鵲 · 實驗室</button>
+              <button class="sx-gchip {{ sw.muWeb.cls }}" type="button" aria-pressed="{{ sw.muWeb.aria }}" onClick="{{ sw.muWeb.flip }}"><span class="tag" style="background:var(--t-blue)"></span>藍鵲 · 網站</button>
+              <button class="sx-gchip {{ sw.muGit.cls }}" type="button" aria-pressed="{{ sw.muGit.aria }}" onClick="{{ sw.muGit.flip }}"><span class="tag" style="background:var(--t-green)"></span>個人 · Github</button>
+              <button class="sx-gchip {{ sw.muCodd.cls }}" type="button" aria-pressed="{{ sw.muCodd.aria }}" onClick="{{ sw.muCodd.flip }}"><span class="tag" style="background:var(--t-purple)"></span>CODD</button>
+              <button class="sx-gchip {{ sw.muNone.cls }}" type="button" aria-pressed="{{ sw.muNone.aria }}" onClick="{{ sw.muNone.flip }}"><span class="tag" style="border:1px dashed var(--dimmer)"></span>未分類</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Badges <span class="cjk">徽章</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">Dock 徽章<span class="sx-en">Dock badge</span></span><span class="hint">等待數 = ◆ 等待 + ▲ 錯誤，目前 3。</span></div>
+            <div class="sx-ctl"><div class="seg" role="group" aria-label="Dock 徽章"><button type="button" class="{{ sg.dock.wait.cls }}" aria-pressed="{{ sg.dock.wait.pr }}" onClick="{{ sg.dock.wait.pick }}">等待數</button><button type="button" class="{{ sg.dock.all.cls }}" aria-pressed="{{ sg.dock.all.pr }}" onClick="{{ sg.dock.all.pick }}">全部</button><button type="button" class="{{ sg.dock.off.cls }}" aria-pressed="{{ sg.dock.off.pr }}" onClick="{{ sg.dock.off.pick }}">關</button></div></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">選單列圖示<span class="sx-en">Menu bar icon</span></span><span class="hint">需要你時中間方塊亮琥珀色；數字只出現在面板、Dock 與通知。</span></div>
+            <div class="sx-ctl"><div class="seg" role="group" aria-label="選單列圖示"><button type="button" class="{{ sg.mbar.icon.cls }}" aria-pressed="{{ sg.mbar.icon.pr }}" onClick="{{ sg.mbar.icon.pick }}">僅圖示</button><button type="button" class="{{ sg.mbar.counts.cls }}" aria-pressed="{{ sg.mbar.counts.pr }}" onClick="{{ sg.mbar.counts.pick }}">圖示 + 數字</button></div></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">Remote Control 手機推播<span class="sx-en">Mobile push</span></span><span class="hint">由 Claude Code Remote Control 推到 iPhone 的 Claude App。</span></div>
+            <div class="sx-ctl"><button class="sx-link" type="button" onClick="{{ goRemote }}">在「遠端」設定 →</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ================= 06 ACCOUNTS ================= -->
+    <sc-if value="{{ is.accounts }}" hint-placeholder-val="{{ true }}">
+    <section class="sx-sec" aria-labelledby="sx-t-accounts">
+      <div class="sx-ph">
+        <div class="l1"><h1 class="h-page" id="sx-t-accounts">ACCOUNTS</h1><span class="zh">帳號</span><span class="sx-acts"><button class="btn sm" type="button">+ 加入帳號</button></span></div>
+        <p class="sx-lead">cswap 管理的 Claude 帳號。介面只顯示 #編號 與別名，不顯示 email。</p>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">cswap</div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">cswap 路徑<span class="sx-en">cswap path</span></span><span class="hint">需 ≥ 0.26；切換帳號與用量快取都透過它。</span></div>
+            <div class="sx-ctl"><input class="input" type="text" value="~/.local/bin/cswap" aria-label="cswap 路徑" style="width:220px"><span class="chip ok">● v0.26.0</span></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">隱藏 email<span class="sx-en">Hide email</span></span><span class="hint">截圖、錄影或分享畫面時不會露出信箱。</span></div>
+            <div class="sx-ctl"><button class="sw {{ sw.hidemail.cls }}" type="button" role="switch" aria-checked="{{ sw.hidemail.aria }}" aria-label="隱藏 email" onClick="{{ sw.hidemail.flip }}"></button></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">切換前確認<span class="sx-en">Confirm before switching</span></span><span class="hint">關閉時，點帳號就直接切換，完成後可 UNDO。</span></div>
+            <div class="sx-ctl"><button class="sw {{ sw.swconfirm.cls }}" type="button" role="switch" aria-checked="{{ sw.swconfirm.aria }}" aria-label="切換前確認" onClick="{{ sw.swconfirm.flip }}"></button></div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Aliases <span class="cjk">帳號別名</span> <span class="cnt">3</span><span class="r">依每週重置排序 · 越快重置越上面</span></div>
+        <div class="sx-card">
+          <div class="sx-arow">
+            <span class="sx-slot">#2</span>
+            <input class="input" type="text" value="藍鵲" aria-label="#2 帳號別名">
+            <span class="chip caps sx-mini">MAX 20x</span>
+            <span class="qrow tone-ok"><span class="k">5h</span><span class="bar10"><b style="width:98%"></b><sc-if value="{{ au.t5 }}" hint-placeholder-val="{{ false }}"><i class="thr" style="left: {{ au.thr }}%"></i></sc-if></span><span class="v">98%</span></span>
+            <span class="qrow tone-warn"><span class="k">1w</span><span class="bar10"><b style="width:46%"></b><sc-if value="{{ au.t1 }}" hint-placeholder-val="{{ false }}"><i class="thr" style="left: {{ au.thr }}%"></i></sc-if></span><span class="v">46%</span></span>
+            <span class="sx-rst"><span>1w 重置 <b>1d12h後</b></span><span class="d">10/16 週五 22:59</span></span>
+            <span class="sx-ses">1 session 固定 · cswap run</span>
+          </div>
+          <div class="sx-arow act">
+            <span class="sx-slot act">#3</span>
+            <input class="input" type="text" value="工作" aria-label="#3 帳號別名">
+            <span class="chip caps sx-mini">MAX 20x</span>
+            <span class="qrow tone-ok"><span class="k">5h</span><span class="bar10"><b style="width:91%"></b><sc-if value="{{ au.t5 }}" hint-placeholder-val="{{ false }}"><i class="thr" style="left: {{ au.thr }}%"></i></sc-if></span><span class="v">91%</span></span>
+            <span class="qrow tone-crit"><span class="k">1w</span><span class="bar10"><b style="width:15%"></b><sc-if value="{{ au.t1 }}" hint-placeholder-val="{{ false }}"><i class="thr" style="left: {{ au.thr }}%"></i></sc-if></span><span class="v">15%</span></span>
+            <span class="sx-rst"><span>1w 重置 <b>3d01h後</b></span><span class="d">10/18 週日 12:00</span></span>
+            <span class="sx-ses"><span class="chip fill caps sx-mini">✓ Active</span>12 session</span>
+          </div>
+          <div class="sx-arow">
+            <span class="sx-slot">#1</span>
+            <input class="input" type="text" value="個人" aria-label="#1 帳號別名">
+            <span class="chip caps sx-mini">MAX 20x</span>
+            <span class="qrow tone-muted"><span class="k">5h</span><span class="bar10"><b style="width:100%"></b><sc-if value="{{ au.t5 }}" hint-placeholder-val="{{ false }}"><i class="thr" style="left: {{ au.thr }}%"></i></sc-if></span><span class="v" style="color:var(--dimmer)">未開始</span></span>
+            <span class="qrow tone-ok"><span class="k">1w</span><span class="bar10"><b style="width:100%"></b><sc-if value="{{ au.t1 }}" hint-placeholder-val="{{ false }}"><i class="thr" style="left: {{ au.thr }}%"></i></sc-if></span><span class="v">100%</span></span>
+            <span class="sx-rst"><span>1w 重置 <b>4d09h後</b></span><span class="d">10/19 週一 20:00</span></span>
+            <span class="sx-ses">0 session</span>
+          </div>
+        </div>
+      </div>
+      <div class="sx-acol">
+        <div class="sx-stack">
+          <div class="sx-grp">
+            <div class="sx-gh">Auto-switch <span class="cjk">自動切換</span><span class="r">{{ au.stLabel }}</span></div>
+            <div class="sx-card">
+              <div class="sx-row">
+                <div class="sx-lab"><span class="sx-name">剩餘不足時自動切換<span class="sx-en">Auto-switch</span></span><span class="hint">由 cswap auto 執行（門檻換算成已用 {{ au.used }}%、策略 consume-first）· 已有 cswap menubar 在跑時會提醒</span></div>
+                <div class="sx-ctl"><button class="sw {{ sw.autolow.cls }}" type="button" role="switch" aria-checked="{{ sw.autolow.aria }}" aria-label="剩餘不足時自動切換" onClick="{{ sw.autolow.flip }}"></button></div>
+              </div>
+              <div class="sx-row tight {{ autoDim }}">
+                <div class="sx-lab"><span class="sx-name">門檻<span class="sx-en">Threshold</span></span><span class="hint">1–20%，預設 2%</span></div>
+                <div class="sx-ctl"><span class="faint">剩餘 ≤</span><div class="sx-step" role="group" aria-label="自動切換門檻"><button type="button" aria-label="門檻減 1%" onClick="{{ thrDown }}">−</button><span class="v" aria-live="polite">{{ au.thr }} %</span><button type="button" aria-label="門檻加 1%" onClick="{{ thrUp }}">+</button></div></div>
+              </div>
+              <div class="sx-row tight {{ autoDim }}">
+                <div class="sx-lab"><span class="sx-name">檢查<span class="sx-en">Windows</span></span><span class="hint">任一個 ≤ 門檻就切換</span></div>
+                <div class="sx-ctl"><button type="button" class="sx-cb {{ cb.h5.cls }}" role="checkbox" aria-checked="{{ cb.h5.aria }}" onClick="{{ cb.h5.flip }}"><span class="box" aria-hidden="true">✓</span>5 小時</button><button type="button" class="sx-cb {{ cb.w1.cls }}" role="checkbox" aria-checked="{{ cb.w1.aria }}" onClick="{{ cb.w1.flip }}"><span class="box" aria-hidden="true">✓</span>每週</button></div>
+              </div>
+              <div class="sx-row tight {{ autoDim }}">
+                <div class="sx-lab"><span class="sx-name">切換到<span class="sx-en">Target</span></span><span class="hint">5h 與每週都高於門檻才算足夠</span></div>
+                <div class="sx-ctl"><span class="chip">依排序第一個額度足夠的帳號</span></div>
+              </div>
+              <div class="sx-row tight {{ autoDim }}">
+                <div class="sx-lab"><span class="sx-name">冷卻<span class="sx-en">Cooldown</span></span><span class="hint">兩次自動切換至少間隔</span></div>
+                <div class="sx-ctl"><input class="input num" type="text" value="300" aria-label="自動切換冷卻秒數" style="width:72px;text-align:right"><span class="faint">s</span></div>
+              </div>
+              <div class="sx-row tight {{ autoDim }}">
+                <div class="sx-lab"><span class="sx-name">都不足時<span class="sx-en">None left</span></span><span class="hint">通知「所有帳號都低於 {{ au.thr }}%」</span></div>
+                <div class="sx-ctl"><span class="chip">不切換，通知我</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sx-stack">
+          <div class="sx-grp">
+            <div class="sx-gh">Preview <span class="cjk">即時預覽</span><span class="r">{{ au.rule }}</span></div>
+            <sc-if value="{{ au.on }}" hint-placeholder-val="{{ false }}">
+              <div class="sx-card">
+                <sc-for list="{{ au.list }}" as="a" hint-placeholder-count="3">
+                  <div class="sx-pvrow {{ a.cls }}">
+                    <div class="p1"><span class="sx-slot {{ a.scls }}">{{ a.slot }}</span><span class="nm">{{ a.alias }}</span><span class="rs">1w 重置 {{ a.rst }}</span><span class="dist {{ a.dcls }}">{{ a.dist }}</span><sc-if value="{{ a.isAct }}" hint-placeholder-val="{{ false }}"><span class="chip fill caps sx-mini">✓ Active</span></sc-if><sc-if value="{{ a.isNext }}" hint-placeholder-val="{{ false }}"><span class="chip cy sx-mini">下一個</span></sc-if></div>
+                    <div class="q2">
+                      <span class="qrow {{ a.s5 }}"><span class="k">5h</span><span class="bar10"><b style="width: {{ a.p5 }}%"></b><sc-if value="{{ a.tk5 }}" hint-placeholder-val="{{ true }}"><i class="thr" style="left: {{ a.thr }}%"></i></sc-if></span><span class="v">{{ a.v5 }}</span></span>
+                      <span class="qrow {{ a.s1 }}"><span class="k">1w</span><span class="bar10"><b style="width: {{ a.p1 }}%"></b><sc-if value="{{ a.tk1 }}" hint-placeholder-val="{{ true }}"><i class="thr" style="left: {{ a.thr }}%"></i></sc-if></span><span class="v">{{ a.v1 }}</span></span>
+                    </div>
+                  </div>
+                </sc-for>
+                <div class="sx-pvf" aria-live="polite"><span>目前 <b class="amber">{{ au.cur }}</b></span><span class="faint">·</span><span>下一個：<b class="cy">{{ au.next }}</b></span><span class="faint">{{ au.note }}</span></div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ au.off }}" hint-placeholder-val="{{ true }}">
+              <div class="sx-info">
+                <span class="comment">// 自動切換未開啟</span>
+                <span>開啟後這裡即時列出各帳號（依每週重置排序）距切換還有多少 %，以及下一個會切到誰。</span>
+              </div>
+            </sc-if>
+          </div>
+          <div class="sx-grp">
+            <div class="sx-gh">Usage source <span class="cjk">用量來源</span></div>
+            <div class="sx-info">
+              <span class="ln"><span class="ok">●</span><span class="amber">#3 工作</span><span>statusline 的 rate_limits</span><span class="faint">· 12s 前</span></span>
+              <span class="ln"><span class="faint">○</span><span class="cy">#2 藍鵲 · #1 個人</span><span>cswap 快取</span><span class="faint">· 3m 前</span></span>
+              <span class="comment">// 不另外呼叫 usage API，避免被 429 擋下</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ================= 07 HOOKS & STATUS ================= -->
+    <sc-if value="{{ is.hooks }}" hint-placeholder-val="{{ true }}">
+    <section class="sx-sec" aria-labelledby="sx-t-hooks">
+      <div class="sx-ph">
+        <div class="l1"><h1 class="h-page" id="sx-t-hooks">HOOKS &amp; STATUS</h1><span class="zh">Hook 與狀態列</span><span class="sx-acts"><button class="btn sm" type="button">重新安裝</button><button class="btn sm danger" type="button">解除安裝</button></span></div>
+        <p class="sx-lead">CODD 寫在 <code>~/.claude/settings.json</code> 的 hooks 與 statusline。其他工具的 hooks 不會被動到。</p>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Status dir <span class="cjk">狀態目錄</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab" style="gap:5px"><span class="sx-name">狀態目錄<span class="sx-en">Status dir</span><span class="chip amber sx-mini">! 與預設不同</span></span><span class="path ell" style="display:block">~/Github/codd-web/agent-sandbox/.claude/codd-status</span><span class="hint">hooks 寫入、CODD 讀取 session 狀態的資料夾。</span></div>
+            <div class="sx-ctl"><button class="btn sm" type="button">在 Finder 顯示</button><button class="btn sm" type="button">變更…</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Components <span class="cjk">安裝部件</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name"><span class="sx-part">Hooks</span><span class="amber">◆ 需要更新</span></span><span class="hint">10 / 14 個事件 · 缺 PreCompact、PostCompact、SubagentStart、SubagentStop</span></div>
+            <div class="sx-ctl"><button class="btn sm" type="button">預覽變更</button><button class="btn sm primary" type="button">更新</button></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name"><span class="sx-part">Statusline</span><span class="ok">● 已安裝</span></span><span class="hint">串接 CODD → hook-tap → statusline.sh，終端機上的顯示不變。</span></div>
+            <div class="sx-ctl"><span class="chip">最近收到資料 8s 前</span></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name"><span class="sx-part">Legacy</span><span class="faint">○ 未偵測到</span></span><span class="hint">舊版 channel 目錄裡的 .claude/settings.json hook，不需處理。</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Events <span class="cjk">事件</span> <span class="cnt">14</span><span class="r"><span class="ok">●</span> 10 已安裝 · <span class="amber">◆</span> 4 缺少</span></div>
+        <div class="sx-card">
+          <div class="sx-chips">
+            <sc-for list="{{ events }}" as="e" hint-placeholder-count="14"><span class="chip {{ e.cls }}"><span class="{{ e.gcls }}" aria-hidden="true">{{ e.g }}</span>{{ e.name }}</span></sc-for>
+          </div>
+          <div class="hint" style="padding:0 16px 12px">外部 hooks 保持不動：hook-tap ×11 · osascript 通知 ×2</div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Backups <span class="cjk">備份</span> <span class="cnt">3</span></div>
+        <div class="sx-card">
+          <div class="sx-row tight">
+            <div class="sx-lab"><span class="sx-name"><code>settings.json.codd-bak-20261012-091503</code></span><span class="hint">10/12 09:15 · 安裝 statusline · 4.1 KB</span></div>
+            <div class="sx-ctl"><button class="btn sm" type="button" aria-label="比較 10/12 備份差異">差異</button><button class="btn sm" type="button" aria-label="還原 10/12 備份">還原</button></div>
+          </div>
+          <div class="sx-row tight">
+            <div class="sx-lab"><span class="sx-name"><code>settings.json.codd-bak-20261003-183020</code></span><span class="hint">10/03 18:30 · 更新 hooks · 3.8 KB</span></div>
+            <div class="sx-ctl"><button class="btn sm" type="button" aria-label="比較 10/03 備份差異">差異</button><button class="btn sm" type="button" aria-label="還原 10/03 備份">還原</button></div>
+          </div>
+          <div class="sx-row tight">
+            <div class="sx-lab"><span class="sx-name"><code>settings.json.codd-bak-20260921-140812</code></span><span class="hint">09/21 14:08 · 首次安裝 · 2.9 KB</span></div>
+            <div class="sx-ctl"><button class="btn sm" type="button" aria-label="比較 09/21 備份差異">差異</button><button class="btn sm" type="button" aria-label="還原 09/21 備份">還原</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ================= 08 NOTEBOOK & MCP ================= -->
+    <sc-if value="{{ is.notebook }}" hint-placeholder-val="{{ true }}">
+    <section class="sx-sec" aria-labelledby="sx-t-notebook">
+      <div class="sx-ph">
+        <div class="l1"><h1 class="h-page" id="sx-t-notebook">NOTEBOOK &amp; MCP</h1><span class="zh">筆記本</span><span class="sx-acts"><button class="btn sm" type="button">開啟筆記本資料夾</button></span></div>
+        <p class="sx-lead">筆記存在哪裡、MCP server 怎麼連，以及 AI 可以碰到多少。</p>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Storage <span class="cjk">儲存</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">位置<span class="sx-en">Location</span></span><span class="hint">{{ nbHint }}</span></div>
+            <div class="sx-ctl"><div class="seg" role="group" aria-label="筆記本位置"><button type="button" class="{{ sg.loc.local.cls }}" aria-pressed="{{ sg.loc.local.pr }}" onClick="{{ sg.loc.local.pick }}">Local</button><button type="button" class="{{ sg.loc.icloud.cls }}" aria-pressed="{{ sg.loc.icloud.pr }}" onClick="{{ sg.loc.icloud.pick }}">iCloud Drive</button><button type="button" class="{{ sg.loc.custom.cls }}" aria-pressed="{{ sg.loc.custom.pr }}" onClick="{{ sg.loc.custom.pick }}">自訂…</button></div></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">圖片長邊壓到 2576px<span class="sx-en">Resize images</span></span><span class="hint">貼上或拖入的截圖先縮小，再存進 assets/。</span></div>
+            <div class="sx-ctl"><button class="sw {{ sw.resize.cls }}" type="button" role="switch" aria-checked="{{ sw.resize.aria }}" aria-label="圖片長邊壓到 2576px" onClick="{{ sw.resize.flip }}"></button></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">保留原檔<span class="sx-en">Keep original</span></span><span class="hint">另外保留未壓縮的原始圖片，比較佔空間。</span></div>
+            <div class="sx-ctl"><button class="sw {{ sw.keeporig.cls }}" type="button" role="switch" aria-checked="{{ sw.keeporig.aria }}" aria-label="保留原始圖片" onClick="{{ sw.keeporig.flip }}"></button></div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">MCP server <span class="cjk">codd</span><span class="r"><span class="ok">●</span> 執行中 · 3 clients</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">Port 與 token<span class="sx-en">127.0.0.1</span></span><span class="hint">只聽 127.0.0.1；輪替 token 後，已註冊的 client 需要重新註冊。</span></div>
+            <div class="sx-ctl"><input class="input num" type="text" value="47821" aria-label="MCP port" style="width:80px;text-align:right"><code style="padding:3px 8px">••••••••••••</code><button class="btn sm" type="button">輪替</button></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">註冊<span class="sx-en">Registrations</span></span><span class="hint">讓其他 agent 也能讀寫 CODD 筆記。</span></div>
+            <div class="sx-regs">
+              <div class="sx-reg"><span class="ok" aria-hidden="true">●</span><span class="cream">Claude Code</span><span class="hint">已註冊 · user scope</span><button class="btn sm" type="button" aria-label="從 Claude Code 移除 MCP">移除</button></div>
+              <div class="sx-reg"><span class="faint" aria-hidden="true">○</span><span class="cream">Codex</span><span class="hint">未註冊</span><button class="btn sm accent" type="button" aria-label="註冊到 Codex">註冊</button></div>
+              <div class="sx-reg"><span class="faint" aria-hidden="true">○</span><span class="cream">Claude Desktop</span><span class="hint">未安裝</span><button class="btn sm accent" type="button">安裝 .mcpb</button></div>
+            </div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">自動掛載 MCP<span class="sx-en">Auto-attach</span></span><span class="hint">CODD 啟動的 session 自動帶上 codd MCP，並展開 codd:// 引用。</span></div>
+            <div class="sx-ctl"><button class="sw {{ sw.mcpauto.cls }}" type="button" role="switch" aria-checked="{{ sw.mcpauto.aria }}" aria-label="CODD 啟動的 session 自動掛載 MCP 並展開 codd 引用" onClick="{{ sw.mcpauto.flip }}"></button></div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">AI access <span class="cjk">AI 存取</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">新筆記預設 AI 存取<span class="sx-en">Default AI access</span></span><span class="hint">每則筆記可在編輯器上方個別調整。</span></div>
+            <div class="sx-ctl"><div class="seg" role="group" aria-label="新筆記預設 AI 存取"><button type="button" class="{{ sg.ai.off.cls }}" aria-pressed="{{ sg.ai.off.pr }}" onClick="{{ sg.ai.off.pick }}">Off</button><button type="button" class="{{ sg.ai.read.cls }}" aria-pressed="{{ sg.ai.read.pr }}" onClick="{{ sg.ai.read.pick }}">Read</button><button type="button" class="{{ sg.ai.append.cls }}" aria-pressed="{{ sg.ai.append.pr }}" onClick="{{ sg.ai.append.pick }}">Append</button></div></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">AI 可寫入<span class="sx-en">AI can write</span></span><span class="hint">允許 AI 透過 MCP 改寫既有筆記；關閉時最多只能附加。</span></div>
+            <div class="sx-ctl"><button class="sw {{ sw.aiwrite.cls }}" type="button" role="switch" aria-checked="{{ sw.aiwrite.aria }}" aria-label="AI 可寫入筆記" onClick="{{ sw.aiwrite.flip }}"></button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ================= 09 CLEANUP ================= -->
+    <sc-if value="{{ is.cleanup }}" hint-placeholder-val="{{ true }}">
+    <section class="sx-sec" aria-labelledby="sx-t-cleanup">
+      <div class="sx-ph">
+        <div class="l1"><h1 class="h-page" id="sx-t-cleanup">CLEANUP</h1><span class="zh">清理</span><span class="sx-acts"><button class="btn sm accent" type="button">查看清理建議 · 15 →</button></span></div>
+        <p class="sx-lead">什麼時候標示 stale、自動封存、清空垃圾桶。只有你能把東西丟進垃圾桶。</p>
+      </div>
+      <div class="sx-life" aria-label="筆記生命週期">
+        <span class="n">ACTIVE</span><span class="a">→</span><span class="n">STALE <b>14d</b></span><span class="a">→</span><span class="n">ARCHIVE <b>30d</b></span><span class="a">→</span><span class="n">TRASH <span class="faint" style="letter-spacing:0">只有你能丟</span></span><span class="a">→</span><span class="n">PURGE <b>30d</b></span>
+      </div>
+      <div class="sx-2col">
+        <div class="sx-grp">
+          <div class="sx-gh">Notes <span class="cjk">筆記</span></div>
+          <div class="sx-card">
+            <div class="sx-row">
+              <div class="sx-lab"><span class="sx-name">標示 STALE</span><span class="hint">多久沒有活動就標示 stale</span></div>
+              <div class="sx-ctl"><select class="select" aria-label="筆記標示 STALE" style="width:96px"><option>14 天</option><option>7 天</option><option>30 天</option><option>60 天</option><option>永不</option></select></div>
+            </div>
+            <div class="sx-row">
+              <div class="sx-lab"><span class="sx-name">自動封存</span><span class="hint">移到 ARCHIVE，隨時可還原</span></div>
+              <div class="sx-ctl"><select class="select" aria-label="筆記自動封存" style="width:96px"><option>30 天</option><option>14 天</option><option>60 天</option><option>永不</option></select></div>
+            </div>
+            <div class="sx-row">
+              <div class="sx-lab"><span class="sx-name">SCRATCH · 已送出 prompt</span><span class="hint">隨手記與送出後的 prompt 較快封存</span></div>
+              <div class="sx-ctl"><select class="select" aria-label="SCRATCH 與已送出 prompt 封存" style="width:96px"><option>7 天</option><option>14 天</option><option>30 天</option><option>永不</option></select></div>
+            </div>
+            <div class="sx-row">
+              <div class="sx-lab"><span class="sx-name">垃圾桶清除</span><span class="hint">超過時間才永久刪除</span></div>
+              <div class="sx-ctl"><select class="select" aria-label="垃圾桶清除" style="width:96px"><option>30 天</option><option>7 天</option><option>60 天</option></select></div>
+            </div>
+            <div class="sx-row">
+              <div class="sx-lab"><span class="sx-name">Tombstone</span><span class="hint">舊的 codd:// 引用顯示「已刪除」</span></div>
+              <div class="sx-ctl"><select class="select" aria-label="Tombstone 保留" style="width:96px"><option>90 天</option><option>30 天</option><option>永久</option></select></div>
+            </div>
+            <div class="sx-row">
+              <div class="sx-lab"><span class="sx-name">豁免</span><span class="hint">釘選與使用中 session 的筆記</span></div>
+              <div class="sx-ctl"><button class="sw {{ sw.exempt.cls }}" type="button" role="switch" aria-checked="{{ sw.exempt.aria }}" aria-label="豁免釘選與使用中 session 的筆記" onClick="{{ sw.exempt.flip }}"></button></div>
+            </div>
+          </div>
+        </div>
+        <div class="sx-grp">
+          <div class="sx-gh">Sessions <span class="cjk">工作階段</span></div>
+          <div class="sx-card">
+            <div class="sx-row">
+              <div class="sx-lab"><span class="sx-name">標示 STALE</span><span class="hint">停止後多久在側欄變暗</span></div>
+              <div class="sx-ctl"><select class="select" aria-label="session 標示 STALE" style="width:96px"><option>3 天</option><option>1 天</option><option>7 天</option><option>永不</option></select></div>
+            </div>
+            <div class="sx-row">
+              <div class="sx-lab"><span class="sx-name">自動封存</span><span class="hint">從側欄隱藏，對話紀錄保留</span></div>
+              <div class="sx-ctl"><select class="select" aria-label="session 自動封存" style="width:96px"><option>7 天</option><option>3 天</option><option>14 天</option><option>永不</option></select></div>
+            </div>
+            <div class="sx-row">
+              <div class="sx-lab"><span class="sx-name">終端機紀錄</span><span class="hint">封存後多久刪除終端機輸出</span></div>
+              <div class="sx-ctl"><select class="select" aria-label="終端機紀錄刪除" style="width:96px"><option>30 天</option><option>7 天</option><option>90 天</option><option>永不</option></select></div>
+            </div>
+            <div class="sx-row">
+              <div class="sx-lab"><span class="sx-name">cleanupPeriodDays</span><span class="hint">Claude Code 設定，超過就無法 resume</span></div>
+              <div class="sx-ctl"><span class="chip">30 天 · 唯讀</span></div>
+            </div>
+            <div class="sx-row">
+              <div class="sx-lab"><span class="sx-name">resume 過期提醒</span><span class="hint">剩 5 天時在列上提醒</span></div>
+              <div class="sx-ctl"><button class="sw {{ sw.resumewarn.cls }}" type="button" role="switch" aria-checked="{{ sw.resumewarn.aria }}" aria-label="resume 過期提醒" onClick="{{ sw.resumewarn.flip }}"></button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Digest <span class="cjk">清理建議</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">每週清理建議<span class="sx-en">Schedule</span></span><span class="hint">週一 09:00 · 累積 5 項以上才提醒 · 目前 15 項。</span></div>
+            <div class="sx-ctl"><div class="seg" role="group" aria-label="清理建議頻率"><button type="button" class="{{ sg.digest.weekly.cls }}" aria-pressed="{{ sg.digest.weekly.pr }}" onClick="{{ sg.digest.weekly.pick }}">每週</button><button type="button" class="{{ sg.digest.biweekly.cls }}" aria-pressed="{{ sg.digest.biweekly.pr }}" onClick="{{ sg.digest.biweekly.pick }}">雙週</button><button type="button" class="{{ sg.digest.monthly.cls }}" aria-pressed="{{ sg.digest.monthly.pr }}" onClick="{{ sg.digest.monthly.pick }}">每月</button><button type="button" class="{{ sg.digest.off.cls }}" aria-pressed="{{ sg.digest.off.pr }}" onClick="{{ sg.digest.off.pick }}">關</button></div></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">交給 Claude 濃縮<span class="sx-en">Condense</span></span><span class="hint">手動觸發；原稿只封存不刪除，摘要連回原稿。</span></div>
+            <div class="sx-ctl"><select class="select" aria-label="濃縮使用的帳號" style="width:120px"><option>#1 個人</option><option>#2 藍鵲</option><option>#3 工作</option></select><select class="select" aria-label="濃縮使用的模型" style="width:130px"><option>sonnet-5.5</option><option>opus-5.5</option></select></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ================= 10 SHORTCUTS ================= -->
+    <sc-if value="{{ is.shortcuts }}" hint-placeholder-val="{{ true }}">
+    <section class="sx-sec" aria-labelledby="sx-t-shortcuts">
+      <div class="sx-ph">
+        <div class="l1"><h1 class="h-page" id="sx-t-shortcuts">SHORTCUTS</h1><span class="zh">快捷鍵</span><span class="sx-acts"><button class="btn sm" type="button">還原預設</button></span></div>
+        <p class="sx-lead">按 [修改] 後直接按下新的組合鍵；⎋ 取消。</p>
+      </div>
+      <div class="sx-card">
+        <div class="sx-krow h"><span>Action</span><span>說明</span><span>Keys</span><span></span></div>
+        <sc-for list="{{ keys }}" as="k" hint-placeholder-count="13">
+          <sc-if value="{{ k.head }}" hint-placeholder-val="{{ true }}"><div class="sx-krow g">{{ k.head }}</div></sc-if>
+          <div class="sx-krow"><span class="cream">{{ k.act }}</span><span class="hint ell">{{ k.note }}</span><span><span class="kbd sx-kbd">{{ k.keys }}</span></span><span><button class="btn sm" type="button" aria-label="{{ k.aria }}">修改</button></span></div>
+        </sc-for>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ================= 11 REMOTE (FUTURE) ================= -->
+    <sc-if value="{{ is.remote }}" hint-placeholder-val="{{ true }}">
+    <section class="sx-sec" aria-labelledby="sx-t-remote">
+      <div class="sx-ph">
+        <div class="l1"><h1 class="h-page" id="sx-t-remote">REMOTE</h1><span class="zh">遠端</span><span class="ext" style="font-size:10px;line-height:16px;padding:0 6px">FUTURE</span><span class="sx-acts"><a class="sx-link" href="#remote-board">看規劃 → Remote 畫板</a></span></div>
+        <p class="sx-lead">尚未實作。先列出規劃中的選項，讓你知道之後會放在哪裡。</p>
+      </div>
+      <div class="sx-info" style="flex-direction:row;align-items:center;gap:10px;background:var(--bg-soft)">
+        <span class="cy">◉</span><span class="cream">1 個 session 已連 Remote Control</span><span class="faint">（修正登入 API 401）</span><span style="flex:1"></span><span class="hint">由 Claude Code 提供，現在就能用</span>
+      </div>
+      <div class="sx-grp sx-dim">
+        <div class="sx-gh"><span class="chip caps sx-mini">Phase 0</span>Remote Control <span class="cjk">Claude 官方 · 不需 Apple 開發者帳號</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">新 session 預設連 Remote Control<span class="sx-en">remoteControlAtStartup</span></span><span class="hint">在 iPhone 的 Claude App 接手 Mac 上的 session。</span></div>
+            <div class="sx-ctl"><button class="sw" type="button" role="switch" aria-checked="false" aria-label="新 session 預設連 Remote Control" disabled="disabled"></button></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">需要操作時推播到手機<span class="sx-en">inputNeededNotifEnabled</span></span><span class="hint">等待授權或回答時推到手機。</span></div>
+            <div class="sx-ctl"><button class="sw" type="button" role="switch" aria-checked="false" aria-label="需要操作時推播到手機" disabled="disabled"></button></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">在 Mac 前時不推播<span class="sx-en">Presence file</span></span><span class="hint">偵測到你正在用這台 Mac 時，只在本機通知。</span></div>
+            <div class="sx-ctl"><button class="sw" type="button" role="switch" aria-checked="false" aria-label="在 Mac 前時不推播" disabled="disabled"></button></div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp sx-dim">
+        <div class="sx-gh"><span class="chip caps sx-mini">Phase 1</span>自架遠端 <span class="cjk">Tailscale / Cloudflare Tunnel</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">連線方式<span class="sx-en">Provider</span></span><span class="hint">CODD Web 介面當手機版（加入主畫面 + Web Push）。</span></div>
+            <div class="sx-ctl"><div class="seg" role="group" aria-label="自架遠端連線方式"><button type="button" class="on" disabled="disabled">Off</button><button type="button" disabled="disabled">Tailscale</button><button type="button" disabled="disabled">Cloudflare</button></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp sx-dim">
+        <div class="sx-gh"><span class="chip caps sx-mini">Phase 2</span>原生 iOS App <span class="cjk">需 Apple Developer US$99/年</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">已配對裝置<span class="sx-en">Paired devices</span></span><span class="hint">Live Activity、動態島與可操作通知。</span></div>
+            <div class="sx-ctl"><button class="btn sm" type="button" disabled="disabled">+ 配對新裝置</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ================= 12 ADVANCED ================= -->
+    <sc-if value="{{ is.advanced }}" hint-placeholder-val="{{ true }}">
+    <section class="sx-sec" aria-labelledby="sx-t-advanced">
+      <div class="sx-ph">
+        <div class="l1"><h1 class="h-page" id="sx-t-advanced">ADVANCED</h1><span class="zh">進階</span></div>
+        <p class="sx-lead">資料位置與維護工具。</p>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Data <span class="cjk">資料位置</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab" style="gap:5px"><span class="sx-name">資料庫<span class="sx-en">Database</span></span><span class="path ell" style="display:block">~/Library/Application Support/CODD/codd.db</span><span class="hint">群組、顏色、排序、設定與 session 索引。</span></div>
+            <div class="sx-ctl"><button class="btn sm" type="button">在 Finder 顯示</button></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab" style="gap:5px"><span class="sx-name">紀錄檔<span class="sx-en">Logs</span></span><span class="path ell" style="display:block">~/Library/Logs/CODD/main.log</span><span class="hint">回報問題時附上這個檔案。</span></div>
+            <div class="sx-ctl"><button class="btn sm" type="button">開啟</button></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">終端機紀錄保留<span class="sx-en">Scrollback retention</span></span><span class="hint">封存的 session 終端機輸出保留多久。</span></div>
+            <div class="sx-ctl"><select class="select" aria-label="終端機紀錄保留" style="width:110px"><option>30 天</option><option>7 天</option><option>90 天</option></select></div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Maintenance <span class="cjk">維護</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">從 CODD Web 匯入<span class="sx-en">Import</span></span><span class="hint">匯入群組、顏色與 launch profiles；對話紀錄本來就在 ~/.claude。</span></div>
+            <div class="sx-ctl"><button class="btn sm" type="button">匯入</button></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">重建筆記索引<span class="sx-en">Rebuild index</span></span><span class="hint">搜尋找不到筆記時使用；不會改動 .md 檔。</span></div>
+            <div class="sx-ctl"><button class="btn sm" type="button">重建</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh" style="color:var(--danger)">Danger zone <span class="cjk">危險區</span></div>
+        <div class="sx-card danger">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">重設所有設定<span class="sx-en">Reset</span></span><span class="hint">只重設偏好設定；筆記、群組、對話紀錄與 hooks 不受影響。</span></div>
+            <div class="sx-ctl"><button class="btn sm danger" type="button">重設所有設定</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ================= 13 ABOUT ================= -->
+    <sc-if value="{{ is.about }}" hint-placeholder-val="{{ true }}">
+    <section class="sx-sec" aria-labelledby="sx-t-about">
+      <div class="sx-ph">
+        <div class="l1"><h1 class="h-page" id="sx-t-about">ABOUT</h1><span class="zh">關於</span></div>
+        <p class="sx-lead">版本與更新。</p>
+      </div>
+      <div class="card">
+        <div class="sx-hero" style="padding:4px 2px 18px">
+          <span class="sx-icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg></span>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <span style="display:flex;align-items:center;gap:10px"><span class="brand" style="font-size:24px">FANCY/CODD</span><span class="disp" style="font-size:15px;color:var(--bone);font-weight:700">Desktop</span></span>
+            <span style="display:flex;align-items:center;gap:8px"><span class="chip amber num">0.1.0 (design)</span><span class="hint">macOS · Apple Silicon</span></span>
+            <span class="sx-lead">在一台 Mac 上管理很多個 Claude Code session。</span>
+          </div>
+        </div>
+        <div class="sx-vers" style="margin:0 -18px -16px">
+          <div class="sx-ver"><span class="k">Electron</span><span class="v">44</span></div>
+          <div class="sx-ver"><span class="k">Node</span><span class="v">24</span></div>
+          <div class="sx-ver"><span class="k">Claude Code</span><span class="v">2.1.300</span></div>
+          <div class="sx-ver"><span class="k">cswap</span><span class="v">0.26.0</span></div>
+        </div>
+      </div>
+      <div class="sx-grp">
+        <div class="sx-gh">Updates <span class="cjk">更新</span></div>
+        <div class="sx-card">
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">更新頻道<span class="sx-en">Update channel</span></span><span class="hint">BETA 會先拿到新功能，偶爾不穩定。</span></div>
+            <div class="sx-ctl"><div class="seg" role="group" aria-label="更新頻道"><button type="button" class="{{ sg.chan.stable.cls }}" aria-pressed="{{ sg.chan.stable.pr }}" onClick="{{ sg.chan.stable.pick }}">Stable</button><button type="button" class="{{ sg.chan.beta.cls }}" aria-pressed="{{ sg.chan.beta.pr }}" onClick="{{ sg.chan.beta.pick }}">Beta</button></div><button class="btn sm" type="button">檢查更新</button></div>
+          </div>
+          <div class="sx-row">
+            <div class="sx-lab"><span class="sx-name">版本資訊<span class="sx-en">Diagnostics</span></span><span class="hint">回報問題時貼上：App、Electron、Node、Claude Code 與 cswap 版本。</span></div>
+            <div class="sx-ctl"><button class="btn sm" type="button">複製版本資訊</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+  </div>
+<!--@STATUSBAR-->
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"crt":{"editor":"enum","options":["subtle","full","off"],"default":"subtle","section":"Look"},"startSection":{"editor":"enum","options":["general","appearance","sessions","profiles","notifications","accounts","hooks","notebook","cleanup","shortcuts","remote","advanced","about"],"default":"general","section":"Behavior"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const sp = (props && props.startSection) || 'general';
+    const cp = (props && props.crt) || 'subtle';
+    this.state = { sec: sp, secBase: sp, crt: cp, crtBase: cp, sw: {}, sg: {}, cb: {}, tfs: 13, thr: 2 };
+  }
+
+  renderVals() {
+    const st = this.state || {};
+    const sp = this.props.startSection ?? 'general';
+    const cp = this.props.crt ?? 'subtle';
+    const sec = (st.secBase === sp && st.sec) ? st.sec : sp;
+    const crt = (st.crtBase === cp && st.crt) ? st.crt : cp;
+
+    // [id, label, EN label, group header (when a group starts), tail text, tail class]
+    const NAV = [
+      ['general', '一般', 'General', 'App'],
+      ['appearance', '外觀', 'Appearance'],
+      ['sessions', '工作階段', 'Sessions', 'Workflow'],
+      ['profiles', '啟動設定檔', 'Profiles'],
+      ['notifications', '通知', 'Notifications'],
+      ['accounts', '帳號', 'Accounts', 'Integrations'],
+      ['hooks', 'Hooks & Status', '', '', '◆ 更新', 'warn'],
+      ['notebook', '筆記本 & MCP', 'Notebook'],
+      ['cleanup', '清理', 'Cleanup', 'System'],
+      ['shortcuts', '快捷鍵', 'Shortcuts'],
+      ['remote', '遠端', 'Remote', '', 'FUTURE', 'fut'],
+      ['advanced', '進階', 'Advanced'],
+      ['about', '關於', 'About', '', '0.1.0', '']
+    ];
+    const nav = NAV.map((n, i) => ({
+      idx: String(i + 1).padStart(2, '0'),
+      zh: n[1], en: n[2], head: n[3] || '', tail: n[4] || '', tcls: n[5] || '',
+      cls: n[0] === sec ? 'on' : '',
+      aria: n[0] === sec ? 'page' : 'false',
+      pick: () => this.setState({ sec: n[0], secBase: sp })
+    }));
+    const is = {};
+    NAV.forEach((n) => { is[n[0]] = n[0] === sec; });
+
+    // switches: key -> default
+    const SW = {
+      login: true, dock: true, keepbar: true, vibrancy: false, sid: true, restore: true, hidesdk: true,
+      nWait: true, sWait: true, nErr: true, sErr: true, nDone: true, sDone: false, nExit: true, sExit: false,
+      dnd: true, muLab: false, muWeb: false, muGit: false, muCodd: true, muNone: false,
+      hidemail: true, swconfirm: false, autolow: false, resize: true, keeporig: false, mcpauto: true, aiwrite: false,
+      exempt: true, resumewarn: true
+    };
+    const swOv = st.sw || {};
+    const sw = {};
+    Object.keys(SW).forEach((k) => {
+      const on = Object.prototype.hasOwnProperty.call(swOv, k) ? !!swOv[k] : SW[k];
+      sw[k] = {
+        on, cls: on ? 'on' : '', aria: on ? 'true' : 'false',
+        flip: () => this.setState({ sw: Object.assign({}, (this.state && this.state.sw) || {}, { [k]: !on }) })
+      };
+    });
+
+    // segmented controls: key -> [default, options]
+    const SG = {
+      quit: ['ask', ['ask', 'stop', 'keep']],
+      density: ['compact', ['compact', 'comfort']],
+      ext: ['project', ['project', 'detected', 'hide']],
+      dock: ['wait', ['wait', 'all', 'off']],
+      mbar: ['icon', ['icon', 'counts']],
+      loc: ['local', ['local', 'icloud', 'custom']],
+      ai: ['read', ['off', 'read', 'append']],
+      digest: ['weekly', ['weekly', 'biweekly', 'monthly', 'off']],
+      chan: ['stable', ['stable', 'beta']]
+    };
+    const sgOv = st.sg || {};
+    const sg = {};
+    const sgVal = {};
+    Object.keys(SG).forEach((k) => {
+      const cur = sgOv[k] || SG[k][0];
+      sgVal[k] = cur;
+      sg[k] = {};
+      SG[k][1].forEach((o) => {
+        sg[k][o] = {
+          cls: o === cur ? 'on' : '', pr: o === cur ? 'true' : 'false',
+          pick: () => this.setState({ sg: Object.assign({}, (this.state && this.state.sg) || {}, { [k]: o }) })
+        };
+      });
+    });
+
+    const crtSeg = {};
+    ['full', 'subtle', 'off'].forEach((o) => {
+      crtSeg[o] = { cls: o === crt ? 'on' : '', pr: o === crt ? 'true' : 'false', pick: () => this.setState({ crt: o, crtBase: cp }) };
+    });
+
+    const tfs = st.tfs ?? 13;
+
+    // auto-switch on low remaining (R8): checkboxes, threshold, live preview in R7 order
+    const CB = { h5: true, w1: true };
+    const cbOv = st.cb || {};
+    const cb = {};
+    Object.keys(CB).forEach((k) => {
+      const on = Object.prototype.hasOwnProperty.call(cbOv, k) ? !!cbOv[k] : CB[k];
+      cb[k] = {
+        on, cls: on ? 'on' : '', aria: on ? 'true' : 'false',
+        flip: () => this.setState({ cb: Object.assign({}, (this.state && this.state.cb) || {}, { [k]: !on }) })
+      };
+    });
+    const thr = Math.min(20, Math.max(1, st.thr ?? 2));
+    const autoOn = sw.autolow.on;
+    const c5 = cb.h5.on;
+    const c1 = cb.w1.on;
+    // R7 order: soonest weekly reset first; the active account keeps its sorted place
+    const ACC = [
+      { slot: '#2', alias: '藍鵲', p5: 98, v5: '98%', s5: 'tone-ok', p1: 46, v1: '46%', s1: 'tone-warn', rst: '1d12h後', act: false, ns5: false },
+      { slot: '#3', alias: '工作', p5: 91, v5: '91%', s5: 'tone-ok', p1: 15, v1: '15%', s1: 'tone-crit', rst: '3d01h後', act: true, ns5: false },
+      { slot: '#1', alias: '個人', p5: 100, v5: '未開始', s5: 'tone-muted', p1: 100, v1: '100%', s1: 'tone-ok', rst: '4d09h後', act: false, ns5: true }
+    ];
+    const target = (c5 || c1) ? ACC.find((a) => !a.act && a.p5 > thr && a.p1 > thr) : null;
+    const active = ACC.find((a) => a.act);
+    let activeLow = false;
+    const pvList = ACC.map((a) => {
+      const wins = [];
+      if (c5) wins.push({ val: a.p5, lab: a.ns5 ? '5h 未開始' : '5h ' + a.p5 + '%' });
+      if (c1) wins.push({ val: a.p1, lab: '1w ' + a.p1 + '%' });
+      let low = null;
+      wins.forEach((w) => { if (!low || w.val < low.val) low = w; });
+      const d = low ? low.val - thr : 0;
+      if (a.act && low && d <= 0) activeLow = true;
+      return Object.assign({}, a, {
+        cls: a.act ? 'act' : '',
+        scls: a.act ? 'act' : '',
+        dist: !low ? '未檢查任何視窗' : (d <= 0 ? low.lab + ' · 已達門檻' : low.lab + ' · 距切換 ' + d + '%'),
+        dcls: !low ? '' : (d <= 0 ? 'crit' : (d <= 15 ? 'warn' : '')),
+        isAct: a.act,
+        isNext: !!target && target.slot === a.slot,
+        thr, tk5: c5, tk1: c1
+      });
+    });
+    let note = '';
+    if (!c5 && !c1) note = '· 未勾選檢查視窗，不會切換';
+    else if (!target) note = '· 所有帳號都低於 ' + thr + '%，不切換';
+    else if (activeLow) note = '· 已達門檻，會立即切換';
+    const winLab = (c5 && c1) ? '5h / 1w' : (c5 ? '5h' : (c1 ? '1w' : '未選視窗'));
+    const au = {
+      on: autoOn, off: !autoOn, thr, used: 100 - thr,
+      t5: autoOn && c5, t1: autoOn && c1,
+      list: pvList,
+      cur: active.slot + ' ' + active.alias,
+      next: target ? target.slot + ' ' + target.alias : '—',
+      note,
+      rule: '剩餘 ≤ ' + thr + '% · ' + winLab + ' · 依排序',
+      stLabel: autoOn ? 'ON · 冷卻 300 s' : 'OFF · 需手動開啟'
+    };
+
+    const NB_HINT = {
+      local: '~/.codd/notebook · 每則筆記是一個 .md 檔',
+      icloud: 'iCloud Drive / CODD / notebook · 多台 Mac 同步',
+      custom: '選擇資料夾後，現有筆記會一起搬過去'
+    };
+
+    const PROFILES = [
+      { glyph: '◆', gcls: 'amber', name: 'claude-default', kind: 'Claude', def: true, cmd: 'claude', cwd: '跟隨專案', acct: '跟隨全域（#3 工作）', model: '預設（opus-5.5）' },
+      { glyph: '◆', gcls: 'amber', name: 'claude-plan', kind: 'Claude', def: false, cmd: 'claude --permission-mode plan', cwd: '跟隨專案', acct: '跟隨全域（#3 工作）', model: '預設（opus-5.5）' },
+      { glyph: '◆', gcls: 'amber', name: 'claude-rc', kind: 'Claude', def: false, cmd: 'claude --remote-control', cwd: '跟隨專案', acct: '跟隨全域（#3 工作）', model: '預設（opus-5.5）' },
+      { glyph: '$', gcls: 'cream', name: 'zsh', kind: 'Shell', def: false, cmd: 'zsh', cwd: '跟隨專案', acct: '—', model: '—' }
+    ].map((p) => Object.assign({}, p, { aCopy: '複製 ' + p.name, aEdit: '編輯 ' + p.name, aDel: '刪除 ' + p.name }));
+
+    const EVENTS = [
+      ['SessionStart', 1], ['UserPromptSubmit', 1], ['PreToolUse', 1], ['PermissionRequest', 1],
+      ['PostToolUse', 1], ['PostToolUseFailure', 1], ['Notification', 1],
+      ['SubagentStart', 0], ['SubagentStop', 0], ['PreCompact', 0], ['PostCompact', 0],
+      ['Stop', 1], ['StopFailure', 1], ['SessionEnd', 1]
+    ].map((e) => ({ name: e[0], cls: e[1] ? '' : 'amber', g: e[1] ? '●' : '◆', gcls: e[1] ? 'ok' : 'amber' }));
+
+    const KEYS = [
+      ['Navigation', '跳到第 1–9 個 session', '依側欄由上而下的順序', '⌘1–9'],
+      ['', '切換到下一個 session', '循環切換', '⌃Tab'],
+      ['', '快速切換', 'session、筆記、專案與動作', '⌘K'],
+      ['', '開啟設定', '就是這一頁', '⌘,'],
+      ['Session', '新增 session', '在目前選取的專案', '⌘N'],
+      ['', '新增 shell 分頁', '在 session 的 cwd 開 zsh', '⌘T'],
+      ['', '下方終端機', '開 / 關', '⌘J'],
+      ['', 'Composer', '多行輸入，可貼圖片', '⌘L'],
+      ['', '允許', 'answer bar 的 [1] Yes', '⌘⏎'],
+      ['', '調整順序', '只在所屬專案內移動', '⌥⇧↑ / ↓'],
+      ['View & Notes', '專注模式', '隱藏側欄', '⌘\\'],
+      ['', '快速筆記', '自動連結目前 session', '⌘⇧N'],
+      ['Global', '叫出 FANCY/CODD', '任何 App 中都有效', '⌥Space']
+    ].map((k) => ({ head: k[0], act: k[1], note: k[2], keys: k[3], aria: '修改「' + k[1] + '」的快捷鍵' }));
+
+    return {
+      crtClass: crt === 'off' ? '' : 'crt-' + crt,
+      crtLabel: crt.toUpperCase(),
+      nav, is, sw, sg, crtSeg, tfs,
+      tfsDown: () => this.setState({ tfs: Math.max(10, tfs - 1) }),
+      tfsUp: () => this.setState({ tfs: Math.min(24, tfs + 1) }),
+      cb, au,
+      thrDown: () => this.setState({ thr: Math.max(1, thr - 1) }),
+      thrUp: () => this.setState({ thr: Math.min(20, thr + 1) }),
+      autoDim: autoOn ? '' : 'sx-dim',
+      dndDim: sw.dnd.on ? '' : 'sx-dim',
+      nbHint: NB_HINT[sgVal.loc] || NB_HINT.local,
+      profiles: PROFILES,
+      events: EVENTS,
+      keys: KEYS,
+      goRemote: () => this.setState({ sec: 'remote', secBase: sp })
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+{"schemaVersion": 1, "error": {"type": "ClaudeCodeLockTimeout", "message": "Timed out waiting for ~/.claude.lock"}}

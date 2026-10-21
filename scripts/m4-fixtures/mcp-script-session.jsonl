@@ -1,0 +1,12 @@
+# The MCP sequence a CODD claude session runs at startup (docs/M4-PLAN.md I2a / I4b B3), for
+# FAKE_MCP_SCRIPT or `mcp-client.py --config <mcp.json> script <this file>`. Ids are make-notes.sh's.
+{"label": "discover", "method": "server/discover"}
+{"label": "initialize", "method": "initialize", "params": {"protocolVersion": "2025-11-25", "capabilities": {}, "clientInfo": {"name": "claude-code", "version": "2.1.302"}}}
+{"label": "initialized", "method": "notifications/initialized"}
+{"label": "tools", "method": "tools/list"}
+{"label": "search", "tool": "notes_search", "arguments": {"query": "打卡"}}
+{"label": "read", "tool": "notes_read", "arguments": {"ref": "rwd-punch-k7x2"}}
+{"label": "append", "tool": "notes_append", "arguments": {"ref": "ai-append-note", "markdown": "AI 附加的一行（fixture）"}}
+{"label": "append-read-note", "tool": "notes_append", "arguments": {"ref": "global-note", "markdown": "不應該成功"}}
+{"label": "read-off", "tool": "notes_read", "arguments": {"ref": "ai-off-note"}}
+{"label": "resources", "method": "resources/list"}

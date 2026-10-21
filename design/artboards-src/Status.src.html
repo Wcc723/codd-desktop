@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>狀態 · Status</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<!--@HELMET-->
+<style>
+/* ===== Status board (prefix sx-) ===== */
+.codd.win.st-tall,.st-tall .rail,.st-tall .side,.st-tall .main{height:1300px}
+.codd .sx-side{flex:0 0 220px}
+.codd .sx-sp{flex:1}
+.codd .sx-rule{flex:1;border-top:1px dashed var(--line-bright);min-width:24px}
+/* sidebar */
+.codd .sx-h{margin:0;cursor:default;font-weight:400}
+.codd .sx-nav{display:flex;flex-direction:column;gap:2px;padding:0 0 8px}
+.codd .sx-ni{display:grid;grid-template-columns:14px minmax(0,1fr) auto;align-items:center;column-gap:8px;min-height:40px;padding:4px 10px 4px 8px;border-left:2px solid transparent;color:var(--bone);text-decoration:none}
+.codd .sx-ni:hover{background:var(--bg-soft);border-left-color:var(--line-bright)}
+.codd .sx-ni.on{background:var(--bg-lift);border-left-color:var(--amber)}
+.codd .sx-ni .g{font-size:11px;text-align:center;line-height:1}
+.codd .sx-ni .t{display:flex;flex-direction:column;gap:1px;min-width:0}
+.codd .sx-ni .t b{font-weight:500;font-size:11px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
+.codd .sx-ni.on .t b{color:var(--amber);text-shadow:0 0 6px var(--amber-glow)}
+.codd .sx-ni.on .t b::after{content:'_';margin-left:2px;animation:codd-blink 1s steps(1) infinite}
+.codd .sx-ni .t small{font-size:10.5px;color:var(--dimmer);letter-spacing:.02em}
+.codd .sx-ni .v{font-size:10.5px;color:var(--dim);font-variant-numeric:tabular-nums;white-space:nowrap}
+.codd .sx-cnts{display:flex;flex-direction:column;padding:0 2px 4px}
+.codd .sx-cn{display:grid;grid-template-columns:14px minmax(0,1fr) auto;column-gap:8px;align-items:center;height:22px;padding:0 10px;font-size:11px;color:var(--bone)}
+.codd .sx-cn .lamp{animation:none}
+.codd .sx-cn .n{color:var(--cream);font-variant-numeric:tabular-nums}
+.codd .sx-cn.z .n,.codd .sx-cn.z{color:var(--dimmer)}
+.codd .sx-golive{display:flex;align-items:center;gap:6px;margin:6px 8px 0;font-size:11px;color:var(--dim);text-decoration:none}
+.codd .sx-golive:hover{color:var(--amber)}
+.codd .sx-fr{display:flex;justify-content:space-between;align-items:center;gap:8px}
+/* page */
+.codd .sx-page{flex:1;min-height:0;overflow:hidden;padding:28px 36px 20px;display:flex;flex-direction:column;gap:20px}
+.codd .sx-top{display:flex;flex-direction:column;gap:8px}
+.codd .sx-tr{display:flex;align-items:center;gap:10px}
+.codd .sx-sec{display:flex;flex-direction:column;gap:10px;min-width:0}
+.codd .sx-sh{display:flex;align-items:center;gap:10px;min-height:20px}
+.codd .sx-sh .h-sub{white-space:nowrap}
+/* host metrics */
+.codd .sx-host{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1.45fr) repeat(3,minmax(0,1fr));gap:10px}
+.codd .sx-m{background:var(--bg-soft);border:1px solid var(--line-bright);padding:9px 12px 11px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.codd .sx-m.tall{grid-row:span 2}
+.codd .sx-m .k{display:flex;align-items:center;gap:6px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.codd .sx-m .k .r{margin-left:auto;letter-spacing:.04em;text-transform:none;font-size:10.5px;color:var(--dimmer)}
+.codd .sx-m .k .r.ok{color:var(--success)}
+.codd .sx-m .v{font-family:var(--display);font-weight:700;font-size:22px;line-height:1.1;color:var(--cream);white-space:nowrap}
+.codd .sx-m .v small{font-size:12.5px;color:var(--dim);font-weight:400;margin-left:2px}
+.codd .sx-m .s{font-size:11px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.codd .sx-m .meter{margin-top:auto}
+.codd .sx-m .spark{flex:1;height:auto;min-height:26px;border-bottom:1px dashed var(--line)}
+.codd .sx-m .spark .sx-base{stroke:var(--line-bright);stroke-width:1;stroke-dasharray:3 3}
+.codd .sx-ax{display:flex;justify-content:space-between;font-size:10px;color:var(--dimmer);letter-spacing:.04em;font-variant-numeric:tabular-nums;margin-top:-2px}
+.codd .sx-stack{height:6px}
+.codd .sx-stack b.w2{background:var(--bone);opacity:.55}
+.codd .sx-stack b.w3{background:var(--cyan);opacity:.6}
+.codd .sx-leg{display:flex;flex-direction:column;gap:1px;font-size:10.5px;color:var(--dim);font-variant-numeric:tabular-nums}
+.codd .sx-leg span{display:flex;align-items:center;gap:6px}
+.codd .sx-leg i{width:7px;height:7px;flex:none;background:var(--amber-dim)}
+.codd .sx-leg i.c2{background:var(--bone);opacity:.55}
+.codd .sx-leg i.c3{background:var(--cyan);opacity:.6}
+.codd .sx-leg em{font-style:normal;margin-left:auto;color:var(--bone)}
+.codd .sx-split b.x{background:var(--bone);opacity:.5}
+/* accounts */
+.codd .sx-accts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.codd .sx-acct{display:flex;flex-direction:column;gap:7px;min-width:0;padding:16px 14px}
+.codd .sx-acct .card-h{margin-bottom:4px}
+.codd .sx-slot{font-size:15px;letter-spacing:.02em}
+.codd .sx-alias{color:var(--cream);letter-spacing:.06em}
+.codd .sx-acct .card-h .btn{margin-left:auto}
+.codd .sx-acct .card-h .chip{font-family:var(--mono);font-weight:500}
+.codd .sx-st{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--dim);white-space:nowrap}
+.codd .sx-q{display:flex;flex-direction:column;gap:2px}
+.codd .sx-acct .qrow .k{width:34px}
+.codd .sx-rs{display:flex;justify-content:space-between;gap:8px;padding-left:42px;font-size:10.5px;color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+.codd .sx-rs .in{color:var(--dimmer)}
+/* 1w reset = sort key (v3 R7): slightly brighter */
+.codd .sx-rs.sx-key{color:var(--bone)}
+.codd .sx-rs.sx-key .in{color:var(--cream);font-weight:600}
+.codd .sx-sort{color:var(--dim)}
+.codd .sx-pace{font-size:11px;color:var(--amber);line-height:1.4;text-wrap:pretty}
+.codd .sx-who{margin-top:auto;padding-top:8px;border-top:1px dashed var(--line);font-size:11px;color:var(--bone);display:flex;align-items:center;gap:6px}
+.codd .sx-add{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:1px dashed var(--line-bright);background:transparent;color:var(--dim);cursor:pointer;font-family:var(--mono);padding:16px;text-align:center}
+.codd .sx-add:hover{border-color:var(--amber-dim);color:var(--amber)}
+.codd .sx-add .p{font-family:var(--display);font-size:22px;line-height:1;color:var(--amber-dim)}
+.codd .sx-add .t{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--bone)}
+.codd .sx-auto{display:flex;flex-wrap:wrap;align-items:center;column-gap:8px;row-gap:4px;padding:6px 12px;min-height:36px;border:1px solid var(--line);background:var(--bg-soft);white-space:nowrap}
+.codd .sx-al{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--bone)}
+.codd .sx-al small{letter-spacing:.04em;color:var(--cream);font-size:11.5px;margin-left:6px;text-transform:none}
+/* auto-switch rule (v3 R8), OFF: configured values as dim chips */
+.codd .sx-auto .chip.sx-dc{color:var(--dim);border-style:dashed}
+.codd .sx-anote{flex-basis:100%;padding-left:38px}
+/* hooks / mcp */
+.codd .sx-two{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:20px;align-items:start}
+.codd .sx-col{display:flex;flex-direction:column;gap:10px;min-width:0}
+.codd .sx-nt{font-family:var(--mono);font-weight:400;letter-spacing:.04em;text-transform:none;font-size:11.5px}
+.codd .sx-r{margin-left:auto;display:inline-flex;align-items:center;gap:6px}
+.codd .sx-r .chip{font-family:var(--mono);font-weight:500}
+.codd .sx-parts{margin:0;display:flex;flex-direction:column}
+.codd .sx-pr{display:grid;grid-template-columns:118px minmax(0,1fr);column-gap:12px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.codd .sx-pr:first-child{padding-top:0}
+.codd .sx-pr dt{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);padding-top:2px;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.codd .sx-pr dt .chip{letter-spacing:.03em;text-transform:none}
+.codd .sx-pr dd{margin:0;display:flex;flex-direction:column;gap:5px;min-width:0}
+.codd .sx-l{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.codd .sx-chain{display:inline-flex;align-items:center;gap:5px;color:var(--dimmer)}
+.codd .sx-pathw{white-space:normal;overflow-wrap:anywhere;line-height:1.55;flex:1;min-width:0}
+.codd .sx-nw{flex-wrap:nowrap;align-items:flex-start}
+.codd .sx-subh{display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-top:12px}
+.codd .sx-subh .hint{letter-spacing:.02em;text-transform:none}
+.codd .sx-fh,.codd .sx-cl,.codd .sx-reg{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.codd .sx-fh li{display:flex;align-items:center;gap:10px;min-height:30px;border-bottom:1px dashed var(--line);white-space:nowrap}
+.codd .sx-acts{display:flex;align-items:center;gap:8px;margin-top:14px}
+.codd .sx-prof{padding:12px 18px;display:flex;flex-direction:column;gap:5px}
+.codd .sx-pt{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.1em;color:var(--amber)}
+.codd .sx-run{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--bone);white-space:nowrap}
+.codd .sx-cl{margin-top:8px;border-top:1px dashed var(--line)}
+.codd .sx-cl li{display:flex;align-items:center;gap:8px;height:27px;border-bottom:1px dashed var(--line);font-size:12px;white-space:nowrap;min-width:0}
+.codd .sx-cl li .ell{max-width:150px}
+.codd .sx-reg li{display:flex;align-items:center;gap:8px;height:31px;border-bottom:1px dashed var(--line);font-size:12px;white-space:nowrap}
+.codd .sx-tok{display:flex;align-items:center;gap:8px;margin-top:10px;white-space:nowrap}
+.codd .sx-tok .lbl{width:auto}
+.codd .sx-rm{padding:14px 18px;display:flex;flex-direction:column;gap:8px}
+</style>
+</helmet>
+<div class="codd win st-tall {{ crtClass }}">
+<!--@RAIL on=status-->
+<aside class="side sx-side" aria-label="狀態區段">
+  <div class="side-head">
+    <span class="brand">STATUS</span>
+    <span class="sx-sp"></span>
+    <button class="icon-btn" type="button" aria-label="立即更新">↻</button>
+  </div>
+  <div class="side-scroll">
+    <h2 class="sbsec sx-h">Sections<span class="rule"></span></h2>
+    <nav class="sx-nav" aria-label="狀態區段">
+      <a class="sx-ni on" href="#host" aria-current="location"><span class="g ok">●</span><span class="t"><b>Host</b><small>主機</small></span><span class="v">cpu 23%</span></a>
+      <a class="sx-ni" href="#accounts"><span class="g bad">▲</span><span class="t"><b>Accounts</b><small>帳號 · cswap</small></span><span class="v bad">1w 15%</span></a>
+      <a class="sx-ni" href="#hooks"><span class="g amber">◆</span><span class="t"><b>Hooks</b><small>狀態回報</small></span><span class="v amber">需更新</span></a>
+      <a class="sx-ni" href="#mcp"><span class="g ok">●</span><span class="t"><b>MCP</b><small>本機 server</small></span><span class="v">3 clients</span></a>
+      <a class="sx-ni" href="#remote"><span class="g cy">◉</span><span class="t"><b>Remote</b><small>遠端連線</small></span><span class="v">1 rc</span></a>
+    </nav>
+
+    <section class="needs" aria-label="需要你處理">
+      <button class="sbsec" type="button"><span class="caret open">▸</span>◆ Needs you <span class="badge">3</span><span class="rule"></span></button>
+      <a class="srow flat st-waiting" href="#s1">
+        <span class="l1"><span class="lamp">◆</span><span class="tag" style="background:var(--t-red)"></span><span class="title">修正登入 API 401</span><span class="state">Perm</span></span>
+        <span class="l2"><span class="dur">3m</span><span>·</span><span class="ell">orb-toolkit-backend</span></span>
+      </a>
+      <a class="srow flat st-waiting" href="#s2">
+        <span class="l1"><span class="lamp">◆</span><span class="title">發票匯出 CSV</span><span class="state">Ask</span></span>
+        <span class="l2"><span class="dur">12m</span><span>·</span><span class="ell">Northstar invoice system</span></span>
+      </a>
+      <a class="srow flat st-error" href="#s3">
+        <span class="l1"><span class="lamp">▲</span><span class="tag" style="background:var(--t-yellow)"></span><span class="title">場景載入優化</span><span class="state">Error</span></span>
+        <span class="l2"><span class="dur">1m</span><span>·</span><span class="ell">overloaded · Gear3D</span></span>
+      </a>
+    </section>
+
+    <h2 class="sbsec sx-h">Sessions <span class="cnt">13 live</span><span class="rule"></span></h2>
+    <div class="sx-cnts">
+      <div class="sx-cn st-waiting"><span class="lamp">◆</span><span>WAITING</span><span class="n">2</span></div>
+      <div class="sx-cn st-error"><span class="lamp">▲</span><span>ERROR</span><span class="n">1</span></div>
+      <div class="sx-cn st-done"><span class="lamp">◇</span><span>DONE</span><span class="n">1</span></div>
+      <div class="sx-cn st-busy"><span class="lamp">●</span><span>BUSY</span><span class="n">3</span></div>
+      <div class="sx-cn st-compacting"><span class="lamp">◌</span><span>COMPACT</span><span class="n">1</span></div>
+      <div class="sx-cn st-idle"><span class="lamp">○</span><span>IDLE</span><span class="n">4</span></div>
+      <div class="sx-cn st-shell"><span class="lamp">$</span><span>SHELL</span><span class="n">1</span></div>
+      <div class="sx-cn st-exited z"><span class="lamp">✕</span><span>EXITED</span><span class="n">1</span></div>
+      <a class="sx-golive" href="#sessions">→ 開啟 SESSIONS</a>
+    </div>
+  </div>
+  <div class="side-foot">
+    <div class="sx-fr"><span class="sec" style="font-size:9.5px">Refresh</span><span class="num">每 5 秒</span></div>
+    <div class="sx-fr"><span class="faint num">上次 10:42:07</span><button class="btn sm" type="button">暫停</button></div>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="sx-page">
+    <header class="sx-top">
+      <div class="sx-tr">
+        <h1 class="h-page">STATUS</h1>
+        <span class="sx-sp"></span>
+        <span class="chip ok caps"><span class="lamp st-busy" style="width:auto;font-size:9px">●</span>Live</span>
+        <button class="btn sm" type="button">↻ 立即更新</button>
+      </div>
+      <div class="meta-rule">UPDATED 10:42:07 · 每 5 秒</div>
+    </header>
+
+    <!-- HOST -->
+    <section class="sx-sec" id="host" aria-labelledby="sx-h-host">
+      <div class="sx-sh"><h2 class="h-sub" id="sx-h-host">Host</h2><span class="hint">studio-mbp · 曲線為最近 10 分鐘</span><span class="sx-rule"></span><span class="chip ok caps">● 正常</span></div>
+      <div class="sx-host">
+        <div class="sx-m tall">
+          <div class="k">CPU<span class="r">user + sys</span></div>
+          <div class="v">23<small>%</small></div>
+          <div class="s">load 3.12 · 12 cores</div>
+          <svg class="spark" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><line class="sx-base" x1="0" y1="24.7" x2="200" y2="24.7" vector-effect="non-scaling-stroke"></line><polyline points="0,28 10,26 20,27.3 30,22.7 40,19.3 50,21.3 60,24 70,25.3 80,22 90,16.7 100,14.7 110,20 120,23.3 130,26 140,27.3 150,24 160,20.7 170,22.7 180,25.3 190,26.7 200,24.7" vector-effect="non-scaling-stroke"></polyline></svg>
+          <div class="sx-ax"><span>-10m</span><span>peak 38%</span><span>now</span></div>
+          <span class="meter"><b style="width:23%"></b></span>
+        </div>
+        <div class="sx-m tall">
+          <div class="k">MEM<span class="r ok">● pressure normal</span></div>
+          <div class="v">21.4<small>/36G</small></div>
+          <span class="meter sx-stack" role="img" aria-label="記憶體 app 13.8G、wired 4.3G、compressed 3.3G，共 21.4G / 36G"><b style="width:38.3%"></b><b class="w2" style="left:38.3%;width:11.9%"></b><b class="w3" style="left:50.2%;width:9.2%"></b></span>
+          <div class="sx-leg"><span><i></i>app<em>13.8G</em></span><span><i class="c2"></i>wired<em>4.3G</em></span><span><i class="c3"></i>compressed<em>3.3G</em></span></div>
+          <svg class="spark" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><polyline points="0,17.1 10,16.7 20,16.3 30,15.9 40,16 50,15.5 60,14.8 70,14.3 80,14.5 90,14.7 100,13.9 110,13.6 120,14 130,14.4 140,14.1 150,13.7 160,13.5 170,13.9 180,14.1 190,14.3 200,14.1" vector-effect="non-scaling-stroke"></polyline></svg>
+          <div class="sx-ax"><span>-10m</span><span>now</span></div>
+        </div>
+        <div class="sx-m">
+          <div class="k">Disk<span class="r">1T</span></div>
+          <div class="v">412G<small>free</small></div>
+          <div class="s">已用 59% · Macintosh HD</div>
+          <span class="meter"><b style="width:59%"></b></span>
+        </div>
+        <div class="sx-m">
+          <div class="k">Swap</div>
+          <div class="v">1.2G</div>
+          <div class="s">共 2G · 壓力正常</div>
+          <span class="meter"><b style="width:60%"></b></span>
+        </div>
+        <div class="sx-m">
+          <div class="k">Bat<span class="r">AC</span></div>
+          <div class="v">86<small>%</small></div>
+          <div class="s">接上電源</div>
+          <span class="meter tone-ok"><b style="width:86%"></b></span>
+        </div>
+        <div class="sx-m">
+          <div class="k">Claude<span class="r">processes</span></div>
+          <div class="v">12</div>
+          <div class="s">11 CODD + 1 外部</div>
+          <span class="meter sx-split"><b style="width:91.7%"></b><b class="x" style="left:91.7%;width:8.3%"></b></span>
+        </div>
+        <div class="sx-m">
+          <div class="k">CODD app<span class="r">RSS</span></div>
+          <div class="v">412<small>MB</small></div>
+          <div class="s">event loop p99 3ms</div>
+          <span class="meter tone-ok"><b style="width:1.1%"></b></span>
+        </div>
+        <div class="sx-m">
+          <div class="k">Uptime</div>
+          <div class="v">3d4h</div>
+          <div class="s">開機於 10/12 06:42</div>
+          <span class="meter tone-muted"><b style="width:100%"></b></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACCOUNTS -->
+    <section class="sx-sec" id="accounts" aria-labelledby="sx-h-acct">
+      <div class="sx-sh"><h2 class="h-sub" id="sx-h-acct">Accounts</h2><span class="chip">cswap 0.26.0</span><span class="path">~/.claude-swap-backup</span><span class="sx-rule"></span><span class="hint sx-sort">依每週重置排序 · 越快重置越上面</span><span class="faint">·</span><span class="hint">3 個帳號 · 不顯示 email</span></div>
+      <div class="sx-accts">
+        <article class="card sx-acct" aria-label="帳號 #2 藍鵲 · 每週重置最快（1d12h後）">
+          <h3 class="card-h"><span class="sx-slot">#2</span><span class="sx-alias">藍鵲</span><span class="chip">MAX 20x</span><button class="btn sm accent" type="button">Switch</button></h3>
+          <div class="sx-st"><span class="ok">● ok</span><span class="faint">·</span><span>cswap cache · 3m 前</span></div>
+          <div class="sx-q tone-ok">
+            <div class="qrow"><span class="k">5h</span><span class="bar10"><b style="width:98%"></b></span><span class="v">98%</span></div>
+            <div class="sx-rs"><span>重置 13:19</span><span class="in">2h37m後</span></div>
+          </div>
+          <div class="sx-q tone-warn">
+            <div class="qrow"><span class="k">1w</span><span class="bar10"><b style="width:46%"></b></span><span class="v">46%</span></div>
+            <div class="sx-rs sx-key"><span>重置 10/16 週五 22:59</span><span class="in">1d12h後</span></div>
+          </div>
+          <div class="sx-q tone-muted">
+            <div class="qrow"><span class="k">Fable</span><span class="bar10"></span><span class="v">—</span></div>
+            <div class="sx-rs"><span>快取未提供</span><span class="in">等待回報</span></div>
+          </div>
+          <div class="sx-who"><span class="cy">●</span>1 個 session 固定（cswap run）</div>
+        </article>
+
+        <article class="card hot sx-acct" aria-label="帳號 #3 工作（使用中）">
+          <h3 class="card-h"><span class="sx-slot">#3</span><span class="sx-alias">工作</span><span class="chip amber">MAX 20x</span><button class="btn sm" type="button" disabled>Active</button></h3>
+          <div class="sx-st"><span class="ok">● ok</span><span class="faint">·</span><span>statusline · 12s 前</span></div>
+          <div class="sx-q tone-ok">
+            <div class="qrow"><span class="k">5h</span><span class="bar10"><b style="width:91%"></b></span><span class="v">91%</span></div>
+            <div class="sx-rs"><span>重置 13:39</span><span class="in">2h57m後</span></div>
+          </div>
+          <div class="sx-q tone-crit">
+            <div class="qrow"><span class="k">1w</span><span class="bar10"><b style="width:15%"></b></span><span class="v">15%</span></div>
+            <div class="sx-rs sx-key"><span>重置 10/18 週日 12:00</span><span class="in">3d01h後</span></div>
+          </div>
+          <div class="sx-q tone-ok">
+            <div class="qrow"><span class="k">Fable</span><span class="bar10"><b style="width:100%"></b></span><span class="v">100%</span></div>
+            <div class="sx-rs"><span>週額度 · 同 1w 重置</span><span class="in">未使用</span></div>
+          </div>
+          <p class="sx-pace">↗ 1w 用量超前預期 · 預估 10/17 18:00 用完</p>
+          <div class="sx-who"><span class="cy">●</span>12 個 session 跟隨全域登入</div>
+        </article>
+
+        <article class="card sx-acct" aria-label="帳號 #1 個人">
+          <h3 class="card-h"><span class="sx-slot">#1</span><span class="sx-alias">個人</span><span class="chip">MAX 20x</span><button class="btn sm accent" type="button">Switch</button></h3>
+          <div class="sx-st"><span class="ok">● ok</span><span class="faint">·</span><span>cswap cache · 3m 前</span></div>
+          <div class="sx-q tone-muted">
+            <div class="qrow"><span class="k">5h</span><span class="bar10"><b style="width:100%"></b></span><span class="v">100%</span></div>
+            <div class="sx-rs"><span>未開始</span><span class="in">第一則訊息後起算</span></div>
+          </div>
+          <div class="sx-q tone-ok">
+            <div class="qrow"><span class="k">1w</span><span class="bar10"><b style="width:100%"></b></span><span class="v">100%</span></div>
+            <div class="sx-rs sx-key"><span>重置 10/19 週一 20:00</span><span class="in">4d09h後</span></div>
+          </div>
+          <div class="sx-q tone-muted">
+            <div class="qrow"><span class="k">Fable</span><span class="bar10"></span><span class="v">—</span></div>
+            <div class="sx-rs"><span>快取未提供</span><span class="in">等待回報</span></div>
+          </div>
+          <div class="sx-who"><span class="faint">○</span><span class="muted">0 個 session</span></div>
+        </article>
+
+        <button class="sx-add" type="button"><span class="p">+</span><span class="t">加入帳號</span><span class="hint">cswap add · 用 claude /login 登入後擷取</span></button>
+      </div>
+      <div class="sx-auto">
+        <button class="sw" type="button" role="switch" aria-checked="false" aria-labelledby="sx-auto-l"></button>
+        <span class="sx-al" id="sx-auto-l">Auto-switch<small>剩餘不足時自動切換</small></span>
+        <span class="chip caps">off</span>
+        <span class="chip sx-dc">剩餘 ≤ 2%</span>
+        <span class="chip sx-dc">5h / 1w</span>
+        <span class="chip sx-dc">依排序第一個額度足夠的</span>
+        <span class="chip sx-dc">冷卻 300s</span>
+        <button class="btn sm" type="button">設定</button>
+        <span class="comment sx-anote">// 用量只讀 statusline 與 cswap 快取，不另外打 API（避免 429）</span>
+      </div>
+    </section>
+
+    <div class="sx-two">
+      <!-- HOOKS & STATUSLINE -->
+      <section class="sx-col" id="hooks" aria-labelledby="sx-h-hooks">
+        <div class="sx-sh"><h2 class="h-sub" id="sx-h-hooks">Hooks &amp; Statusline</h2><span class="sx-rule"></span></div>
+        <article class="card" aria-label="~/.claude 設定">
+          <h3 class="card-h">~/.claude<span class="faint sx-nt">settings.json</span><span class="sx-r"><span class="chip amber">◆ 1 項需要更新</span></span></h3>
+          <dl class="sx-parts">
+            <div class="sx-pr">
+              <dt>Hooks</dt>
+              <dd>
+                <div class="sx-l"><span class="amber">◆ 需要更新</span><span class="hint">已安裝 10 / 14 個事件</span></div>
+                <div class="sx-l"><span class="hint">缺</span><span class="chip amber">PreCompact</span><span class="chip amber">PostCompact</span><span class="chip amber">SubagentStart</span><span class="chip amber">SubagentStop</span></div>
+              </dd>
+            </div>
+            <div class="sx-pr">
+              <dt>Statusline</dt>
+              <dd><div class="sx-l"><span class="ok">● 已安裝</span><span class="sx-chain"><code>CODD</code>→<code>hook-tap</code>→<code>statusline.sh</code></span></div></dd>
+            </div>
+            <div class="sx-pr">
+              <dt>Status dir<span class="chip amber">! 與預設不同</span></dt>
+              <dd>
+                <div class="sx-l sx-nw"><span class="path sx-pathw">~/Github/codd-web/agent-sandbox/.claude/codd-status</span></div>
+              </dd>
+            </div>
+            <div class="sx-pr">
+              <dt>最近收到資料</dt>
+              <dd><div class="sx-l"><span class="ok">●</span><span class="cream num">8s 前</span><span class="hint">hook 事件與 statusline 都有回報</span></div></dd>
+            </div>
+          </dl>
+          <div class="sx-subh"><span>Foreign hooks</span><span class="hint">其他工具的項目 · CODD 不會改動</span><span class="sx-rule"></span></div>
+          <ul class="sx-fh">
+            <li><code>hook-tap</code><span class="hint">×11 events</span><span class="chip amber">PermissionRequest 會阻擋 600s</span></li>
+            <li><code>osascript</code><span class="cream">通知</span><span class="hint">×2 · Notification, Stop</span><span class="sx-sp"></span><button class="btn sm" type="button">停用重複通知</button></li>
+          </ul>
+          <div class="sx-acts">
+            <button class="btn" type="button">預覽變更</button>
+            <button class="btn primary" type="button">更新</button>
+            <span class="hint">套用前自動備份 settings.json</span>
+            <span class="sx-sp"></span>
+            <button class="btn danger" type="button">解除安裝</button>
+          </div>
+        </article>
+        <article class="card sx-prof" aria-label="cswap session profile #2">
+          <div class="sx-l"><span class="sx-pt">cswap session profile #2</span><span class="faint">→</span><span>settings.json 連結自 <code>~/.claude</code>（共用）</span><span class="sx-sp"></span><span class="ok">● 已連結</span></div>
+          <p class="hint">現場示範：連線 MCP 以 cswap run 使用 #2，hooks 與 statusline 跟主設定一起生效</p>
+        </article>
+      </section>
+
+      <div class="sx-col">
+        <!-- MCP SERVER -->
+        <section class="sx-col" id="mcp" aria-labelledby="sx-h-mcp">
+          <div class="sx-sh"><h2 class="h-sub" id="sx-h-mcp">MCP Server</h2><span class="sx-rule"></span></div>
+          <article class="card" aria-label="MCP server codd">
+            <h3 class="card-h">codd<span class="faint sx-nt">MCP · ~/.codd/notebook</span></h3>
+            <div class="sx-run"><span class="lamp st-busy">●</span><span class="ok caps">Running</span><span class="cream num">127.0.0.1:47821</span><span class="faint">·</span><span>3 clients</span><span class="sx-sp"></span><span class="hint">只接受本機連線</span></div>
+            <ul class="sx-cl" aria-label="已連線的 client">
+              <li><span class="ok">●</span><span class="cream ell">修正登入 API 401</span><span class="hint">Claude Code</span><span class="sx-sp"></span><span class="faint num">連線 42m</span></li>
+              <li><span class="ok">●</span><span class="cream ell">打卡頁 RWD 調整</span><span class="hint">Claude Code</span><span class="sx-sp"></span><span class="faint num">連線 1h18m</span></li>
+              <li><span class="ok">●</span><span class="cream ell">codex</span><span class="hint">Codex CLI</span><span class="sx-sp"></span><span class="faint num">連線 12m</span></li>
+            </ul>
+            <div class="sx-subh"><span>Registrations</span><span class="hint">註冊到其他 app</span><span class="sx-rule"></span></div>
+            <ul class="sx-reg">
+              <li><span class="cream">Claude Code</span><span class="hint">user scope</span><span class="sx-sp"></span><span class="ok">● 已註冊</span><button class="btn sm" type="button">移除</button></li>
+              <li><span class="cream">Codex</span><span class="hint">~/.codex/config.toml</span><span class="sx-sp"></span><span class="faint">○ 未註冊</span><button class="btn sm accent" type="button">註冊</button></li>
+              <li><span class="cream">Claude Desktop</span><span class="hint">擴充功能</span><span class="sx-sp"></span><span class="faint">○ 未安裝</span><button class="btn sm" type="button">安裝 .mcpb</button></li>
+            </ul>
+            <div class="sx-tok"><span class="lbl">Token</span><code>••••</code><span class="hint">client 連線時需附上</span><span class="sx-sp"></span><button class="btn sm" type="button">輪替</button></div>
+          </article>
+        </section>
+
+        <!-- REMOTE -->
+        <section class="sx-col" id="remote" aria-labelledby="sx-h-remote">
+          <div class="sx-sh"><h2 class="h-sub" id="sx-h-remote">Remote</h2><span class="sx-rule"></span></div>
+          <article class="card sx-rm" aria-label="Remote Control">
+            <div class="sx-l"><span class="cy">◉</span><span class="cream">1 個 session 已連 Remote Control（修正登入 API 401）</span></div>
+            <div class="sx-l"><span class="hint">切帳號後手機需登入同一帳號</span><span class="sx-sp"></span><a href="#remote-settings">Remote &amp; Mobile 設定 →</a></div>
+          </article>
+        </section>
+      </div>
+    </div>
+  </div>
+<!--@STATUSBAR-->
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"crt":{"editor":"enum","options":["subtle","full","off"],"default":"subtle","section":"Look"},"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const crt = this.props.crt ?? 'subtle';
+    return { crtClass: crt === 'off' ? '' : 'crt-' + crt };
+  }
+}
+</script>
+</body>
+</html>

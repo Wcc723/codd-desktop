@@ -1,0 +1,31 @@
+{
+  "activeAccountNumber": 3,
+  "lastUpdated": "2026-10-15T02:30:00Z",
+  "sequence": [1, 2, 3],
+  "accounts": {
+    "1": {
+      "email": "personal@example.com",
+      "uuid": "00000000-0000-4000-8000-0000000000a1",
+      "organizationUuid": "00000000-0000-4000-8000-0000000000b1",
+      "organizationName": "personal@example.com's Organization",
+      "added": "2026-09-01T00:00:00Z",
+      "alias": "個人"
+    },
+    "2": {
+      "email": "north@example.com",
+      "uuid": "00000000-0000-4000-8000-0000000000a2",
+      "organizationUuid": "00000000-0000-4000-8000-0000000000b2",
+      "organizationName": "Synthetic North Org",
+      "added": "2026-09-02T00:00:00Z",
+      "alias": "藍鵲"
+    },
+    "3": {
+      "email": "work@example.com",
+      "uuid": "00000000-0000-4000-8000-0000000000a3",
+      "organizationUuid": "00000000-0000-4000-8000-0000000000b3",
+      "organizationName": "work@example.com's Organization",
+      "added": "2026-09-03T00:00:00Z",
+      "alias": "工作"
+    }
+  }
+}

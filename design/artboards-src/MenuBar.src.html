@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>選單列 · 通知</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<!--@HELMET-->
+<style>
+/* ===== MenuBar board (prefix mb-) ===== */
+.codd .mb-sys{--sys:-apple-system,BlinkMacSystemFont,'SF Pro Text','PingFang TC','Helvetica Neue',sans-serif}
+.codd .mb-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(26,26,26,.4) 1px,transparent 1px),linear-gradient(90deg,rgba(26,26,26,.4) 1px,transparent 1px);background-size:40px 40px}
+.codd .mb-sp{flex:1}
+.codd .mb-mark{width:16px;height:16px;display:block;flex:none}
+/* macOS menu bar */
+.codd .mb-bar{position:absolute;left:0;top:0;width:1440px;height:24px;background:rgba(20,20,22,.85);border-bottom:1px solid rgba(255,255,255,.07);backdrop-filter:blur(20px);z-index:40;font-family:var(--sys);color:rgba(255,255,255,.88)}
+.codd .mb-blks{position:absolute;left:830px;right:100px;top:0;height:24px;display:flex;align-items:center;justify-content:space-between}
+.codd .mb-blk{display:block;height:10px;background:rgba(255,255,255,.2)}
+.codd .mb-clock{position:absolute;right:14px;top:0;height:24px;display:flex;align-items:center;font-size:13px;letter-spacing:.01em;font-variant-numeric:tabular-nums;white-space:nowrap}
+/* status item = ONE icon (v2 R5): .mbi brand mark, inner .core square carries state */
+.codd .mb-item{position:absolute;left:786px;top:0;width:28px;height:24px;display:flex;align-items:center;justify-content:center;padding:0;border:0;background:rgba(255,255,255,.18);color:rgba(255,255,255,.95);cursor:default}
+.codd .mb-off{opacity:.45}
+/* specimens */
+.codd .mb-zone{position:absolute;left:40px;top:72px;width:540px;display:flex;flex-direction:column;gap:44px}
+.codd .mb-grp{display:flex;flex-direction:column;gap:14px}
+.codd .mb-lbl{display:flex;align-items:center;gap:10px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.codd .mb-lbl::after{content:'';flex:1;border-top:1px dashed var(--line-bright)}
+.codd .mb-lbl small{font-size:11px;letter-spacing:.04em;text-transform:none;color:var(--bone)}
+.codd .mb-specs{display:flex;gap:28px;align-items:flex-start}
+.codd .mb-spec{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.codd .mb-mini{width:28px;height:24px;padding:0;display:inline-flex;align-items:center;justify-content:center;background:rgba(20,20,22,.85);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.92)}
+.codd .mb-mini.on{background:rgba(255,255,255,.18);border-color:transparent}
+.codd .mb-cap{font-size:11.5px;color:var(--bone)}
+.codd .mb-cap small{display:block;font-size:10.5px;color:var(--dim);margin-top:2px}
+.codd .mb-rc{position:relative;height:250px}
+.codd .mb-menu{position:absolute;left:0;top:30px;width:236px}
+.codd .mb-sub{position:absolute;left:230px;top:90px;width:214px}
+.codd .mb-sub .mi .k.bad{color:var(--danger)}
+/* popover */
+.codd .mb-pop{position:absolute;left:610px;top:30px;width:380px;border-color:var(--amber-dim);box-shadow:0 14px 40px rgba(0,0,0,.7),0 0 26px rgba(255,184,74,.10);display:flex;flex-direction:column}
+.codd .mb-notch{position:absolute;top:-6px;left:185px;width:10px;height:10px;background:var(--bg-soft);border-left:1px solid var(--amber-dim);border-top:1px solid var(--amber-dim);transform:rotate(45deg)}
+.codd .mb-ph{height:40px;flex:none;display:flex;align-items:center;gap:8px;padding:0 6px 0 12px;border-bottom:1px dashed var(--line-bright)}
+.codd .mb-ph .mb-mark{color:var(--amber);filter:drop-shadow(0 0 4px var(--amber-glow))}
+.codd .mb-ph .chip{height:18px;font-size:10.5px}
+.codd .mb-pb{display:flex;flex-direction:column;gap:3px;padding:6px}
+.codd .mb-h{margin:0;cursor:default;font-weight:400;padding:4px 8px 2px}
+.codd .mb-h .mb-hr{letter-spacing:.04em;text-transform:none;color:var(--dimmer)}
+.codd .mb-needs{margin:0}
+.codd .mb-nr{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:8px;align-items:start;padding:4px 8px 4px 10px;border-left:2px solid var(--amber);background:linear-gradient(90deg,rgba(255,184,74,.09),rgba(255,184,74,.02));line-height:1.25}
+.codd .mb-nr + .mb-nr{margin-top:1px}
+.codd .mb-nr.st-error{border-left-color:var(--danger);background:linear-gradient(90deg,rgba(255,112,88,.08),rgba(255,112,88,.015))}
+.codd .mb-nr.hov{background:linear-gradient(90deg,rgba(255,184,74,.17),rgba(255,184,74,.05));box-shadow:inset 0 0 0 1px rgba(255,184,74,.22)}
+.codd .mb-nl{display:flex;flex-direction:column;gap:1px;min-width:0;color:var(--bone);text-decoration:none}
+.codd .mb-l1{display:flex;align-items:center;gap:7px;min-width:0}
+.codd .mb-t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;color:var(--cream)}
+.codd .mb-l2{display:flex;gap:6px;padding-left:19px;font-size:10.5px;color:var(--dimmer);white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums;min-width:0}
+.codd .mb-l2 .dur{color:var(--st)}
+.codd .mb-l3{padding-left:19px;font-size:11px;color:var(--bone);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.codd .mb-l3 b{font-weight:600;color:var(--cream)}
+.codd .mb-nx{display:flex;align-items:center;gap:4px;padding-top:1px}
+.codd .mb-rr.mb-ready{height:26px;padding-left:10px;border-left-color:var(--cyan)}
+.codd .mb-rr.mb-ready .mb-t{color:var(--cream)}
+.codd .mb-rr.mb-ready .mb-d{color:var(--dim)}
+/* RUNNING groups = tinted .gblk blocks (v2 R1); header has no square, name drawn in the group color */
+.codd .mb-gh{display:flex;align-items:center;gap:7px;height:16px;padding:0 8px;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:color-mix(in srgb,var(--g,var(--bone)) 62%,var(--cream))}
+.codd .mb-gh .n{margin-left:auto;letter-spacing:0;color:var(--dimmer);font-variant-numeric:tabular-nums}
+.codd .mb-rr{display:flex;align-items:center;gap:7px;height:20px;padding:0 8px 0 24px;color:var(--bone);text-decoration:none;border-left:2px solid transparent;min-width:0}
+.codd .mb-rr:hover{background:var(--bg-raise);border-left-color:var(--line-bright)}
+.codd .gblk .mb-rr:hover{background:color-mix(in srgb,var(--g) 13%,transparent);border-left-color:color-mix(in srgb,var(--g) 45%,transparent)}
+.codd .mb-rr .mb-t{font-size:12px;color:var(--bone)}
+.codd .mb-rr .mb-d{font-size:10.5px;color:var(--st);white-space:nowrap;font-variant-numeric:tabular-nums}
+.codd .mb-rr .chip{height:15px;font-size:9.5px;padding:0 4px}
+.codd .mb-more{display:flex;align-items:center;gap:8px;height:20px;padding:0 8px 0 24px;margin-top:2px;font-size:11px;color:var(--dim);text-decoration:none;border-top:1px dashed var(--line)}
+.codd .mb-more:hover{color:var(--amber)}
+/* ACCOUNTS first (v2 R4): each block is a full-width radio-like button; click = switch directly */
+.codd .mb-acs{display:flex;flex-direction:column}
+.codd .mb-ac{display:flex;flex-direction:column;gap:3px;width:100%;padding:5px 8px 6px 10px;background:transparent;border:0;border-left:2px solid transparent;font:inherit;letter-spacing:inherit;color:var(--bone);text-align:left;cursor:pointer}
+.codd .mb-ac + .mb-ac{border-top:1px dashed var(--line)}
+.codd .mb-ac:hover,.codd .mb-ac.hov{background:var(--bg-raise);border-left-color:var(--line-bright)}
+.codd .mb-ac.on{border-left-color:var(--amber);background:var(--bg-lift);cursor:default}
+.codd .mb-go{font-size:10.5px;letter-spacing:.06em;color:var(--amber);opacity:0}
+.codd .mb-ac:hover .mb-go,.codd .mb-ac.hov .mb-go,.codd .mb-ac:focus-visible .mb-go{opacity:1}
+.codd .mb-ac.on .mb-go{opacity:1;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.codd .mb-ah{margin:0;padding:3px 10px 2px 12px;font-size:10.5px;color:var(--dim);display:flex;align-items:center;gap:8px;white-space:nowrap}
+.codd .mb-ah a{text-decoration:none}
+.codd .mb-a1{display:flex;align-items:center;gap:6px;min-height:22px;font-size:12px;white-space:nowrap}
+.codd .mb-a1 b{font-family:var(--display);font-weight:700;font-size:12.5px}
+.codd .mb-a1 .chip{height:16px;font-size:10px;padding:0 5px}
+.codd .mb-a1 .src{font-size:10.5px;color:var(--dim)}
+.codd .mb-q2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.codd .mb-ac .qrow .k{width:16px}
+.codd .mb-ac .qrow .v{width:32px}
+.codd .mb-in{font-size:10.5px;color:var(--dim);white-space:nowrap}
+.codd .mb-in.mb-key{color:var(--bone)}
+.codd .mb-pf{flex:none;display:flex;flex-direction:column;gap:6px;padding:7px 12px 8px;border-top:1px dashed var(--line-bright)}
+.codd .mb-fr{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--dim);white-space:nowrap}
+.codd .mb-fr a{text-decoration:none}
+/* macOS notification banners (system UI: the only rounded surfaces) */
+.codd .mb-notifs{position:absolute;right:12px;top:34px;width:360px;display:flex;flex-direction:column;gap:10px;z-index:60}
+.codd .mb-nt{position:relative;display:flex;align-items:stretch;border-radius:14px;background:rgba(44,44,48,.80);border:1px solid rgba(255,255,255,.10);box-shadow:0 0 0 .5px rgba(0,0,0,.7),0 12px 32px rgba(0,0,0,.5);backdrop-filter:blur(30px) saturate(1.6);font-family:var(--sys);color:rgba(255,255,255,.92);letter-spacing:0;line-height:1.3}
+.codd .mb-nm{flex:1;min-width:0;display:flex;gap:10px;align-items:flex-start;padding:11px 12px}
+.codd .mb-ai{width:38px;height:38px;flex:none;border-radius:9px;background:repeating-linear-gradient(to bottom,rgba(255,184,74,.07) 0,rgba(255,184,74,.07) 1px,transparent 1px,transparent 3px),#000;display:flex;align-items:center;justify-content:center;color:var(--amber);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.18)}
+.codd .mb-ai svg{width:24px;height:24px;filter:drop-shadow(0 0 4px rgba(255,184,74,.5))}
+.codd .mb-nb{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.codd .mb-nh{display:flex;align-items:baseline;gap:8px;font-size:11.5px;color:rgba(255,255,255,.62)}
+.codd .mb-nh .app{font-weight:600;letter-spacing:.01em}
+.codd .mb-ntt{font-size:13px;font-weight:600;color:rgba(255,255,255,.96);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.codd .mb-nbd{font-size:12.5px;color:rgba(255,255,255,.78);text-wrap:pretty}
+.codd .mb-na{flex:none;width:72px;display:flex;flex-direction:column;border-left:1px solid rgba(255,255,255,.12)}
+.codd .mb-na button{flex:1;background:transparent;border:0;padding:0 8px;font-family:var(--sys);font-size:12.5px;font-weight:500;color:rgba(255,255,255,.92);cursor:pointer}
+.codd .mb-na button + button{border-top:1px solid rgba(255,255,255,.12)}
+.codd .mb-na button:hover{background:rgba(255,255,255,.06)}
+.codd .mb-na button:first-child{border-radius:0 13px 0 0}
+.codd .mb-na button:last-child{border-radius:0 0 13px 0}
+.codd .mb-ncap{display:flex;flex-direction:column;gap:3px;padding-left:4px;font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.codd .mb-ncap small{font-size:11px;letter-spacing:.04em;text-transform:none;color:var(--bone)}
+.codd .mb-x{position:absolute;left:-7px;top:-7px;width:20px;height:20px;border-radius:50%;background:rgba(72,72,76,.96);border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;padding:0;color:rgba(255,255,255,.85);cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.codd .mb-x svg{width:10px;height:10px}
+/* Dock specimen (system UI) */
+.codd .mb-dock{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:7px 9px 10px;border-radius:18px;background:rgba(44,44,48,.55);border:1px solid rgba(255,255,255,.10);backdrop-filter:blur(20px);box-shadow:0 10px 30px rgba(0,0,0,.4);z-index:30}
+.codd .mb-di{position:relative;width:48px;height:48px;flex:none;border-radius:11px;background:linear-gradient(180deg,#2c2c31,#1c1c20);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.08)}
+.codd .mb-di.codd-ic{background:repeating-linear-gradient(to bottom,rgba(255,184,74,.07) 0,rgba(255,184,74,.07) 1px,transparent 1px,transparent 3px),#000;display:flex;align-items:center;justify-content:center;color:var(--amber);box-shadow:inset 0 0 0 .5px rgba(255,255,255,.18)}
+.codd .mb-di.codd-ic svg{width:30px;height:30px;filter:drop-shadow(0 0 5px rgba(255,184,74,.55))}
+.codd .mb-badge{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:#ff3b30;color:#fff;font-family:var(--sys);font-size:12px;font-weight:600;line-height:20px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.codd .mb-run{position:absolute;bottom:-7px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:rgba(255,255,255,.6)}
+.codd .mb-dsep{width:1px;height:40px;background:rgba(255,255,255,.16);flex:none}
+.codd .mb-dcap{position:absolute;left:914px;bottom:30px;display:flex;flex-direction:column;gap:3px;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.codd .mb-dcap small{font-size:11px;letter-spacing:.04em;text-transform:none;color:var(--bone)}
+</style>
+</helmet>
+<div class="codd {{ crtClass }}" style="width:1440px; height:900px; overflow:hidden; background:#0d0d10">
+  <div class="mb-sys">
+    <div class="mb-grid" aria-hidden="true"></div>
+
+    <!-- macOS menu bar -->
+    <header class="mb-bar" aria-label="macOS 選單列">
+      <button class="mb-item" type="button" aria-expanded="true" aria-label="FANCY/CODD：3 個需要你">
+        <svg class="mb-mark mbi need" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect class="core" x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg>
+      </button>
+      <div class="mb-blks" aria-hidden="true">
+        <i class="mb-blk" style="width:16px"></i><i class="mb-blk" style="width:22px"></i><i class="mb-blk" style="width:16px"></i><i class="mb-blk" style="width:30px"></i><i class="mb-blk" style="width:16px"></i><i class="mb-blk" style="width:18px"></i><i class="mb-blk" style="width:26px"></i><i class="mb-blk" style="width:16px"></i><i class="mb-blk" style="width:20px"></i><i class="mb-blk" style="width:16px"></i><i class="mb-blk" style="width:34px"></i><i class="mb-blk" style="width:16px"></i>
+      </div>
+      <span class="mb-clock">週四 10:42</span>
+    </header>
+
+    <!-- specimens (left) -->
+    <div class="mb-zone">
+      <section class="mb-grp" aria-label="選單列圖示狀態">
+        <div class="mb-lbl">Status item<small>選單列圖示</small></div>
+        <div class="mb-specs">
+          <div class="mb-spec">
+            <span class="mb-mini"><svg class="mb-mark mbi" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect class="core" x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg></span>
+            <span class="mb-cap">一般</span>
+          </div>
+          <div class="mb-spec">
+            <span class="mb-mini"><svg class="mb-mark mbi need" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect class="core" x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg></span>
+            <span class="mb-cap">需要你<small>有 ◆ 等待或 ▲ 錯誤</small></span>
+          </div>
+          <div class="mb-spec">
+            <span class="mb-mini"><svg class="mb-mark mbi nohook" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect class="core" x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg></span>
+            <span class="mb-cap">Hook 未安裝</span>
+          </div>
+          <div class="mb-spec">
+            <span class="mb-mini"><svg class="mb-mark mbi mb-off" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect class="core" x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg></span>
+            <span class="mb-cap">暫停通知<small>暫停 1 小時</small></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="mb-grp" aria-label="右鍵選單">
+        <div class="mb-lbl">Right-click<small>右鍵選單</small></div>
+        <div class="mb-rc">
+          <span class="mb-mini on"><svg class="mb-mark mbi need" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect class="core" x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg></span>
+          <div class="menu mb-menu" role="menu" aria-label="FANCY/CODD 選單">
+            <button class="mi" type="button" role="menuitem"><span class="g">↗</span>開啟 FANCY/CODD</button>
+            <button class="mi" type="button" role="menuitem"><span class="g">+</span>新增 session<span class="k">⌘N</span></button>
+            <button class="mi" type="button" role="menuitem"><span class="g">✎</span>快速筆記<span class="k">⌘⇧N</span></button>
+            <button class="mi hl" type="button" role="menuitem" aria-haspopup="menu" aria-expanded="true"><span class="g">#</span>切換帳號<span class="k">▸</span></button>
+            <button class="mi" type="button" role="menuitem"><span class="g">○</span>暫停通知 1 小時</button>
+            <button class="mi" type="button" role="menuitem"><span class="g"></span>設定…<span class="k">⌘,</span></button>
+            <div class="sep" role="separator"></div>
+            <button class="mi" type="button" role="menuitem"><span class="g"></span>結束<span class="k">⌘Q</span></button>
+          </div>
+          <div class="menu mb-sub" role="menu" aria-label="切換帳號">
+            <div class="mh">Accounts · 依每週重置</div>
+            <button class="mi" type="button" role="menuitemradio" aria-checked="false"><span class="g"></span>#2 藍鵲<span class="k">1w 46%</span></button>
+            <button class="mi" type="button" role="menuitemradio" aria-checked="true"><span class="g amber">✓</span>#3 工作<span class="k bad">1w 15%</span></button>
+            <button class="mi" type="button" role="menuitemradio" aria-checked="false"><span class="g"></span>#1 個人<span class="k">1w 100%</span></button>
+            <div class="sep" role="separator"></div>
+            <button class="mi" type="button" role="menuitem"><span class="g"></span>自動切換<span class="k">OFF</span></button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- popover -->
+    <section class="pop mb-pop" aria-label="FANCY/CODD 選單列面板">
+      <span class="mb-notch" aria-hidden="true"></span>
+      <header class="mb-ph">
+        <svg class="mb-mark" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg>
+        <span class="brand">FANCY/CODD</span>
+        <span class="chip num">13 live</span>
+        <span class="mb-sp"></span>
+        <button class="icon-btn" type="button" aria-label="新增 session ⌘N"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M10 4.5v11M4.5 10h11"></path></svg></button>
+        <button class="icon-btn" type="button" aria-label="開啟主視窗"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="2.75" y="4.25" width="14.5" height="11.5"></rect><path d="M2.75 7.75h14.5"></path></svg></button>
+        <button class="icon-btn" type="button" aria-label="設定 ⌘,"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M3 5.5h14M3 10h14M3 14.5h14"></path><rect x="11.25" y="4" width="3" height="3" fill="currentColor"></rect><rect x="5.25" y="8.5" width="3" height="3" fill="currentColor"></rect><rect x="9.25" y="13" width="3" height="3" fill="currentColor"></rect></svg></button>
+      </header>
+
+      <div class="mb-pb">
+        <section aria-label="帳號用量">
+          <h3 class="sbsec mb-h">Accounts <span class="cnt">3</span><span class="rule"></span><span class="mb-hr">依每週重置 · 剩餘</span></h3>
+          <div class="mb-acs" role="radiogroup" aria-label="切換帳號（依每週重置排序，越快重置越上面）">
+            <button class="mb-ac hov" type="button" role="radio" aria-checked="false" aria-label="切換到 #2 藍鵲 · 5h 剩 98% · 1w 剩 46% · 1w 重置 1d12h後">
+              <span class="mb-a1"><b class="cream">#2</b><span class="cream">藍鵲</span><span class="chip">MAX 20x</span><span class="mb-sp"></span><span class="src">cswap cache · 3m 前</span><span class="mb-go">切換 →</span></span>
+              <span class="mb-q2">
+                <span class="qrow tone-ok"><span class="k">5h</span><span class="bar10"><b style="width:98%"></b></span><span class="v">98%</span><span class="mb-in">2h37m後</span></span>
+                <span class="qrow tone-warn"><span class="k">1w</span><span class="bar10"><b style="width:46%"></b></span><span class="v">46%</span><span class="mb-in mb-key">1d12h後</span></span>
+              </span>
+            </button>
+            <button class="mb-ac on" type="button" role="radio" aria-checked="true" aria-label="#3 工作，使用中 · 5h 剩 91% · 1w 剩 15% · 1w 重置 3d01h後">
+              <span class="mb-a1"><b class="amber">#3</b><span class="cream">工作</span><span class="chip">MAX 20x</span><span class="mb-sp"></span><span class="src">statusline · 12s 前</span><span class="mb-go">✓ Active</span></span>
+              <span class="mb-q2">
+                <span class="qrow tone-ok"><span class="k">5h</span><span class="bar10"><b style="width:91%"></b></span><span class="v">91%</span><span class="mb-in">2h57m後</span></span>
+                <span class="qrow tone-crit"><span class="k">1w</span><span class="bar10"><b style="width:15%"></b></span><span class="v">15%</span><span class="mb-in mb-key">3d01h後</span></span>
+              </span>
+            </button>
+            <button class="mb-ac" type="button" role="radio" aria-checked="false" aria-label="切換到 #1 個人 · 5h 未開始 · 1w 剩 100% · 1w 重置 4d09h後">
+              <span class="mb-a1"><b class="cream">#1</b><span class="cream">個人</span><span class="chip">MAX 20x</span><span class="mb-sp"></span><span class="src">cswap cache · 3m 前</span><span class="mb-go">切換 →</span></span>
+              <span class="mb-q2">
+                <span class="qrow tone-muted"><span class="k">5h</span><span class="bar10"><b style="width:100%"></b></span><span class="v">100%</span><span class="mb-in">未開始</span></span>
+                <span class="qrow tone-ok"><span class="k">1w</span><span class="bar10"><b style="width:100%"></b></span><span class="v">100%</span><span class="mb-in mb-key">4d09h後</span></span>
+              </span>
+            </button>
+          </div>
+          <p class="mb-ah"><span>點一下直接切換</span><span class="mb-sp"></span><span class="autosw"><span>自動切換</span><span class="st">OFF</span><span>·</span><a href="#settings-accounts">開啟 →</a></span></p>
+        </section>
+
+        <section class="needs mb-needs" aria-label="需要你處理">
+          <h3 class="sbsec mb-h">◆ Needs you <span class="badge">3</span><span class="rule"></span></h3>
+          <div class="mb-nr st-waiting hov">
+            <a class="mb-nl" href="#s1">
+              <span class="mb-l1"><span class="lamp">◆</span><span class="tag" style="background:var(--t-red)"></span><span class="mb-t">修正登入 API 401</span></span>
+              <span class="mb-l2"><span class="dur">3m</span><span>·</span><span class="ell">藍鵲·網站 / orb-toolkit-backend</span></span>
+              <span class="mb-l3"><b>Bash:</b> npm test -- auth.spec.ts</span>
+            </a>
+            <span class="mb-nx"><button class="btn sm" type="button">前往</button><button class="btn sm primary" type="button">1 允許</button></span>
+          </div>
+          <div class="mb-nr st-waiting">
+            <a class="mb-nl" href="#s2">
+              <span class="mb-l1"><span class="lamp">◆</span><span class="mb-t">發票匯出 CSV</span></span>
+              <span class="mb-l2"><span class="dur">12m</span><span>·</span><span class="ell">藍鵲·網站 / Northstar invoice system</span></span>
+              <span class="mb-l3"><b>問：</b>CSV 要用 UTF-8 BOM 還是 Big5？</span>
+            </a>
+            <span class="mb-nx"><span class="state">Ask</span></span>
+          </div>
+          <div class="mb-nr st-error">
+            <a class="mb-nl" href="#s3">
+              <span class="mb-l1"><span class="lamp">▲</span><span class="tag" style="background:var(--t-yellow)"></span><span class="mb-t">場景載入優化</span></span>
+              <span class="mb-l2"><span class="dur">1m</span><span>·</span><span class="ell">個人·Github / Gear3D</span></span>
+              <span class="mb-l3"><b>API 529</b> overloaded · 本輪未完成</span>
+            </a>
+            <span class="mb-nx"><span class="state">Error</span></span>
+          </div>
+        </section>
+
+        <section aria-label="剛完成">
+          <h3 class="sbsec mb-h"><span class="cy">◇</span> Ready <span class="cnt">1</span><span class="rule"></span></h3>
+          <a class="mb-rr mb-ready st-done" href="#s4"><span class="lamp">◇</span><span class="mb-t">第二版原型 · 審查流程</span><span class="mb-d">4m · 原型試做</span><span class="state">Done</span></a>
+        </section>
+
+        <section aria-label="執行中">
+          <h3 class="sbsec mb-h">Running <span class="cnt">9</span><span class="rule"></span></h3>
+          <div class="gblk g-orange">
+            <div class="mb-gh">藍鵲 · 實驗室</div>
+            <a class="mb-rr st-busy" href="#s7"><span class="lamp">●</span><span class="mb-t">現場示範：連線 MCP</span><span class="chip cy">#2</span><span class="mb-d">Bash · 1m12s</span></a>
+          </div>
+          <div class="gblk g-blue">
+            <div class="mb-gh">藍鵲 · 網站</div>
+            <a class="mb-rr st-busy" href="#s9"><span class="lamp">●</span><span class="tag" style="background:var(--t-pink)"></span><span class="mb-t">打卡頁 RWD 調整</span><span class="mb-d">Edit · 6m</span></a>
+            <a class="mb-rr st-shell" href="#s8"><span class="lamp">$</span><span class="mb-t">npm run dev</span><span class="mb-d">zsh · up 42m</span></a>
+          </div>
+          <div class="gblk g-green">
+            <div class="mb-gh">個人 · Github</div>
+            <a class="mb-rr st-compacting" href="#s10"><span class="lamp">◌</span><span class="mb-t">像素小鎮 NPC 對話</span><span class="mb-d">compact · 20s</span></a>
+          </div>
+          <a class="mb-more" href="#sessions">+5 more<span class="faint">·</span><span class="st-busy"><span class="lamp" style="width:auto">●</span> 1</span><span class="faint">·</span><span class="st-idle"><span class="lamp" style="width:auto">○</span> 4 idle</span></a>
+        </section>
+      </div>
+
+      <footer class="mb-pf">
+        <div class="mb-fr"><span class="sec" style="font-size:9.5px">Host</span><span class="num">cpu 23% · mem 21/36G · bat 86%</span><span class="mb-sp"></span><a href="#cleanup">清理建議 15 →</a></div>
+        <div class="mb-fr"><button class="btn sm" type="button">Quick note ⌘⇧N</button><span class="mb-sp"></span><button class="btn sm primary" type="button">Open CODD</button></div>
+      </footer>
+    </section>
+
+    <!-- macOS notification banners -->
+    <div class="mb-notifs" role="region" aria-label="通知">
+      <article class="mb-nt" aria-label="FANCY/CODD 通知：修正登入 API 401 需要授權">
+        <button class="mb-x" type="button" aria-label="關閉通知"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M2 2l6 6M8 2l-6 6"></path></svg></button>
+        <div class="mb-nm">
+          <span class="mb-ai" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg></span>
+          <div class="mb-nb">
+            <div class="mb-nh"><span class="app">FANCY/CODD</span><span class="mb-sp"></span><span>現在</span></div>
+            <p class="mb-ntt">◆ 修正登入 API 401 需要授權</p>
+            <p class="mb-nbd">orb-toolkit-backend · Bash: npm test -- auth.spec.ts</p>
+          </div>
+        </div>
+        <div class="mb-na"><button type="button">前往</button><button type="button">稍後</button></div>
+      </article>
+      <article class="mb-nt" aria-label="FANCY/CODD 通知：場景載入優化 失敗">
+        <div class="mb-nm">
+          <span class="mb-ai" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg></span>
+          <div class="mb-nb">
+            <div class="mb-nh"><span class="app">FANCY/CODD</span><span class="mb-sp"></span><span>1 分鐘前</span></div>
+            <p class="mb-ntt">▲ 場景載入優化 失敗 · API 過載（529）</p>
+            <p class="mb-nbd">Gear3D · ⎇ perf/scene-load · 本輪未完成</p>
+          </div>
+        </div>
+      </article>
+      <article class="mb-nt" aria-label="FANCY/CODD 通知：已自動切換到 #2 藍鵲">
+        <div class="mb-nm">
+          <span class="mb-ai" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg></span>
+          <div class="mb-nb">
+            <div class="mb-nh"><span class="app">FANCY/CODD</span><span class="mb-sp"></span><span>現在</span></div>
+            <p class="mb-ntt">↻ 已自動切換到 #2 藍鵲</p>
+            <p class="mb-nbd">#3 工作 1w 剩 2% · 12 個 session 約 30 秒內套用</p>
+          </div>
+        </div>
+        <div class="mb-na"><button type="button">復原</button><button type="button">好</button></div>
+      </article>
+      <p class="mb-ncap">Auto-switch<small>開啟自動切換後，切換時的通知</small></p>
+    </div>
+
+    <!-- Dock specimen -->
+    <div class="mb-dock" aria-label="Dock">
+      <span class="mb-di" aria-hidden="true"></span>
+      <span class="mb-di" aria-hidden="true"></span>
+      <span class="mb-di" aria-hidden="true"></span>
+      <span class="mb-di codd-ic" role="img" aria-label="FANCY/CODD，3 個需要你"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg><span class="mb-badge" aria-hidden="true">3</span><span class="mb-run" aria-hidden="true"></span></span>
+      <span class="mb-di" aria-hidden="true"></span>
+      <span class="mb-dsep" aria-hidden="true"></span>
+      <span class="mb-di" aria-hidden="true"></span>
+    </div>
+    <div class="mb-dcap">Dock<small>徽章 3 = ◆2 + ▲1</small></div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"crt":{"editor":"enum","options":["subtle","full","off"],"default":"subtle","section":"Look"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const crt = this.props.crt ?? 'subtle';
+    return { crtClass: crt === 'off' ? '' : 'crt-' + crt };
+  }
+}
+</script>
+</body>
+</html>

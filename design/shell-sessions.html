@@ -1,0 +1,163 @@
+<!-- ===== CANONICAL WINDOW SHELL (static) — traffic lights + rail + SESSIONS sidebar =====
+     Root:  <div class="codd win {{ crtClass }}"> ...this snippet... <div class="main"> ...board content... </div></div>
+     To change the active rail item move class "on" (and aria-current) to another .ri.
+     To change the current session move class "current" to another .srow.            -->
+<div class="tl" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<nav class="rail" aria-label="主要區域">
+  <a class="ri on" href="#sessions" aria-current="page">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="2.75" y="3.75" width="14.5" height="12.5"></rect><path d="M6 8l2.5 2L6 12M10.5 12.5H14"></path></svg>
+    <span>Sessions</span><span class="badge">3</span>
+  </a>
+  <a class="ri" href="#notes">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M5 2.75h7.5l3 3v11.5H5z"></path><path d="M12.25 2.75V6h3.25M7.5 9.5h5M7.5 12.5h5M7.5 15h3"></path></svg>
+    <span>Notes</span>
+  </a>
+  <a class="ri" href="#status">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2 11h3.5l2-5.5 4 10 2-4.5H18"></path></svg>
+    <span>Status</span>
+  </a>
+  <a class="ri" href="#settings">
+    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M3 5.5h14M3 10h14M3 14.5h14"></path><rect x="11.25" y="4" width="3" height="3" fill="currentColor"></rect><rect x="5.25" y="8.5" width="3" height="3" fill="currentColor"></rect><rect x="9.25" y="13" width="3" height="3" fill="currentColor"></rect></svg>
+    <span>Settings</span>
+  </a>
+  <div class="grow"></div>
+  <a class="ri" href="#mcp" aria-label="MCP server 執行中，3 個 client" style="padding:4px 0;gap:3px">
+    <span style="display:flex;align-items:center;gap:4px;font-size:9px;letter-spacing:.08em"><span class="lamp st-busy" style="width:auto;font-size:8px">●</span>MCP</span>
+  </a>
+  <a class="acct tone-crit" href="#accounts" aria-label="目前帳號 #3 工作，5 小時剩 91%，本週剩 15%">
+    <span style="display:flex;justify-content:space-between"><b style="color:var(--amber)">#3</b><span class="faint">MAX</span></span>
+    <span class="mini tone-ok"><b style="width:91%"></b></span>
+    <span class="mini tone-crit"><b style="width:15%"></b></span>
+  </a>
+</nav>
+
+<aside class="side" aria-label="Sessions">
+  <div class="side-head">
+    <a class="brand" href="#home">FANCY/CODD</a>
+    <span style="flex:1"></span>
+    <button class="icon-btn" type="button" aria-label="快速切換 ⌘K"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><circle cx="9" cy="9" r="5.25"></circle><path d="M13 13l4.25 4.25"></path></svg></button>
+    <button class="btn sm accent" type="button">+ New ▾</button>
+  </div>
+  <div style="display:flex;gap:6px;align-items:center;padding:8px 8px 2px">
+    <label class="ell" style="flex:1;display:flex;align-items:center;gap:6px;height:26px;border:1px solid var(--line-bright);background:var(--bg-soft);padding:0 8px;color:var(--dimmer);font-size:11.5px"><span aria-hidden="true">/</span><input class="ell" type="text" placeholder="篩選 session、專案…" aria-label="篩選" style="all:unset;flex:1;color:var(--cream);font-size:11.5px;min-width:0"></label>
+    <div class="seg" role="group" aria-label="檢視方式"><button class="on" type="button">Tree</button><button type="button">State</button></div>
+  </div>
+
+  <div class="side-scroll">
+    <!-- NEEDS YOU: mirror of waiting + error sessions, always on top, never reorders the tree -->
+    <section class="needs" aria-label="需要你處理">
+      <button class="sbsec" type="button"><span class="caret open">▸</span>◆ Needs you <span class="badge">3</span><span class="rule"></span></button>
+      <a class="srow flat st-waiting current" href="#s1">
+        <span class="l1"><span class="lamp">◆</span><span class="tag" style="background:var(--t-red)"></span><span class="title">修正登入 API 401</span><span class="state">Perm</span></span>
+        <span class="l2"><span class="dur">3m</span><span>·</span><span class="ell">藍鵲·網站 / orb-toolkit-backend</span></span>
+      </a>
+      <a class="srow flat st-waiting" href="#s2">
+        <span class="l1"><span class="lamp">◆</span><span class="title">發票匯出 CSV</span><span class="state">Ask</span></span>
+        <span class="l2"><span class="dur">12m</span><span>·</span><span class="ell">藍鵲·網站 / Northstar invoice system</span></span>
+      </a>
+      <a class="srow flat st-error" href="#s3">
+        <span class="l1"><span class="lamp">▲</span><span class="tag" style="background:var(--t-yellow)"></span><span class="title">場景載入優化</span><span class="state">Error</span></span>
+        <span class="l2"><span class="dur">1m</span><span>·</span><span class="ell">overloaded · 個人·Github / Gear3D</span></span>
+      </a>
+      <a class="srow flat st-done" href="#s4" style="min-height:28px">
+        <span class="l1"><span class="lamp">◇</span><span class="title" style="font-size:11.5px;color:var(--dim)">1 個待看 · 第二版原型 · 審查流程</span><span class="state">Done</span></span>
+      </a>
+    </section>
+
+    <button class="sbsec" type="button"><span class="caret open">▸</span>Pinned<span class="rule"></span></button>
+    <a class="srow flat st-busy" href="#s5">
+      <span class="l1"><span class="lamp">●</span><span class="tag" style="background:var(--t-purple)"></span><span class="title">CODD Desktop 設計稿</span><span class="state">Busy</span></span>
+      <span class="l2"><span class="dur">Write · 2m</span><span>·</span><span class="ell">CODD / codd-desktop</span></span>
+    </a>
+
+    <!-- GROUP: 藍鵲 · 實驗室 -->
+    <div class="gblk g-orange">
+    <button class="grp" type="button" aria-expanded="true"><span class="caret open">▸</span>藍鵲 · 實驗室<span class="agg"><span class="st-done"><span class="lamp">◇</span>1</span><span class="st-busy"><span class="lamp">●</span>1</span><span class="st-idle"><span class="lamp">○</span>1</span></span></button>
+    <button class="proj" type="button"><span class="caret open">▸</span><span class="pname">原型試做</span><span class="pcount">2</span></button>
+    <a class="srow st-done" href="#s4"><span class="grip" aria-hidden="true">⠿</span>
+      <span class="l1"><span class="lamp">◇</span><span class="title">第二版原型 · 審查流程</span><span class="state">Done</span></span>
+      <span class="l2"><span class="dur">4m</span><span>·</span><span>up 38m</span></span>
+    </a>
+    <a class="srow st-idle" href="#s6"><span class="grip" aria-hidden="true">⠿</span>
+      <span class="l1"><span class="lamp">○</span><span class="title">產生程式碼審查清單</span><span class="state">Idle</span></span>
+      <span class="l2"><span class="dur" style="color:var(--dim)">2h</span><span>·</span><span>up 3h10m</span></span>
+    </a>
+    <button class="proj" type="button"><span class="caret open">▸</span><span class="pname">MCP 整合範例</span><span class="pcount">1</span></button>
+    <a class="srow st-busy" href="#s7"><span class="grip" aria-hidden="true">⠿</span>
+      <span class="l1"><span class="lamp">●</span><span class="title">現場示範：連線 MCP</span><span class="chip" style="height:15px;font-size:9.5px;padding:0 4px;color:var(--cyan);border-color:rgba(110,224,240,.4)">#2</span><span class="state">Busy</span></span>
+      <span class="l2"><span class="dur">Bash · 1m12s</span><span>·</span><span>up 51m</span></span>
+    </a>
+    <button class="proj" type="button"><span class="caret">▸</span><span class="pname">Skills 整合範例</span><span class="pcount">封存 3</span></button>
+
+    </div>
+    <!-- GROUP: 藍鵲 · 網站 -->
+    <div class="gblk g-blue">
+    <button class="grp" type="button" aria-expanded="true"><span class="caret open">▸</span>藍鵲 · 網站<span class="agg"><span class="st-waiting"><span class="lamp" style="animation:none">◆</span>2</span><span class="st-busy"><span class="lamp">●</span>1</span><span class="st-shell"><span class="lamp">$</span>1</span></span></button>
+    <button class="proj" type="button"><span class="caret open">▸</span><span class="pname">orb-toolkit-backend</span><span class="pcount">2</span></button>
+    <a class="srow st-waiting current" href="#s1"><span class="grip" aria-hidden="true">⠿</span>
+      <span class="l1"><span class="lamp">◆</span><span class="tag" style="background:var(--t-red)"></span><span class="title">修正登入 API 401</span><span class="state">Waiting</span></span>
+      <span class="l2"><span class="dur">perm · 3m</span><span>·</span><span>up 42m</span><span>·</span><span>◉ rc</span></span>
+    </a>
+    <a class="srow st-shell" href="#s8"><span class="grip" aria-hidden="true">⠿</span>
+      <span class="l1"><span class="lamp">$</span><span class="title">npm run dev</span><span class="state">Shell</span></span>
+      <span class="l2"><span class="dur" style="color:var(--dim)">zsh</span><span>·</span><span>up 42m</span></span>
+    </a>
+    <button class="proj" type="button"><span class="caret open">▸</span><span class="pname">orb-toolkit-frontend</span><span class="pcount">1</span></button>
+    <a class="srow st-busy" href="#s9"><span class="grip" aria-hidden="true">⠿</span>
+      <span class="l1"><span class="lamp">●</span><span class="tag" style="background:var(--t-pink)"></span><span class="title">打卡頁 RWD 調整</span><span class="state">Busy</span></span>
+      <span class="l2"><span class="dur">Edit · 6m</span><span>·</span><span>up 1h18m</span></span>
+    </a>
+    <button class="proj" type="button"><span class="caret open">▸</span><span class="pname">Northstar invoice system</span><span class="pcount">1</span></button>
+    <a class="srow st-waiting" href="#s2"><span class="grip" aria-hidden="true">⠿</span>
+      <span class="l1"><span class="lamp">◆</span><span class="title">發票匯出 CSV</span><span class="state">Waiting</span></span>
+      <span class="l2"><span class="dur">ask · 12m</span><span>·</span><span>up 1h05m</span></span>
+    </a>
+
+    </div>
+    <!-- GROUP: 個人 · GITHUB -->
+    <div class="gblk g-green">
+    <button class="grp" type="button" aria-expanded="true"><span class="caret open">▸</span>個人 · Github<span class="agg"><span class="st-error"><span class="lamp">▲</span>1</span><span class="st-compacting"><span class="lamp">◌</span>1</span><span class="st-idle"><span class="lamp">○</span>1</span><span class="st-exited"><span class="lamp">✕</span>1</span></span></button>
+    <button class="proj" type="button"><span class="caret open">▸</span><span class="pname">Gear3D</span><span class="pcount">1</span></button>
+    <a class="srow st-error" href="#s3"><span class="grip" aria-hidden="true">⠿</span>
+      <span class="l1"><span class="lamp">▲</span><span class="tag" style="background:var(--t-yellow)"></span><span class="title">場景載入優化</span><span class="state">Error</span></span>
+      <span class="l2"><span class="dur">overloaded · 1m</span><span>·</span><span>up 2h12m</span></span>
+    </a>
+    <button class="proj" type="button"><span class="caret open">▸</span><span class="pname">pixel-town-demo</span><span class="pcount">1</span></button>
+    <a class="srow st-compacting" href="#s10"><span class="grip" aria-hidden="true">⠿</span>
+      <span class="l1"><span class="lamp">◌</span><span class="title">像素小鎮 NPC 對話</span><span class="state">Compact</span></span>
+      <span class="l2"><span class="dur">20s</span><span>·</span><span>up 4h02m</span></span>
+    </a>
+    <button class="proj" type="button"><span class="caret open">▸</span><span class="pname">keynote-deck</span><span class="pcount">1</span></button>
+    <a class="srow st-idle" href="#s11" style="opacity:.75"><span class="grip" aria-hidden="true">⠿</span>
+      <span class="l1"><span class="lamp">○</span><span class="title">keynote 第 3 章</span><span class="state">Idle</span></span>
+      <span class="l2"><span class="dur" style="color:var(--dim)">1d</span><span>·</span><span>stale</span></span>
+    </a>
+    <button class="proj" type="button"><span class="caret">▸</span><span class="pname">UsageBar</span><span class="pcount">✕ 1</span></button>
+
+    </div>
+    <!-- GROUP: CODD (collapsed) -->
+    <div class="gblk g-purple closed">
+    <button class="grp" type="button" aria-expanded="false"><span class="caret">▸</span>CODD<span class="agg"><span class="st-busy"><span class="lamp">●</span>1</span><span class="st-idle"><span class="lamp">○</span>1</span></span></button>
+    </div>
+
+    <!-- UNGROUPED -->
+    <div class="gblk none">
+    <button class="grp" type="button" aria-expanded="true"><span class="caret open">▸</span>未分類<span class="agg"><span class="st-idle"><span class="lamp">○</span>1</span></span></button>
+    <button class="proj" type="button"><span class="caret open">▸</span><span class="pname">claude-line-test</span><span class="pcount">1</span></button>
+    <a class="srow st-idle" href="#s14"><span class="grip" aria-hidden="true">⠿</span>
+      <span class="l1"><span class="lamp">○</span><span class="title">LINE bot 測試</span><span class="ext">EXT</span><span class="state">Idle</span></span>
+      <span class="l2"><span class="dur" style="color:var(--dim)">25m</span><span>·</span><span>外部啟動</span></span>
+    </a>
+    </div>
+    <button class="addrow" type="button">+ 新增群組</button>
+  </div>
+
+  <div class="side-foot">
+    <div style="display:flex;justify-content:space-between;align-items:center"><span class="sec" style="font-size:9.5px">Host</span><span class="num">cpu 23% · mem 21/36G · bat 86%</span></div>
+    <button class="sf-toggle" type="button" aria-expanded="false" aria-label="展開全部帳號的用量"><span class="caret">▸</span><span class="sec" style="font-size:9.5px">Usage 剩餘</span><span style="color:var(--cyan)">#3 工作</span><span style="flex:1"></span><span>全部帳號 <span class="n">3</span></span></button>
+    <div class="qrow tone-ok"><span class="k">5h</span><span class="bar10"><b style="width:91%"></b></span><span class="v">91%</span></div>
+    <div class="qrow tone-crit"><span class="k">1w</span><span class="bar10"><b style="width:15%"></b></span><span class="v">15%</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:10px" class="faint"><span>5h 重置 13:39</span><span>2h57m後</span></div>
+  </div>
+</aside>

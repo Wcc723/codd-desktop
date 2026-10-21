@@ -1,0 +1,290 @@
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "tools": [
+      {
+        "name": "notes_search",
+        "description": "Search the user's CODD notes (Markdown, often in Traditional Chinese / 繁體中文) by words, \"quoted phrases\" or #tags. Returns titles, codd://note/<id> refs, kinds, update times and snippets. Open a result with notes_read.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Words to find in titles, bodies and tags; all must match. Chinese terms of any length work. #tag filters by tag, \"quoted phrases\" keep their spaces."
+            },
+            "scope": {
+              "type": "string",
+              "enum": [
+                "all",
+                "project"
+              ],
+              "default": "all",
+              "description": "all: every note you may see. project: only notes of the current session's project or linked to the session."
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Only notes with all of these tags (without #)."
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "note",
+                "prompt",
+                "scratch"
+              ],
+              "description": "Only notes of this kind."
+            },
+            "include_archived": {
+              "type": "boolean",
+              "default": false,
+              "description": "Also include archived notes."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 20,
+              "default": 10,
+              "description": "Maximum number of results."
+            }
+          },
+          "required": [
+            "query"
+          ]
+        },
+        "annotations": {
+          "title": "Search CODD notes",
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "_meta": {
+          "anthropic/alwaysLoad": true
+        }
+      },
+      {
+        "name": "notes_list",
+        "description": "List the user's CODD notes, newest first: recent notes, notes linked to the current session or project, pinned notes, prompts. Open a result with notes_read.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "session": {
+              "type": "string",
+              "description": "\"current\" for notes linked to this session, or a CODD session UUID."
+            },
+            "project": {
+              "type": "string",
+              "description": "\"current\" for notes of this session's project, or a project path."
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "note",
+                "prompt",
+                "scratch"
+              ],
+              "description": "Only notes of this kind."
+            },
+            "pinned": {
+              "type": "boolean",
+              "description": "Only pinned (true) or unpinned (false) notes."
+            },
+            "days": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 3650,
+              "description": "Only notes updated in the last N days."
+            },
+            "include_archived": {
+              "type": "boolean",
+              "default": false,
+              "description": "Also include archived notes."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 20,
+              "description": "Maximum number of results."
+            }
+          }
+        },
+        "annotations": {
+          "title": "List CODD notes",
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "notes_read",
+        "description": "Read one CODD note by ref (an id, codd://note/<id> or [[note:<id>]]). Returns its Markdown (often 繁體中文) with absolute file paths, its images as image blocks, and each image's annotations as numbered items in original image pixels (origin top-left). Long notes are paged: call again with the offset it reports.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The note: an id (rwd-punch-k7x2), codd://note/<id> or [[note:<id>]]."
+            },
+            "offset": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "description": "Character offset to start from; use the offset a previous page reported."
+            },
+            "max_chars": {
+              "type": "integer",
+              "minimum": 1000,
+              "maximum": 50000,
+              "default": 12000,
+              "description": "Characters of note text per page."
+            },
+            "include_images": {
+              "type": "boolean",
+              "default": true,
+              "description": "Attach the note's images (at most 4) as image blocks."
+            }
+          },
+          "required": [
+            "ref"
+          ]
+        },
+        "annotations": {
+          "title": "Read a CODD note",
+          "readOnlyHint": true,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "_meta": {
+          "anthropic/alwaysLoad": true,
+          "anthropic/maxResultSizeChars": 200000
+        }
+      },
+      {
+        "name": "notes_append",
+        "description": "Append a Markdown section to the end of a CODD note whose AI access is APPEND (other notes refuse). The section is marked as written by AI; existing text is never changed. The user may be asked to approve.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The note: an id (rwd-punch-k7x2), codd://note/<id> or [[note:<id>]]."
+            },
+            "markdown": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000,
+              "description": "The Markdown to append, in the language of the note."
+            },
+            "heading": {
+              "type": "string",
+              "maxLength": 200,
+              "description": "Heading of the new section (default: AI 附加 · HH:mm)."
+            }
+          },
+          "required": [
+            "ref",
+            "markdown"
+          ]
+        },
+        "annotations": {
+          "title": "Append to a CODD note",
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "notes_create",
+        "description": "Create a NEW note in the user's CODD notebook (INBOX) for the user to read there: a report, plan, review or summary they asked you to put in CODD, instead of a Markdown file in the project. It is linked to this session and its project, its AI access is APPEND (add to it later with notes_append), and it never changes an existing note. Returns the new codd://note/<id> ref and the file path. The user may be asked to approve.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200,
+              "description": "The note's title, one line without #."
+            },
+            "body": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100000,
+              "description": "The note's Markdown, without the title line, in the language the user works in. Longer text: create the note, then add the rest with notes_append."
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Tags (without #), at most 20."
+            },
+            "kind": {
+              "type": "string",
+              "enum": [
+                "note",
+                "prompt"
+              ],
+              "default": "note",
+              "description": "note (the default), or prompt for a prompt the user will send later."
+            }
+          },
+          "required": [
+            "title",
+            "body"
+          ]
+        },
+        "annotations": {
+          "title": "Create a CODD note",
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        }
+      },
+      {
+        "name": "notes_write",
+        "description": "Replace the body (everything after the title line) of a CODD note whose AI access is APPEND. CODD keeps a snapshot of the old text and always asks the user first. Prefer notes_append.",
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The note: an id (rwd-punch-k7x2), codd://note/<id> or [[note:<id>]]."
+            },
+            "markdown": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 50000,
+              "description": "The new body, without the title line (it is kept)."
+            }
+          },
+          "required": [
+            "ref",
+            "markdown"
+          ]
+        },
+        "annotations": {
+          "title": "Replace a CODD note body",
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "_meta": {
+          "anthropic/requiresUserInteraction": true
+        }
+      }
+    ]
+  }
+}

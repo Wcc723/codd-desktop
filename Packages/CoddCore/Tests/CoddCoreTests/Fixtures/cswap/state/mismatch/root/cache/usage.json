@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 2,
+  "accounts": {
+    "1": {"email": "personal@example.com", "lastGood": {"five_hour": {"pct": 11.0}}, "fetchedAt": 1792032000},
+    "2": {"email": "previous-owner@example.com", "organizationUuid": "00000000-0000-4000-8000-0000000000b2",
+          "lastGood": {"five_hour": {"pct": 77.0}}, "fetchedAt": 1792032000},
+    "3": {"email": "work@example.com", "organizationUuid": "00000000-0000-4000-8000-0000000000ff",
+          "lastGood": {"five_hour": {"pct": 66.0}}, "fetchedAt": 1792032000}
+  }
+}

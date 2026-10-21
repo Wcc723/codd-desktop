@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "activeAccountNumber": 3,
+  "accounts": [
+    {
+      "number": 1,
+      "email": "account-one@example.invalid",
+      "organizationName": "",
+      "organizationUuid": "",
+      "isOrganization": false,
+      "active": false,
+      "usageStatus": "unavailable",
+      "usage": null,
+      "alias": "個人",
+      "lastGoodUsage": {
+        "fiveHour": {"pct": 0.0},
+        "sevenDay": {"pct": 0.0, "resetsAt": "2026-10-19T12:00:00.441208+00:00", "countdown": "4d 9h", "clock": "Oct 19 20:00"},
+        "scoped": [{"pct": 0.0, "resetsAt": "2026-10-19T12:00:00+00:00", "countdown": "4d 9h", "clock": "Oct 19 20:00", "name": "Fable"}]
+      },
+      "lastGoodFetchedAt": "2026-10-15T02:39:00Z",
+      "lastGoodAgeSeconds": 180.4,
+      "pollIntervalS": 600
+    },
+    {
+      "number": 2,
+      "email": "account-two@example.invalid",
+      "organizationName": "Synthetic Org",
+      "organizationUuid": "00000000-0000-4000-8000-000000000002",
+      "isOrganization": true,
+      "active": false,
+      "usageStatus": "ok",
+      "usage": {
+        "fiveHour": {"pct": 2.0, "resetsAt": "2026-10-15T05:19:00.000000+00:00", "countdown": "2h 37m", "clock": "13:19"},
+        "sevenDay": {"pct": 54.0, "resetsAt": "2026-10-16T14:59:00+00:00", "countdown": "1d 12h", "clock": "Oct 16 22:59", "expectedPct": 78.6, "aheadOfPace": false, "willLastToReset": true},
+        "scoped": [{"pct": 0.0, "name": "Fable"}]
+      },
+      "alias": "藍鵲",
+      "usageFetchedAt": "2026-10-15T02:39:00Z",
+      "usageAgeSeconds": 180.0
+    },
+    {
+      "number": 3,
+      "email": "account-three@example.invalid",
+      "organizationName": "",
+      "organizationUuid": "",
+      "isOrganization": false,
+      "active": true,
+      "usageStatus": "ok",
+      "usage": {
+        "fiveHour": {"pct": 9.0, "resetsAt": "2026-10-15T05:39:00+00:00", "countdown": "2h 57m", "clock": "13:39"},
+        "sevenDay": {"pct": 85.0, "resetsAt": "2026-10-18T04:00:00+00:00", "countdown": "3d 1h", "clock": "Oct 18 12:00", "expectedPct": 52.1, "aheadOfPace": true, "projectedExhaustionAt": "2026-10-17T10:00:00Z", "willLastToReset": false},
+        "spend": {"used": 0.0, "limit": 50.0, "pct": 0.0, "currency": "USD"},
+        "scoped": [{"pct": 0.0, "resetsAt": "2026-10-18T04:00:00+00:00", "name": "Fable", "expectedPct": 52.1, "aheadOfPace": false}]
+      },
+      "alias": "工作",
+      "usageFetchedAt": "2026-10-15T02:41:48Z",
+      "usageAgeSeconds": 12.0
+    }
+  ],
+  "duplicateAccountWarnings": [],
+  "lockstepUsageWarnings": [{"accounts": [2, 3], "note": "synthetic"}]
+}

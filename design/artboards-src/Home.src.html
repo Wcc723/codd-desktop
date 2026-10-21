@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>主頁 · 未選取 session</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<!--@HELMET-->
+<style>
+/* ===== Home board (hm-) ===== */
+.codd .hm-flex{flex:1}
+.codd .hm-lc{text-transform:none;letter-spacing:.02em}
+.codd .hm-scroll{flex:1;min-height:0;overflow:auto;padding:28px 36px;display:flex;flex-direction:column;gap:20px}
+.codd .hm-head{display:flex;flex-direction:column;gap:8px}
+.codd .hm-titlerow{display:flex;align-items:baseline;gap:16px}
+.codd .hm-now{margin-left:auto;font-size:11px;color:var(--dim);letter-spacing:.06em}
+.codd .hm-sec{display:flex;flex-direction:column;gap:10px;min-width:0}
+.codd .hm-sh{display:flex;align-items:center;gap:10px;min-height:20px}
+.codd .hm-h2{margin:0;font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.codd .hm-h2 .zh{font-family:var(--mono);font-weight:400;color:var(--dim);letter-spacing:.06em;text-transform:none}
+.codd .hm-rule{flex:1;min-width:24px;border-top:1px dashed var(--line-bright)}
+.codd .hm-shr{display:inline-flex;align-items:center;gap:8px;font-size:11px;color:var(--dim);white-space:nowrap}
+.codd .hm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:12px}
+.codd .hm-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:22px;align-items:start}
+/* needs-you cards */
+.codd .hm-nc{padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.codd .hm-nc .card-h{margin:0 0 2px;font-size:11px;padding-bottom:7px}
+.codd .hm-nc .card-h .hm-dur{margin-left:auto;text-transform:none;font-family:var(--mono);font-weight:500;letter-spacing:0;font-size:11.5px;color:var(--st)}
+.codd .hm-nc.st-error{border-color:rgba(255,112,88,.5)}
+.codd .hm-nc.st-error::before,.codd .hm-nc.st-error::after{color:var(--danger)}
+.codd .hm-nc.st-error .card-h{color:var(--danger)}
+.codd .hm-nc .hm-nc-t{margin:0;padding:0;border:0;display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.01em;text-transform:none;color:var(--cream);white-space:nowrap;overflow:hidden;min-width:0}
+.codd .hm-nc-t .t{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.codd .hm-nc-p{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--dim);white-space:nowrap;overflow:hidden;min-width:0}
+.codd .hm-nc-r{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--bone);min-width:0;white-space:nowrap}
+.codd .hm-nc-r code{flex:none}
+.codd .hm-nc-a{display:flex;align-items:center;gap:8px;margin-top:3px;min-width:0}
+.codd .hm-nc-a .keybtn{height:22px;font-size:11px}
+.codd .hm-nc-a .btn .k{color:var(--dim);letter-spacing:0}
+.codd .hm-nc-meta{margin-left:auto;font-size:10.5px;color:var(--dimmer);white-space:nowrap}
+.codd .hm-done{display:flex;align-items:center;gap:10px;height:28px;padding:0 10px;border:1px dashed var(--line-bright);font-size:11.5px;color:var(--dim);text-decoration:none;white-space:nowrap;overflow:hidden}
+.codd .hm-done:hover{border-color:var(--cyan);color:var(--cream)}
+.codd .hm-done .cy{letter-spacing:.06em}
+/* project cards */
+.codd .hm-pc{background:var(--bg-soft);border:1px solid var(--line-bright);padding:10px 12px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.codd .hm-pc:hover{border-color:var(--amber-dim)}
+.codd .hm-pc-h{display:flex;align-items:center;gap:8px;min-width:0}
+.codd .hm-pc-n{margin:0;font-size:13px;font-weight:600;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.codd .hm-live{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:var(--dim);font-variant-numeric:tabular-nums}
+.codd .hm-live .lamp{width:auto}
+.codd .hm-pc-path{font-size:11px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.codd .hm-pc-f{display:flex;align-items:center;gap:6px;margin-top:4px}
+.codd .hm-pc-when{margin-left:auto;font-size:10.5px;color:var(--dimmer);white-space:nowrap;font-variant-numeric:tabular-nums}
+/* lists */
+.codd .hm-list{list-style:none;margin:0;padding:0}
+.codd .hm-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px dashed var(--line);min-width:0}
+.codd .hm-row:last-child{border-bottom:0}
+.codd .hm-row-b{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.codd .hm-row-t{font-size:12.5px;color:var(--bone);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.codd .hm-row-m{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--dimmer);white-space:nowrap;overflow:hidden;font-variant-numeric:tabular-nums}
+.codd .hm-warn{color:var(--amber-dim)}
+/* usage */
+.codd .hm-acct{display:grid;grid-template-columns:136px minmax(0,1fr);gap:12px;align-items:center;padding:7px 12px;border-bottom:1px dashed var(--line)}
+.codd .hm-acct:last-child{border-bottom:0}
+.codd .hm-acct.on{background:linear-gradient(90deg,rgba(255,184,74,.05),transparent 60%);box-shadow:inset 2px 0 0 var(--amber)}
+.codd .hm-acct-id{display:flex;flex-direction:column;gap:3px;min-width:0}
+.codd .hm-alias{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--cream);white-space:nowrap}
+.codd .hm-alias b{color:var(--amber);font-weight:700}
+.codd .hm-alias .chip{height:16px;font-size:9.5px;padding:0 4px}
+.codd .hm-src{font-size:10.5px;color:var(--dimmer);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.codd .hm-rk{font-size:10.5px;color:var(--bone);white-space:nowrap;font-variant-numeric:tabular-nums}
+.codd .hm-asw{padding:0 2px}
+.codd .hm-asw a{text-decoration:none}
+.codd .hm-asw a:hover{color:var(--cream)}
+.codd .hm-acct-q{display:flex;flex-direction:column;gap:4px;min-width:0}
+.codd .hm-reset{width:118px;flex:none;font-size:10.5px;color:var(--dim);text-align:right;white-space:nowrap}
+.codd .hm-pace{font-size:10.5px;color:var(--amber);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+</helmet>
+<div class="codd win {{ crtClass }}">
+<!--@SHELL on=sessions current=none-->
+<div class="main">
+  <div class="hm-scroll">
+    <header class="hm-head">
+      <p class="comment">// 沒有選取 session</p>
+      <div class="hm-titlerow">
+        <h1 class="h-page">SESSIONS</h1>
+        <span class="hm-now num">2026-10-15 週四 10:42</span>
+      </div>
+      <div class="meta-rule"><span>13 live · <span class="amber">◆ 3</span> needs you · <span class="ok">● 4</span> working · ✕ 1 exited</span></div>
+    </header>
+
+    <!-- NEEDS YOU -->
+    <section class="hm-sec" aria-labelledby="hm-needs">
+      <div class="hm-sh">
+        <h2 class="hm-h2" id="hm-needs"><span aria-hidden="true">◆</span>Needs you</h2>
+        <span class="badge">3</span>
+        <span class="hm-rule"></span>
+      </div>
+      <div class="hm-grid">
+        <article class="card hot hm-nc st-waiting">
+          <div class="card-h"><span class="lamp">◆</span>Waiting · Permission<span class="hm-dur num">3m</span></div>
+          <h3 class="hm-nc-t"><span class="tag" style="background:var(--t-red)"></span><span class="t">修正登入 API 401</span></h3>
+          <p class="hm-nc-p"><span class="tag" style="background:var(--t-blue)"></span><span class="ell">藍鵲·網站 / orb-toolkit-backend</span><span>·</span><span class="num">up 42m</span></p>
+          <p class="hm-nc-r"><code>Bash: npm test -- auth.spec.ts</code></p>
+          <div class="hm-nc-a">
+            <button class="keybtn" type="button"><span class="k">1</span>允許</button>
+            <button class="btn sm" type="button">前往 <span class="k">⌘1</span></button>
+            <span class="hm-nc-meta">opus-5.5 · ◉ rc</span>
+          </div>
+        </article>
+        <article class="card hot hm-nc st-waiting">
+          <div class="card-h"><span class="lamp">◆</span>Waiting · Question<span class="hm-dur num">12m</span></div>
+          <h3 class="hm-nc-t"><span class="t">發票匯出 CSV</span></h3>
+          <p class="hm-nc-p"><span class="tag" style="background:var(--t-blue)"></span><span class="ell">藍鵲·網站 / Northstar invoice system</span><span>·</span><span class="num">up 1h05m</span></p>
+          <p class="hm-nc-r"><span class="ell cream">「CSV 要用 UTF-8 BOM 還是 Big5？」</span></p>
+          <div class="hm-nc-a">
+            <button class="btn sm" type="button">前往 <span class="k">⌘2</span></button>
+            <span class="hm-nc-meta">sonnet-5.5</span>
+          </div>
+        </article>
+        <article class="card hm-nc st-error">
+          <div class="card-h"><span class="lamp">▲</span>Error · Overloaded<span class="hm-dur num">1m</span></div>
+          <h3 class="hm-nc-t"><span class="tag" style="background:var(--t-yellow)"></span><span class="t">場景載入優化</span></h3>
+          <p class="hm-nc-p"><span class="tag" style="background:var(--t-green)"></span><span class="ell">個人·Github / Gear3D</span><span>·</span><span class="num">up 2h12m</span></p>
+          <p class="hm-nc-r"><code>API 529</code><span class="ell">overloaded · 本輪未完成</span></p>
+          <div class="hm-nc-a">
+            <button class="btn sm" type="button">前往 <span class="k">⌘3</span></button>
+            <span class="hm-nc-meta">opus-5.5</span>
+          </div>
+        </article>
+      </div>
+      <a class="hm-done st-done" href="#s4"><span class="lamp">◇</span><span class="cy">1 個待看</span><span class="cream">第二版原型 · 審查流程</span><span class="faint">藍鵲·實驗室 / 原型試做</span><span class="hm-flex"></span><span class="faint num">4m 前完成</span><span class="state">Done</span></a>
+    </section>
+
+    <!-- LAUNCH -->
+    <section class="hm-sec" aria-labelledby="hm-launch">
+      <div class="hm-sh">
+        <h2 class="hm-h2" id="hm-launch">Launch <span class="zh">最近專案</span></h2>
+        <span class="hm-rule"></span>
+        <span class="hm-shr">
+          <button class="pillbtn" type="button" aria-label="啟動設定檔：claude-default">Profile · <span class="hm-lc">claude-default</span> ▾</button>
+          <button class="btn sm" type="button">其他專案… <span class="faint">⌘N</span></button>
+        </span>
+      </div>
+      <div class="hm-grid">
+        <article class="hm-pc">
+          <div class="hm-pc-h"><span class="tag lg" style="background:var(--t-orange);color:var(--t-orange)"></span><h3 class="hm-pc-n">原型試做</h3><span class="hm-live"><span class="lamp st-done">◇</span><span class="lamp st-idle">○</span>2 live</span></div>
+          <p class="hm-pc-path">~/…/agent-lab-2026/原型試做</p>
+          <div class="hm-pc-f"><button class="btn sm accent" type="button">+ Claude</button><button class="btn sm" type="button">+ Shell</button><span class="hm-pc-when">啟動 10:04</span></div>
+        </article>
+        <article class="hm-pc">
+          <div class="hm-pc-h"><span class="tag lg" style="background:var(--t-blue);color:var(--t-blue)"></span><h3 class="hm-pc-n">orb-toolkit-backend</h3><span class="hm-live"><span class="lamp st-waiting" style="animation:none">◆</span><span class="lamp st-shell">$</span>2 live</span></div>
+          <p class="hm-pc-path">~/…/orb-toolkit-suite/orb-toolkit-backend</p>
+          <div class="hm-pc-f"><button class="btn sm accent" type="button">+ Claude</button><button class="btn sm" type="button">+ Shell</button><span class="hm-pc-when">啟動 10:00</span></div>
+        </article>
+        <article class="hm-pc">
+          <div class="hm-pc-h"><span class="tag lg" style="background:var(--t-orange);color:var(--t-orange)"></span><h3 class="hm-pc-n">MCP 整合範例</h3><span class="hm-live"><span class="lamp st-busy">●</span>1 live</span></div>
+          <p class="hm-pc-path">~/…/agent-lab-2026/整合範例/MCP</p>
+          <div class="hm-pc-f"><button class="btn sm accent" type="button">+ Claude</button><button class="btn sm" type="button">+ Shell</button><span class="hm-pc-when">啟動 09:51</span></div>
+        </article>
+        <article class="hm-pc">
+          <div class="hm-pc-h"><span class="tag lg" style="background:var(--t-blue);color:var(--t-blue)"></span><h3 class="hm-pc-n">Northstar invoice system</h3><span class="hm-live"><span class="lamp st-waiting" style="animation:none">◆</span>1 live</span></div>
+          <p class="hm-pc-path">~/…/websites/業主/Northstar invoice system</p>
+          <div class="hm-pc-f"><button class="btn sm accent" type="button">+ Claude</button><button class="btn sm" type="button">+ Shell</button><span class="hm-pc-when">啟動 09:37</span></div>
+        </article>
+        <article class="hm-pc">
+          <div class="hm-pc-h"><span class="tag lg" style="background:var(--t-blue);color:var(--t-blue)"></span><h3 class="hm-pc-n">orb-toolkit-frontend</h3><span class="hm-live"><span class="lamp st-busy">●</span>1 live</span></div>
+          <p class="hm-pc-path">~/…/orb-toolkit-suite/orb-toolkit-frontend</p>
+          <div class="hm-pc-f"><button class="btn sm accent" type="button">+ Claude</button><button class="btn sm" type="button">+ Shell</button><span class="hm-pc-when">啟動 09:24</span></div>
+        </article>
+        <article class="hm-pc">
+          <div class="hm-pc-h"><span class="tag lg" style="background:var(--t-green);color:var(--t-green)"></span><h3 class="hm-pc-n">Gear3D</h3><span class="hm-live"><span class="lamp st-error">▲</span>1 live</span></div>
+          <p class="hm-pc-path">~/Github/Gear3D</p>
+          <div class="hm-pc-f"><button class="btn sm accent" type="button">+ Claude</button><button class="btn sm" type="button">+ Shell</button><span class="hm-pc-when">啟動 08:30</span></div>
+        </article>
+      </div>
+    </section>
+
+    <div class="hm-grid2">
+      <!-- RECENTLY STOPPED -->
+      <section class="hm-sec" aria-labelledby="hm-stopped">
+        <div class="hm-sh">
+          <h2 class="hm-h2" id="hm-stopped">Recently stopped <span class="zh">可接續</span></h2>
+          <span class="hm-rule"></span>
+          <a class="hm-shr" href="#transcripts">全部對話紀錄 →</a>
+        </div>
+        <div class="panel">
+          <ul class="hm-list">
+            <li class="hm-row st-exited">
+              <span class="lamp">✕</span>
+              <div class="hm-row-b"><span class="hm-row-t">選單列額度顯示</span><span class="hm-row-m"><span>個人·Github / UsageBar</span><span>·</span><span>exited · code 0</span><span>·</span><span>3h 前</span></span></div>
+              <button class="btn sm" type="button">⟲ Resume</button>
+            </li>
+            <li class="hm-row st-stopped">
+              <span class="lamp">⟲</span>
+              <div class="hm-row-b"><span class="hm-row-t">refresh token 流程改寫</span><span class="hm-row-m"><span>orb-toolkit-backend</span><span>·</span><span>⎇ fix/refresh</span><span>·</span><span>2d</span><span>·</span><span>1.2MB</span></span></div>
+              <button class="btn sm" type="button">⟲ Resume</button>
+            </li>
+            <li class="hm-row st-stopped">
+              <span class="lamp">⟲</span>
+              <div class="hm-row-b"><span class="hm-row-t">auth middleware 單元測試</span><span class="hm-row-m"><span>orb-toolkit-backend</span><span>·</span><span>⎇ main</span><span>·</span><span>5d</span><span>·</span><span>640KB</span></span></div>
+              <button class="btn sm" type="button">⟲ Resume</button>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- USAGE -->
+      <section class="hm-sec" aria-labelledby="hm-usage">
+        <div class="hm-sh">
+          <h2 class="hm-h2" id="hm-usage">Usage <span class="zh">剩餘</span></h2>
+          <span class="hm-rule"></span>
+          <span class="hm-shr"><span aria-hidden="true">↓</span><span>依每週重置排序 · 越快重置越上面</span><span>·</span><span>cswap 0.26.0</span></span>
+        </div>
+        <div class="panel">
+          <div class="hm-acct">
+            <div class="hm-acct-id">
+              <span class="hm-alias"><b>#2</b>藍鵲</span>
+              <span class="hm-rk">1w 重置 1d12h後</span>
+              <span class="hm-src">cswap cache · 3m 前</span>
+            </div>
+            <div class="hm-acct-q">
+              <div class="qrow tone-ok"><span class="k">5h</span><span class="bar10"><b style="width:98%"></b></span><span class="v">98%</span><span class="hm-reset">13:19</span></div>
+              <div class="qrow tone-warn"><span class="k">1w</span><span class="bar10"><b style="width:46%"></b></span><span class="v">46%</span><span class="hm-reset">10/16 週五 22:59</span></div>
+            </div>
+          </div>
+          <div class="hm-acct on">
+            <div class="hm-acct-id">
+              <span class="hm-alias"><b>#3</b>工作<span class="chip caps amber">Active</span></span>
+              <span class="hm-rk">1w 重置 3d01h後</span>
+              <span class="hm-src">statusline · 12s 前</span>
+            </div>
+            <div class="hm-acct-q">
+              <div class="qrow tone-ok"><span class="k">5h</span><span class="bar10"><b style="width:91%"></b></span><span class="v">91%</span><span class="hm-reset">13:39 · 2h57m後</span></div>
+              <div class="qrow tone-crit"><span class="k">1w</span><span class="bar10"><b style="width:15%"></b></span><span class="v">15%</span><span class="hm-reset">10/18 週日 12:00</span></div>
+              <span class="hm-pace">1w 用量超前預期 · 預估 10/17 18:00 用完</span>
+            </div>
+          </div>
+          <div class="hm-acct">
+            <div class="hm-acct-id">
+              <span class="hm-alias"><b>#1</b>個人</span>
+              <span class="hm-rk">1w 重置 4d09h後</span>
+              <span class="hm-src">cswap cache · 3m 前</span>
+            </div>
+            <div class="hm-acct-q">
+              <div class="qrow tone-muted"><span class="k">5h</span><span class="bar10"><b style="width:100%"></b></span><span class="v">100%</span><span class="hm-reset">未開始</span></div>
+              <div class="qrow tone-ok"><span class="k">1w</span><span class="bar10"><b style="width:100%"></b></span><span class="v">100%</span><span class="hm-reset">10/19 週一 20:00</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="autosw hm-asw"><span>自動切換</span><span class="st">OFF</span><span>·</span><span>剩餘 ≤ 2% 時切換</span><span>·</span><a href="#settings-accounts">設定 →</a></div>
+      </section>
+    </div>
+  </div>
+<!--@STATUSBAR-->
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"crt":{"editor":"enum","options":["subtle","full","off"],"default":"subtle","section":"Look"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const crt = this.props.crt ?? 'subtle';
+    return { crtClass: crt === 'off' ? '' : 'crt-' + crt };
+  }
+}
+</script>
+</body>
+</html>

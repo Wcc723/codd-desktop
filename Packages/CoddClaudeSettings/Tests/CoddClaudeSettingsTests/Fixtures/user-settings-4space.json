@@ -1,0 +1,285 @@
+{
+    "$schema": "https://json.schemastore.org/claude-code-settings.json",
+    "env": {
+        "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "64000",
+        "GREETING": "你好，世界 ∑",
+        "SEP": "a b c",
+        "CTRL": "tab\there\u0001\u001f"
+    },
+    "permissions": {
+        "allow": [
+            "Bash(npm run test:*)",
+            "Read(~/.zshrc)"
+        ],
+        "deny": [],
+        "defaultMode": "acceptEdits"
+    },
+    "model": "opus",
+    "hooks": {
+        "SessionStart": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "[ -z \"$CODD_TERMINAL_ID\" ] || [ ! -x '/opt/homebrew/bin/node' ] || [ ! -f '@TMP@/codd-web/configs/hooks/status-writer.js' ] || STATUS_DIR_PATH='@TMP@/status' '/opt/homebrew/bin/node' '@TMP@/codd-web/configs/hooks/status-writer.js'",
+                        "timeout": 5
+                    }
+                ]
+            },
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "'@TMP@/.hook-tap/bin/hook-tap' SessionStart"
+                    }
+                ]
+            }
+        ],
+        "UserPromptSubmit": [
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "'@TMP@/.hook-tap/bin/hook-tap' UserPromptSubmit"
+                    }
+                ]
+            },
+            {
+                "matcher": "*",
+                "command": "[ -z \"$CODD_TERMINAL_ID\" ] || [ ! -x '/opt/homebrew/bin/node' ] || [ ! -f '@TMP@/codd-web/configs/hooks/status-writer.js' ] || STATUS_DIR_PATH='@TMP@/status' '/opt/homebrew/bin/node' '@TMP@/codd-web/configs/hooks/status-writer.js'"
+            }
+        ],
+        "PreToolUse": [
+            {
+                "matcher": "*",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "[ -z \"$CODD_TERMINAL_ID\" ] || [ ! -x '/opt/homebrew/bin/node' ] || [ ! -f '@TMP@/codd-web/configs/hooks/status-writer.js' ] || STATUS_DIR_PATH='@TMP@/status' '/opt/homebrew/bin/node' '@TMP@/codd-web/configs/hooks/status-writer.js'",
+                        "timeout": 5
+                    }
+                ]
+            },
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "'@TMP@/.hook-tap/bin/hook-tap' PreToolUse"
+                    }
+                ]
+            }
+        ],
+        "PostToolUse": [
+            {
+                "matcher": "*",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "[ -z \"$CODD_TERMINAL_ID\" ] || [ ! -x '/opt/homebrew/bin/node' ] || [ ! -f '@TMP@/codd-web/configs/hooks/status-writer.js' ] || STATUS_DIR_PATH='@TMP@/status' '/opt/homebrew/bin/node' '@TMP@/codd-web/configs/hooks/status-writer.js'",
+                        "timeout": 5
+                    }
+                ]
+            },
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "'@TMP@/.hook-tap/bin/hook-tap' PostToolUse"
+                    }
+                ]
+            }
+        ],
+        "PostToolUseFailure": [
+            {
+                "matcher": "*",
+                "command": "[ -z \"$CODD_TERMINAL_ID\" ] || [ ! -x '/opt/homebrew/bin/node' ] || [ ! -f '@TMP@/codd-web/configs/hooks/status-writer.js' ] || STATUS_DIR_PATH='@TMP@/status' '/opt/homebrew/bin/node' '@TMP@/codd-web/configs/hooks/status-writer.js'"
+            },
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "'@TMP@/.hook-tap/bin/hook-tap' PostToolUseFailure"
+                    }
+                ]
+            }
+        ],
+        "PermissionRequest": [
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "'@TMP@/.hook-tap/bin/hook-tap' PermissionRequest",
+                        "timeout": 600
+                    }
+                ]
+            },
+            {
+                "matcher": "*",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "[ -z \"$CODD_TERMINAL_ID\" ] || [ ! -x '/opt/homebrew/bin/node' ] || [ ! -f '@TMP@/codd-web/configs/hooks/status-writer.js' ] || STATUS_DIR_PATH='@TMP@/status' '/opt/homebrew/bin/node' '@TMP@/codd-web/configs/hooks/status-writer.js'",
+                        "timeout": 5
+                    }
+                ]
+            }
+        ],
+        "Notification": [
+            {
+                "matcher": "*",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "[ -z \"$CODD_TERMINAL_ID\" ] || [ ! -x '/opt/homebrew/bin/node' ] || [ ! -f '@TMP@/codd-web/configs/hooks/status-writer.js' ] || STATUS_DIR_PATH='@TMP@/status' '/opt/homebrew/bin/node' '@TMP@/codd-web/configs/hooks/status-writer.js'",
+                        "timeout": 5
+                    }
+                ]
+            },
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "'@TMP@/.hook-tap/bin/hook-tap' Notification"
+                    }
+                ]
+            },
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "osascript -e 'display notification \"Claude 需要你\" with title \"Claude Code\"'"
+                    }
+                ]
+            }
+        ],
+        "Stop": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "[ -z \"$CODD_TERMINAL_ID\" ] || [ ! -x '/opt/homebrew/bin/node' ] || [ ! -f '@TMP@/codd-web/configs/hooks/status-writer.js' ] || STATUS_DIR_PATH='@TMP@/status' '/opt/homebrew/bin/node' '@TMP@/codd-web/configs/hooks/status-writer.js'",
+                        "timeout": 5
+                    }
+                ]
+            },
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "osascript -e 'display notification \"Claude 需要你\" with title \"完成\"'"
+                    }
+                ]
+            },
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "'@TMP@/.hook-tap/bin/hook-tap' Stop"
+                    }
+                ]
+            }
+        ],
+        "StopFailure": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "[ -z \"$CODD_TERMINAL_ID\" ] || [ ! -x '/opt/homebrew/bin/node' ] || [ ! -f '@TMP@/codd-web/configs/hooks/status-writer.js' ] || STATUS_DIR_PATH='@TMP@/status' '/opt/homebrew/bin/node' '@TMP@/codd-web/configs/hooks/status-writer.js'",
+                        "timeout": 5
+                    }
+                ]
+            },
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "'@TMP@/.hook-tap/bin/hook-tap' StopFailure"
+                    }
+                ]
+            }
+        ],
+        "SessionEnd": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "[ -z \"$CODD_TERMINAL_ID\" ] || [ ! -x '/opt/homebrew/bin/node' ] || [ ! -f '@TMP@/codd-web/configs/hooks/status-writer.js' ] || STATUS_DIR_PATH='@TMP@/status' '/opt/homebrew/bin/node' '@TMP@/codd-web/configs/hooks/status-writer.js'",
+                        "timeout": 5
+                    }
+                ]
+            },
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "'@TMP@/.hook-tap/bin/hook-tap' SessionEnd"
+                    }
+                ]
+            }
+        ],
+        "PreCompact": [
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "'@TMP@/.hook-tap/bin/hook-tap' PreCompact"
+                    }
+                ]
+            }
+        ],
+        "SubagentStop": [
+            {
+                "matcher": "",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "'@TMP@/.hook-tap/bin/hook-tap' SubagentStop"
+                    }
+                ]
+            }
+        ]
+    },
+    "statusLine": {
+        "type": "command",
+        "command": "if [ -x '/opt/homebrew/bin/node' ] && [ -f '@TMP@/codd-web/configs/statusline/codd-statusline.js' ]; then STATUS_DIR_PATH='@TMP@/status' '/opt/homebrew/bin/node' '@TMP@/codd-web/configs/statusline/codd-statusline.js' --chain-b64 @B64@; else /bin/sh -c '@TMP@/.hook-tap/statusline.sh'; fi",
+        "padding": 0
+    },
+    "enabledPlugins": {
+        "hook-tap@local": true,
+        "空白 plugin@市場": false
+    },
+    "feedbackSurveyState": {
+        "lastShownTime": 1e3
+    },
+    "numbers": [
+        1e3,
+        0.10,
+        -0,
+        12345678901234567890,
+        1.5E-7
+    ],
+    "alwaysThinkingEnabled": true,
+    "nested": {
+        "empty": {},
+        "list": [],
+        "deep": [
+            [],
+            {},
+            [
+                {}
+            ]
+        ],
+        "nil": null
+    }
+}

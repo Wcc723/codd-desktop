@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "activeAccountNumber": 5,
+  "accounts": [
+    {"email": "no-number@example.invalid", "active": false, "usageStatus": "ok"},
+    {"number": "4", "active": false},
+    {"number": 4.5, "active": false},
+    {"number": 5, "active": "yes", "usageStatus": "brand_new_status", "usage": "not an object", "alias": "   "},
+    {"number": 6, "usageStatus": "relogin_required", "usage": {"fiveHour": {"resetsAt": "2026-10-15T05:00:00Z"}, "sevenDay": {"pct": "54"}, "scoped": [{"pct": 10}, {"name": "Fable", "pct": 3.5}, 42], "spend": []}},
+    {"number": 7, "disabled": true, "usageStatus": "ok", "usage": {"fiveHour": {"pct": 101.5, "resetsAt": 1792040340}, "sevenDay": {"pct": -3, "resetsAt": 1792296000000}}, "usageFetchedAt": 1792032000}
+  ],
+  "accountsExtra": "ignored"
+}

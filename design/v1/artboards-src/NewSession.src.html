@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>新增 Session ⌘N</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<!--@HELMET-->
+<style>
+/* ===== NewSession board (ns-) ===== */
+.codd .ns-vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.codd .ns-fz{display:inline-flex;align-items:center;height:24px;border:1px solid var(--line-bright);font-size:10.5px;color:var(--dim)}
+.codd .ns-fz button{background:transparent;border:0;color:var(--dim);height:22px;padding:0 6px;cursor:pointer;font-family:var(--mono);font-size:10.5px}
+.codd .ns-fz button:hover{color:var(--amber)}
+.codd .ns-fz .num{padding:0 5px;color:var(--bone);border-left:1px solid var(--line);border-right:1px solid var(--line);line-height:22px}
+
+.codd .ns-modal{width:720px}
+.codd .ns-modal .m-h{padding:12px 12px 11px 20px}
+.codd .ns-h2{font:inherit;letter-spacing:inherit;margin:0;color:inherit;text-shadow:0 0 10px var(--amber-glow)}
+.codd .ns-modal .m-b{gap:14px;padding:16px 20px 14px}
+.codd .ns-grid{display:grid;grid-template-columns:348px minmax(0,1fr);gap:14px 24px;align-items:start}
+.codd .ns-col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.codd .ns-lrow{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.codd .ns-lrow .hint{font-size:10.5px}
+.codd .ns-row{display:flex;align-items:center;gap:10px;min-width:0}
+.codd .ns-modal .hint{text-wrap:pretty}
+
+/* project combobox (open) */
+.codd .ns-combo{display:flex;flex-direction:column;gap:3px;min-width:0}
+.codd .ns-cbox{display:flex;align-items:center;gap:9px;height:46px;padding:0 10px 0 11px;background:var(--bg-soft);border:1px solid var(--amber);box-shadow:inset 0 0 0 1px var(--amber),0 0 8px var(--amber-glow)}
+.codd .ns-cval{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.codd .ns-cin{all:unset;display:block;width:100%;font-family:var(--mono);font-size:12.5px;line-height:1.3;color:var(--cream);caret-color:var(--amber)}
+.codd .ns-cpath{font-size:10.5px;line-height:1.3;color:var(--dim)}
+.codd .ns-list{height:300px;overflow:hidden;min-width:0}
+.codd .ns-list .mh{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px 3px}
+.codd .ns-list .mh .faint{letter-spacing:.02em;text-transform:none;font-size:10px}
+.codd .ns-list .mi{height:26px;gap:9px;min-width:0}
+.codd .ns-list .mi .ell{flex:0 1 auto}
+.codd .ns-list .ns-chk{width:12px;flex:none;text-align:center;color:var(--amber)}
+.codd .ns-par{font-size:10.5px;color:var(--dimmer);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.codd .ns-tnone{border:1px dashed var(--dimmer)}
+.codd .ns-sug .btn{margin-left:auto;padding:1px 5px}
+.codd .ns-nt{text-transform:none;letter-spacing:.04em}
+
+/* start mode radios + resume picker */
+.codd .ns-rgroup{display:flex;flex-direction:column;gap:4px}
+.codd .ns-radio{position:relative;display:flex;align-items:center;gap:8px;height:24px;font-size:12.5px;color:var(--bone);cursor:pointer;min-width:0}
+.codd .ns-radio .ns-rg{width:14px;flex:none;text-align:center;color:var(--dimmer)}
+.codd .ns-radio .hint{margin-left:auto;font-size:10.5px;white-space:nowrap}
+.codd .ns-radio.on{color:var(--cream)}
+.codd .ns-radio.on .ns-rg{color:var(--amber);text-shadow:0 0 6px var(--amber-glow)}
+.codd .ns-picker{margin-left:22px;border:1px solid var(--line-bright);background:var(--bg);display:flex;flex-direction:column;min-width:0}
+.codd .ns-ph{display:flex;align-items:center;justify-content:space-between;gap:8px;height:24px;padding:0 10px;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);border-bottom:1px dashed var(--line-bright)}
+.codd .ns-ph .faint{letter-spacing:.02em;text-transform:none;font-size:10.5px}
+.codd .ns-tr{display:flex;flex-direction:column;gap:1px;width:100%;padding:5px 10px 5px 8px;background:transparent;border:0;border-left:2px solid transparent;border-bottom:1px dashed var(--line);color:var(--bone);text-align:left;cursor:pointer;font-family:var(--mono)}
+.codd .ns-tr:last-child{border-bottom:0}
+.codd .ns-tr:hover{background:var(--bg-soft)}
+.codd .ns-tr.on{background:var(--bg-raise);border-left-color:var(--amber);color:var(--cream)}
+.codd .ns-tr .r1{display:flex;align-items:center;gap:7px;min-width:0;font-size:12px}
+.codd .ns-tr .r1 .g{width:10px;flex:none;color:var(--amber);visibility:hidden}
+.codd .ns-tr.on .r1 .g{visibility:visible}
+.codd .ns-tr .r2{display:flex;align-items:center;gap:6px;padding-left:17px;font-size:10.5px;color:var(--dimmer);white-space:nowrap;font-variant-numeric:tabular-nums}
+.codd .ns-sz{margin-left:auto;font-size:10.5px;color:var(--dim);font-variant-numeric:tabular-nums;flex:none}
+.codd .ns-exp{margin-left:auto;color:var(--amber)}
+
+/* account quota line */
+.codd .ns-quota{display:flex;align-items:center;gap:12px;font-size:10.5px;color:var(--dim);font-variant-numeric:tabular-nums}
+.codd .ns-q{display:inline-flex;align-items:center;gap:5px}
+.codd .ns-q .meter{width:40px}
+.codd .ns-q .v{color:var(--tone)}
+
+/* raw permission-mode values (not uppercased) */
+.codd .ns-raw button{text-transform:none;letter-spacing:.03em;font-size:11px}
+
+/* advanced + command strip */
+.codd .ns-adv{display:flex;align-items:center;gap:12px;padding-top:10px;border-top:1px dashed var(--line);min-width:0}
+.codd .ns-advbtn{display:inline-flex;align-items:center;gap:6px;background:transparent;border:0;padding:0;color:var(--bone);font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;flex:none}
+.codd .ns-advbtn:hover{color:var(--amber)}
+.codd .ns-adv .hint{font-size:10.5px}
+.codd .ns-cmd{display:flex;align-items:center;gap:8px;height:38px;padding:0 8px 0 20px;background:#000;border-top:1px solid var(--line-bright)}
+.codd .ns-cmdtx{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--mono);font-size:10.5px;letter-spacing:0;color:#e8e6d8}
+.codd .ns-cmdtx .f{color:#8a8578}
+.codd .ns-cmdtx .w{color:#fff;font-weight:700}
+.codd .ns-cmdtx .s{color:var(--cyan)}
+.codd .ns-cmd .icon-btn{width:24px;height:24px}
+.codd .ns-cmd .icon-btn svg{width:14px;height:14px}
+.codd .ns-dest{margin-right:auto;display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--dimmer);white-space:nowrap}
+.codd .ns-dest b{font-weight:400;color:var(--bone)}
+</style>
+</helmet>
+<div class="codd win {{ crtClass }}">
+<!--@SHELL on=sessions current=s1-->
+<div class="main">
+  <header class="sh st-waiting">
+    <div class="ident">
+      <div class="l1"><span class="lamp">◆</span><span class="ttl">修正登入 API 401</span><span class="stchip">◆ Waiting · Permission · <span class="ns-nt">3m</span></span></div>
+      <div class="meta"><span>~/…/orb-toolkit-suite/orb-toolkit-backend</span><span class="sep">·</span><span>⎇ fix/login-401</span><span class="sep">·</span><span>opus-5.5</span><span class="sep">·</span><span>CTX 58%</span><span class="sep">·</span><span>$2.14</span><span class="sep">·</span><span>UP 42m</span><span class="sep">·</span><span class="cy">#3 工作</span><span class="sep">·</span><span class="cy">◉ RC</span></div>
+    </div>
+    <div class="acts">
+      <button class="pillbtn" type="button">✎ Notes 2</button>
+      <button class="icon-btn" type="button" aria-label="檔案"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2.75 4.75h5l1.75 2h7.75v9.5H2.75z"></path></svg></button>
+      <button class="icon-btn" type="button" aria-label="下方終端機 ⌘J"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="2.75" y="3.75" width="14.5" height="12.5"></rect><path d="M2.75 11.25h14.5M5.5 13.75h2"></path></svg></button>
+      <span class="ns-fz"><button type="button" aria-label="縮小終端機字級">A−</button><span class="num">13</span><button type="button" aria-label="放大終端機字級">A+</button></span>
+      <button class="icon-btn" type="button" aria-label="更多動作">⋯</button>
+    </div>
+  </header>
+  <div class="tabs" role="tablist" aria-label="終端機分頁">
+    <button class="tab on" type="button" role="tab" aria-selected="true"><span class="lamp st-waiting">◆</span><span class="tlabel">Claude</span></button>
+    <button class="tab" type="button" role="tab" aria-selected="false"><span class="faint">$</span><span class="tlabel">zsh</span></button>
+    <button class="tab" type="button" aria-label="新增 shell 分頁 ⌘T">+</button>
+    <div class="tfill"><span class="num">120×38</span><span>·</span><span>⌘J 終端機</span></div>
+  </div>
+<pre class="term"><span class="d">></span> 登入 API 在 token 過期後會回 401，幫我修好並補測試
+
+<span class="cc">●</span> 我先看 auth middleware 的流程。
+
+<span class="cc">●</span> <span class="w">Read</span>(src/middleware/auth.ts)
+  <span class="d">⎿  Read 84 lines</span>
+
+<span class="cc">●</span> <span class="w">Update</span>(src/middleware/auth.ts)
+  <span class="d">⎿  Updated src/middleware/auth.ts with 12 additions and 3 removals</span>
+     <span class="del"> 41 -   if (isExpired(token)) return res.status(401).end()        </span>
+     <span class="add"> 41 +   if (isExpired(token)) {                                    </span>
+     <span class="add"> 42 +     const next = await refreshSession(req, res)              </span>
+     <span class="add"> 43 +     if (!next) return res.status(401).json({ code: 'EXPIRED' })</span>
+
+<span class="a">╭──────────────────────────────────────────────────────────────────────╮</span>
+<span class="a">│</span> <span class="w">Bash command</span>                                                         <span class="a">│</span>
+<span class="a">│</span>                                                                      <span class="a">│</span>
+<span class="a">│</span>   npm test -- auth.spec.ts                                           <span class="a">│</span>
+<span class="a">│</span>   <span class="d">執行 auth 相關的單元測試</span>
+<span class="a">│</span>                                                                      <span class="a">│</span>
+<span class="a">│</span> Do you want to proceed?                                              <span class="a">│</span>
+<span class="a">│</span> <span class="a">❯ 1. Yes</span>                                                             <span class="a">│</span>
+<span class="a">│</span>   2. Yes, and don't ask again for <span class="w">npm test</span> commands in this project  <span class="a">│</span>
+<span class="a">│</span>   3. No, and tell Claude what to do differently <span class="d">(esc)</span>                  <span class="a">│</span>
+<span class="a">╰──────────────────────────────────────────────────────────────────────╯</span></pre>
+  <div class="answerbar"><span class="lamp st-waiting">◆</span><span>Claude 需要授權 · <code>Bash: npm test -- auth.spec.ts</code></span><span style="flex:1"></span>
+    <button class="keybtn" type="button"><span class="k">1</span>Yes</button><button class="keybtn" type="button"><span class="k">2</span>Always</button>
+    <button class="keybtn danger" type="button"><span class="k">3</span>No</button><button class="keybtn" type="button"><span class="k">ESC</span>取消</button><span class="kbd">⌘⏎</span></div>
+<!--@STATUSBAR-->
+</div>
+
+<div class="backdrop" style="align-items:center;padding-top:0">
+  <div class="modal ns-modal" role="dialog" aria-modal="true" aria-labelledby="ns-title">
+    <div class="m-h">
+      <h2 class="ns-h2" id="ns-title">New session · <span class="ns-nt">新增 session</span></h2>
+      <span style="flex:1"></span>
+      <span class="kbd">⌘N</span>
+      <button class="icon-btn" type="button" aria-label="關閉">✕</button>
+    </div>
+
+    <div class="m-b">
+      <div class="ns-grid">
+        <!-- LEFT: where + what -->
+        <div class="ns-col">
+          <div class="field">
+            <div class="ns-lrow"><label class="lbl" for="ns-proj">專案 Project</label><span class="hint">輸入名稱或路徑篩選</span></div>
+            <div class="ns-combo">
+              <div class="ns-cbox">
+                <span class="tag" style="background:var(--t-blue)"></span>
+                <span class="ns-cval">
+                  <input class="ns-cin" id="ns-proj" type="text" value="orb-toolkit-backend" role="combobox" aria-expanded="true" aria-controls="ns-projlist" aria-autocomplete="list">
+                  <span class="ns-cpath ell">~/…/orb-toolkit-suite/orb-toolkit-backend</span>
+                </span>
+                <span class="amber" aria-hidden="true">▾</span>
+              </div>
+              <div class="menu ns-list" id="ns-projlist" aria-label="專案清單">
+                <div class="mh"><span>最近 Recent</span><span class="faint">5</span></div>
+                <button class="mi hl" type="button" aria-current="true"><span class="tag" style="background:var(--t-blue)"></span><span class="ell">orb-toolkit-backend</span><span class="k">2 live</span><span class="ns-chk" aria-hidden="true">✓</span></button>
+                <button class="mi" type="button"><span class="tag" style="background:var(--t-blue)"></span><span class="ell">orb-toolkit-frontend</span><span class="k">1 live</span><span class="ns-chk" aria-hidden="true"></span></button>
+                <button class="mi" type="button"><span class="tag" style="background:var(--t-blue)"></span><span class="ell">Northstar invoice system</span><span class="k">1 live</span><span class="ns-chk" aria-hidden="true"></span></button>
+                <button class="mi" type="button"><span class="tag" style="background:var(--t-purple)"></span><span class="ell">codd-desktop</span><span class="k">1 live</span><span class="ns-chk" aria-hidden="true"></span></button>
+                <button class="mi" type="button"><span class="tag" style="background:var(--t-orange)"></span><span class="ell">原型試做</span><span class="k">2 live</span><span class="ns-chk" aria-hidden="true"></span></button>
+                <div class="mh"><span>建議 · 來自 <span class="ns-nt">~/.claude.json</span></span><span class="faint">未加入</span></div>
+                <div class="mi ns-sug"><span class="tag ns-tnone"></span><span class="ell">打卡紀錄前端介面</span><span class="ns-par">…/orb-toolkit-suite</span><button class="btn sm" type="button" aria-label="加入 打卡紀錄前端介面">+ 加入</button></div>
+                <div class="mi ns-sug"><span class="tag ns-tnone"></span><span class="ell">chat-bot-mcp</span><span class="ns-par">~/Github</span><button class="btn sm" type="button" aria-label="加入 chat-bot-mcp">+ 加入</button></div>
+                <div class="mi ns-sug"><span class="tag ns-tnone"></span><span class="ell">mysite.github.io</span><span class="ns-par">~/Github</span><button class="btn sm" type="button" aria-label="加入 mysite.github.io">+ 加入</button></div>
+                <div class="sep"></div>
+                <button class="mi" type="button"><span class="g">+</span>選擇資料夾…<span class="k">⌘O</span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="lbl" id="ns-kind-l">類型 Kind</span>
+            <div class="ns-row">
+              <div class="seg" role="group" aria-labelledby="ns-kind-l"><button class="on" type="button" aria-pressed="true">◆ Claude</button><button type="button" aria-pressed="false">$ Shell</button></div>
+              <span class="hint">SHELL 只在專案目錄開 zsh</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: how it starts + who pays -->
+        <div class="ns-col">
+          <div class="field">
+            <span class="lbl" id="ns-start-l">開始方式 Start</span>
+            <div class="ns-rgroup" role="radiogroup" aria-labelledby="ns-start-l">
+              <label class="ns-radio"><input class="ns-vh" type="radio" name="ns-start" value="new"><span class="ns-rg" aria-hidden="true">○</span><span>新對話</span><span class="hint">自動帶 --session-id</span></label>
+              <label class="ns-radio on"><input class="ns-vh" type="radio" name="ns-start" value="resume" checked><span class="ns-rg" aria-hidden="true">●</span><span>接續先前對話</span><span class="hint">claude --resume</span></label>
+              <div class="ns-picker" role="group" aria-label="選擇要接續的對話">
+                <div class="ns-ph"><span>Past transcripts</span><span class="faint">orb-toolkit-backend · 4</span></div>
+                <button class="ns-tr on" type="button" aria-pressed="true">
+                  <span class="r1"><span class="g" aria-hidden="true">❯</span><span class="ell">refresh token 流程改寫</span><span class="ns-sz">1.2MB</span></span>
+                  <span class="r2"><span>⎇ fix/refresh</span><span>·</span><span>2d</span></span>
+                </button>
+                <button class="ns-tr" type="button" aria-pressed="false">
+                  <span class="r1"><span class="g" aria-hidden="true">❯</span><span class="ell">auth middleware 單元測試</span><span class="ns-sz">640KB</span></span>
+                  <span class="r2"><span>⎇ main</span><span>·</span><span>5d</span></span>
+                </button>
+                <button class="ns-tr" type="button" aria-pressed="false">
+                  <span class="r1"><span class="g" aria-hidden="true">❯</span><span class="ell">登入頁錯誤訊息 i18n</span><span class="ns-sz">2.3MB</span></span>
+                  <span class="r2"><span>⎇ feat/i18n</span><span>·</span><span>12d</span></span>
+                </button>
+                <button class="ns-tr" type="button" aria-pressed="false">
+                  <span class="r1"><span class="g" aria-hidden="true">❯</span><span class="ell">CI 設定</span></span>
+                  <span class="r2"><span>⎇ main</span><span>·</span><span>26d</span><span class="ns-exp">! resume 4 天後過期</span></span>
+                </button>
+              </div>
+              <label class="ns-radio"><input class="ns-vh" type="radio" name="ns-start" value="rc"><span class="ns-rg" aria-hidden="true">○</span><span>從 Remote Control 啟動</span><span class="hint">--remote-control</span></label>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="lbl" for="ns-acct">帳號 Account</label>
+            <select class="select" id="ns-acct">
+              <option selected>跟隨全域登入（#3 工作）</option>
+              <option>固定 #3 工作</option>
+              <option>固定 #2 藍鵲（cswap run）</option>
+              <option>固定 #1 個人（cswap run）</option>
+            </select>
+            <div class="ns-quota">
+              <span class="cy">#3 工作</span>
+              <span class="ns-q tone-ok"><span>5h</span><span class="meter"><b style="width:91%"></b></span><span class="v">91%</span></span>
+              <span class="ns-q tone-crit"><span>1w</span><span class="meter"><b style="width:15%"></b></span><span class="v">15%</span></span>
+              <span class="faint">剩餘</span>
+            </div>
+            <p class="hint">改選固定帳號會以 cswap run 建立獨立設定目錄，對話紀錄分開存放</p>
+          </div>
+        </div>
+
+        <!-- ROW: model | permission -->
+        <div class="field">
+          <label class="lbl" for="ns-model">模型 Model</label>
+          <select class="select" id="ns-model">
+            <option selected>預設 (opus-5.5)</option>
+            <option>opus-5.5</option>
+            <option>sonnet-5.5</option>
+          </select>
+        </div>
+        <div class="field">
+          <span class="lbl" id="ns-perm-l">權限 Permission</span>
+          <div class="seg ns-raw" role="group" aria-labelledby="ns-perm-l"><button type="button" aria-pressed="false">default</button><button class="on" type="button" aria-pressed="true">acceptEdits</button><button type="button" aria-pressed="false">plan</button><button type="button" aria-pressed="false">auto</button></div>
+          <p class="hint">acceptEdits：檔案編輯自動接受，Bash 指令仍會詢問</p>
+        </div>
+
+        <!-- ROW: name | color -->
+        <div class="field">
+          <div class="ns-lrow"><label class="lbl" for="ns-name">名稱 Name</label><span class="hint">側欄顯示，並以 -n 傳給 claude</span></div>
+          <input class="input" id="ns-name" type="text" value="refresh token 流程改寫">
+        </div>
+        <div class="field">
+          <div class="ns-lrow"><span class="lbl" id="ns-color-l">顏色 Color</span><span class="hint">1–8 快速選色</span></div>
+          <div class="swatches" role="group" aria-labelledby="ns-color-l">
+            <button class="sw8" type="button" aria-pressed="false" aria-label="red" style="background:var(--t-red)"></button>
+            <button class="sw8 on" type="button" aria-pressed="true" aria-label="blue" style="background:var(--t-blue)"></button>
+            <button class="sw8" type="button" aria-pressed="false" aria-label="green" style="background:var(--t-green)"></button>
+            <button class="sw8" type="button" aria-pressed="false" aria-label="yellow" style="background:var(--t-yellow)"></button>
+            <button class="sw8" type="button" aria-pressed="false" aria-label="purple" style="background:var(--t-purple)"></button>
+            <button class="sw8" type="button" aria-pressed="false" aria-label="orange" style="background:var(--t-orange)"></button>
+            <button class="sw8" type="button" aria-pressed="false" aria-label="pink" style="background:var(--t-pink)"></button>
+            <button class="sw8" type="button" aria-pressed="false" aria-label="cyan" style="background:var(--t-cyan)"></button>
+            <button class="sw8 none" type="button" aria-pressed="false" aria-label="不設定顏色">✕</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="ns-adv">
+        <button class="ns-advbtn" type="button" aria-expanded="false"><span class="caret">▸</span>進階 Advanced</button>
+        <span class="hint ell">launch profile <span class="cream">claude-default</span> · env 0 個 · --remote-control 關</span>
+      </div>
+    </div>
+
+    <div class="ns-cmd" role="group" aria-label="指令預覽">
+      <span class="ns-cmdtx"><span class="amber">$</span> <span class="w">claude</span> <span class="f">--resume</span> 3f2a91c0-… <span class="f">--model</span> opus-5.5 <span class="f">--permission-mode</span> acceptEdits <span class="f">-n</span> <span class="s">"refresh token 流程改寫"</span></span>
+      <button class="icon-btn" type="button" aria-label="複製指令"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="6.75" y="6.75" width="10.5" height="10.5"></rect><path d="M13.25 4V2.75H2.75v10.5H4"></path></svg></button>
+    </div>
+
+    <div class="m-f">
+      <span class="ns-dest">建立後放在 <span class="tag" style="background:var(--t-blue)"></span><b>藍鵲 · 網站 / orb-toolkit-backend</b></span>
+      <button class="btn" type="button">取消</button>
+      <button class="btn primary" type="button">建立 ⌘⏎</button>
+    </div>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"crt":{"editor":"enum","options":["subtle","full","off"],"default":"subtle","section":"Look"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const crt = this.props.crt ?? 'subtle';
+    return { crtClass: crt === 'off' ? '' : 'crt-' + crt };
+  }
+}
+</script>
+</body>
+</html>

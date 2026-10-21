@@ -1,0 +1,49 @@
+CoddTerminal includes third-party software.
+
+THIRD-PARTY-NOTICES.md at the repository root lists everything CODD ships or vendors, with the full
+license texts (the libraries and fonts inside GhosttyKit too); CODD.app carries it as
+Contents/Resources/THIRD-PARTY-NOTICES.md and opens it from Settings › 關於 › 第三方元件授權.
+
+--------------------------------------------------------------------------------
+Sources/GhosttyWrapper/
+
+Vendored from libghostty-spm, https://github.com/Lakr233/libghostty-spm
+Upstream path: Sources/GhosttyTerminal (macOS subset; the UIKit files are omitted)
+Upstream commit: d403978c66870baa422709d1dde385730a4bdaef (release 2.2.2026101301)
+CODD's changes are marked `CODD:` in the source and listed in Vendor/GhosttyWrapper-CODD.patch;
+Sources/GhosttyWrapper/CODD/ is CODD's own code.
+
+MIT License
+
+Copyright (c) 2026 @Lakr233
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+--------------------------------------------------------------------------------
+Dependencies (linked, not vendored)
+
+libghostty (GhosttyKit.xcframework, through libghostty-spm's GhosttyKit product), built from
+Ghostty, https://ghostty.org. MIT License, Copyright (c) 2024 Mitchell Hashimoto, Ghostty
+contributors. GhosttyKit also links Oniguruma, simdutf, Highway, Wuffs, libxev, libvaxis, z2d
+(MPL-2.0), zig-objc, zf, uucode with the Unicode tables built from the Unicode Character Database,
+Zig's standard library and GNU libintl (LGPL-2.1), and embeds JetBrains Mono and Symbols Nerd Font
+as Ghostty's fallback fonts; their licenses, and where the source of z2d and libintl is offered,
+are in THIRD-PARTY-NOTICES.md.
+
+DisplayLink, https://github.com/Lakr233/DisplayLink. MIT License, Copyright (c) 2024 Lakr Aream.

@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>遠端連線 · Remote</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<!--@HELMET-->
+<style>
+/* ===== Remote board (rm-) ===== */
+.rm-root{display:flex;flex-direction:column;gap:24px}
+.rm-hd{display:flex;flex-direction:column;gap:12px}
+.rm-hrow{display:flex;align-items:center;gap:12px}
+.rm-lead{font-size:14px;color:var(--bone);text-wrap:pretty;max-width:900px}
+.rm-lead b{color:var(--cream);font-weight:600}
+.rm-phases{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr) minmax(0,1.7fr);gap:28px;align-items:stretch}
+@media (max-width:1180px){.rm-phases{grid-template-columns:repeat(2,minmax(0,1fr))}.rm-p2{grid-column:1 / -1}}
+@media (max-width:760px){.rm-phases{grid-template-columns:minmax(0,1fr)}}
+.codd .rm-ph{padding:16px 18px 18px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.rm-phh{display:flex;flex-direction:column;gap:4px;padding-bottom:12px;border-bottom:1px dashed var(--line-bright)}
+.rm-phl{display:flex;align-items:center;gap:9px;min-width:0}
+.rm-pno{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber-dim);white-space:nowrap}
+.rm-pt{margin:0;font-family:var(--display);font-weight:700;font-size:15px;color:var(--amber);text-shadow:0 0 10px var(--amber-glow);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.rm-ps{font-size:11.5px;color:var(--dim)}
+.rm-blk{display:flex;flex-direction:column;gap:8px}
+.rm-cap{display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim)}
+.codd .card h3.rm-cap{font-family:var(--mono);font-size:10px;font-weight:400;letter-spacing:.18em;color:var(--dim);margin:0;padding:0;border:0}
+.rm-cap .hint{letter-spacing:.02em;text-transform:none;font-size:10.5px;margin-left:auto}
+/* P0: session header mock */
+.rm-sh{background:var(--bg-soft);border:1px solid var(--line-bright);padding:9px 10px 9px 12px;display:flex;flex-direction:column;gap:7px}
+.rm-sh .l1{display:flex;align-items:center;gap:8px;min-width:0}
+.rm-sh .ttl{font-family:var(--display);font-weight:700;font-size:13px;color:var(--amber);text-shadow:0 0 8px var(--amber-glow);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.rm-sh .l2{display:flex;align-items:center;gap:6px}
+.rm-rc{gap:6px}
+.rm-rc .dot{color:var(--success);text-shadow:0 0 6px rgba(124,255,154,.55)}
+/* P0: QR modal mock */
+.codd .rm-modal{width:100%;max-width:100%}
+.codd .rm-modal .m-h{padding:11px 10px 10px 16px;font-size:11.5px}
+.codd .rm-modal .m-b{padding:14px 16px 16px;gap:12px}
+.rm-qrrow{display:flex;gap:14px;align-items:flex-start}
+.rm-qr{margin:0;display:flex;flex-direction:column;gap:6px;flex:none}
+.rm-qr svg{display:block;width:112px;height:112px;box-shadow:0 0 0 1px var(--line-bright),0 0 18px rgba(255,184,74,.08)}
+.rm-qr.sm svg{width:100px;height:100px}
+.rm-qr rect{fill:var(--bone)}
+.rm-qr path{fill:#000}
+.rm-qr figcaption{font-size:10px;letter-spacing:.04em;color:var(--dim);white-space:nowrap}
+.rm-qrtx{display:flex;flex-direction:column;gap:6px;min-width:0;font-size:12px;color:var(--bone);text-wrap:pretty}
+.rm-qrtx b{color:var(--cream);font-weight:600}
+.rm-wait{font-size:11px;color:var(--dim)}
+.rm-wait .lamp{width:auto;display:inline-flex;margin-right:4px}
+.rm-urlrow{display:flex;align-items:center;gap:6px;min-width:0}
+.rm-urlrow .input{display:flex;align-items:center;font-size:12px;color:var(--bone);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+/* toggles */
+.rm-tg{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.rm-tg li{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line)}
+.rm-tg li:last-child{border-bottom:0}
+.rm-tgt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--cream)}
+.rm-tgt code{align-self:flex-start;font-size:10.5px;color:var(--dim);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* P1 */
+.rm-health{display:flex;align-items:center;gap:8px;font-size:12px;flex-wrap:wrap}
+.rm-pair{padding:12px 14px 14px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
+.rm-pairrow{display:flex;gap:16px;align-items:flex-start}
+.rm-code{display:flex;flex-direction:column;gap:6px;min-width:0}
+.rm-digits{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:.12em;color:var(--amber);text-shadow:0 0 12px var(--amber-glow);line-height:1.1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rm-count{font-size:11.5px;color:var(--bone);font-variant-numeric:tabular-nums}
+.rm-web{display:flex;flex-direction:column;gap:4px;padding:10px 12px;border:1px dashed var(--line-bright);font-size:12px;color:var(--bone);text-wrap:pretty}
+.rm-web b{color:var(--cream);font-weight:600}
+/* P2: phone */
+.rm-p2body{display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start}
+.rm-phone{position:relative;flex:none;width:300px;height:620px;border-radius:44px;background:#141414;padding:10px;box-shadow:inset 0 0 0 1px #2e2e2e,0 0 0 1px #000,0 24px 60px rgba(0,0,0,.65)}
+.rm-phone::before{content:'';position:absolute;right:-3px;top:176px;width:3px;height:92px;background:#262626}
+.rm-phone::after{content:'';position:absolute;left:-3px;top:128px;width:3px;height:164px;background:linear-gradient(#262626 0 30px,transparent 30px 52px,#262626 52px 106px,transparent 106px 116px,#262626 116px 164px)}
+.rm-screen{position:relative;width:100%;height:100%;border-radius:34px;background:#000;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'PingFang TC','Noto Sans TC',sans-serif}
+.rm-screen::before{content:'';position:absolute;inset:0;background:radial-gradient(130% 50% at 50% 0%,rgba(255,184,74,.06),transparent 62%);pointer-events:none}
+.rm-di{position:absolute;top:11px;left:50%;transform:translateX(-50%);height:34px;padding:0 14px 0 12px;border-radius:17px;background:#000;box-shadow:0 0 0 1px #1d1d1d;display:flex;align-items:center;gap:66px;color:var(--amber);z-index:2}
+.rm-di svg{width:16px;height:16px;display:block;filter:drop-shadow(0 0 5px rgba(255,184,74,.5))}
+.rm-di .n{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.02em;text-shadow:0 0 8px var(--amber-glow)}
+.rm-lock{position:absolute;top:64px;left:0;right:0;display:flex;flex-direction:column;align-items:center;color:rgba(245,236,214,.94)}
+.rm-date{font-size:16px;font-weight:600;letter-spacing:.02em}
+.rm-time{font-size:84px;font-weight:700;line-height:1.02;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.rm-la{position:absolute;left:10px;right:10px;bottom:92px;border-radius:22px;background:rgba(13,13,13,.97);border:1px solid rgba(255,184,74,.32);padding:12px 13px 11px;display:flex;flex-direction:column;gap:9px;font-family:var(--mono);box-shadow:0 0 26px rgba(255,184,74,.07)}
+.rm-lah{display:flex;align-items:center;gap:6px;font-size:10.5px}
+.rm-lah svg{width:14px;height:14px;display:block;color:var(--amber)}
+.rm-lah .brand{font-size:11px;text-shadow:none}
+.rm-lah .need{margin-left:auto;color:var(--amber);font-weight:700;letter-spacing:.04em}
+.rm-latop{display:flex;flex-direction:column;gap:2px;min-width:0}
+.rm-latop .t{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--cream);min-width:0}
+.rm-latop .t .ell{flex:1}
+.rm-latop .s{font-size:10.5px;color:var(--dim);padding-left:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rm-labtns{display:flex;gap:8px}
+.rm-labtns .btn{flex:1;justify-content:center;min-height:30px;font-size:12px}
+.rm-lamore{display:flex;flex-direction:column;gap:3px;border-top:1px dashed var(--line-bright);padding-top:7px}
+.rm-lamore span.r{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--bone);white-space:nowrap;overflow:hidden}
+.rm-lamore .d{margin-left:auto;color:var(--dim);font-variant-numeric:tabular-nums}
+.rm-circ{position:absolute;bottom:30px;width:46px;height:46px;border-radius:50%;background:rgba(38,38,38,.9);display:flex;align-items:center;justify-content:center;color:var(--cream)}
+.rm-circ svg{width:20px;height:20px}
+.rm-circ.l{left:32px}.rm-circ.r{right:32px}
+.rm-home{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:112px;height:5px;border-radius:3px;background:rgba(245,236,214,.78)}
+/* P2: side */
+.rm-side{flex:1 1 210px;min-width:0;display:flex;flex-direction:column;gap:22px}
+.rm-dev{display:flex;align-items:center;gap:10px;padding:10px 10px 10px 12px;border:1px solid var(--line-bright);background:var(--bg)}
+.rm-dev svg{width:18px;height:18px;flex:none;color:var(--bone)}
+.rm-dev .who{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rm-dev .who b{font-weight:500;font-size:12.5px;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rm-dev .who span{font-size:10.5px;color:var(--dimmer);font-variant-numeric:tabular-nums}
+.codd .rm-side .addrow{margin-top:0}
+.rm-bul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.rm-bul li{display:grid;grid-template-columns:14px minmax(0,1fr);gap:2px 8px;font-size:11.5px;color:var(--dim);text-wrap:pretty;line-height:1.5}
+.rm-bul li::before{content:'▸';color:var(--amber-dim);grid-row:1 / span 2;font-size:10px;line-height:19px}
+.rm-bul b{font-weight:500;font-size:12.5px;color:var(--cream)}
+.rm-req{display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px dashed var(--line)}
+/* comparison */
+.rm-cmp{display:flex;flex-direction:column;gap:12px}
+.rm-tblw{border:1px solid var(--line-bright);background:var(--bg-soft)}
+.rm-tbl{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px}
+.rm-tbl th{height:32px;padding:0 14px;text-align:left;font-weight:500;font-size:11px;color:var(--bone);border-bottom:1px solid var(--line-bright);background:var(--bg-lift);white-space:nowrap}
+.rm-tbl th .en{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-left:6px}
+.rm-tbl td{padding:7px 14px;vertical-align:top;border-bottom:1px dashed var(--line);color:var(--bone);line-height:1.55;text-wrap:pretty}
+.rm-tbl tbody tr:last-child td{border-bottom:0}
+.rm-tbl .c-plan{width:204px}
+.rm-tbl .c-req{width:300px}
+.rm-tbl td.c-plan{color:var(--cream)}
+.rm-tbl .pl{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.rm-tbl tr.rec td{background:linear-gradient(90deg,rgba(255,184,74,.06),transparent 60%)}
+.rm-tbl tr.rec td.c-plan{box-shadow:inset 2px 0 0 var(--amber)}
+.rm-tbl .lim{color:var(--dim)}
+</style>
+</helmet>
+<div class="codd rm-root {{ crtClass }}" style="width:100%; min-height:1250px; padding:48px 56px">
+
+  <header class="rm-hd">
+    <div class="rm-hrow">
+      <h1 class="h-page">REMOTE &amp; MOBILE</h1>
+      <span class="chip caps">Future</span>
+      <span style="flex:1"></span>
+      <span class="hint">設定 → 遠端 REMOTE · 目前為規劃稿</span>
+    </div>
+    <div class="meta-rule">FUTURE · PHASE 0 → 2</div>
+    <p class="rm-lead">最可能的是 <b>Claude Code Remote Control</b>：Mac 上的 session 繼續跑，用 iPhone 的 Claude App 接手。</p>
+  </header>
+
+  <div class="rm-phases">
+
+    <!-- ===== PHASE 0 ===== -->
+    <article class="card hot rm-ph rm-p0" aria-labelledby="rm-p0-t">
+      <div class="rm-phh">
+        <div class="rm-phl"><span class="rm-pno">Phase 0</span><h2 class="rm-pt" id="rm-p0-t">Remote Control</h2><span style="flex:1"></span><span class="chip amber">v1 先做</span></div>
+        <p class="rm-ps">Claude 官方 · 不需 Apple 開發者帳號</p>
+      </div>
+
+      <div class="rm-blk">
+        <div class="rm-cap">Session header<span class="hint">綠點 = 手機在線</span></div>
+        <div class="rm-sh st-waiting">
+          <div class="l1"><span class="lamp">◆</span><span class="ttl">修正登入 API 401</span><span class="stchip">◆ Waiting · 3m</span></div>
+          <div class="l2">
+            <span class="chip ok rm-rc"><span class="dot">◉</span>RC · 已連線</span>
+            <span style="flex:1"></span>
+            <button class="btn sm" type="button">QR</button>
+            <button class="btn sm" type="button">複製連結</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal rm-modal" role="dialog" aria-labelledby="rm-qr-t">
+        <h3 class="m-h" id="rm-qr-t">Remote Control · 用手機接手<span style="flex:1"></span><button class="icon-btn" type="button" aria-label="關閉">✕</button></h3>
+        <div class="m-b">
+          <div class="rm-qrrow">
+            <figure class="rm-qr">
+              <svg viewBox="-2 -2 29 29" shape-rendering="crispEdges" role="img" aria-label="QR code 示意：session 網址"><rect x="-2" y="-2" width="29" height="29"></rect><path d="M0 0h7v1H0zM8 0h2v1H8zM11 0h1v1H11zM13 0h2v1H13zM16 0h1v1H16zM18 0h7v1H18zM0 1h1v1H0zM6 1h1v1H6zM8 1h4v1H8zM13 1h2v1H13zM18 1h1v1H18zM24 1h1v1H24zM0 2h1v1H0zM2 2h3v1H2zM6 2h1v1H6zM9 2h1v1H9zM11 2h1v1H11zM13 2h4v1H13zM18 2h1v1H18zM20 2h3v1H20zM24 2h1v1H24zM0 3h1v1H0zM2 3h3v1H2zM6 3h1v1H6zM9 3h1v1H9zM12 3h1v1H12zM14 3h3v1H14zM18 3h1v1H18zM20 3h3v1H20zM24 3h1v1H24zM0 4h1v1H0zM2 4h3v1H2zM6 4h1v1H6zM9 4h2v1H9zM12 4h2v1H12zM16 4h1v1H16zM18 4h1v1H18zM20 4h3v1H20zM24 4h1v1H24zM0 5h1v1H0zM6 5h1v1H6zM12 5h1v1H12zM14 5h2v1H14zM18 5h1v1H18zM24 5h1v1H24zM0 6h7v1H0zM8 6h1v1H8zM10 6h1v1H10zM12 6h1v1H12zM14 6h1v1H14zM16 6h1v1H16zM18 6h7v1H18zM8 7h3v1H8zM15 7h1v1H15zM2 8h1v1H2zM5 8h2v1H5zM8 8h1v1H8zM13 8h2v1H13zM16 8h5v1H16zM22 8h3v1H22zM1 9h2v1H1zM8 9h3v1H8zM13 9h5v1H13zM19 9h4v1H19zM4 10h1v1H4zM6 10h1v1H6zM10 10h3v1H10zM14 10h11v1H14zM2 11h4v1H2zM7 11h1v1H7zM10 11h6v1H10zM17 11h2v1H17zM21 11h1v1H21zM23 11h1v1H23zM3 12h4v1H3zM10 12h2v1H10zM18 12h1v1H18zM20 12h5v1H20zM2 13h1v1H2zM7 13h5v1H7zM15 13h1v1H15zM18 13h1v1H18zM23 13h2v1H23zM1 14h1v1H1zM4 14h3v1H4zM9 14h3v1H9zM14 14h6v1H14zM23 14h1v1H23zM0 15h2v1H0zM7 15h1v1H7zM10 15h5v1H10zM18 15h1v1H18zM20 15h3v1H20zM24 15h1v1H24zM0 16h1v1H0zM3 16h1v1H3zM6 16h1v1H6zM9 16h4v1H9zM14 16h1v1H14zM16 16h1v1H16zM18 16h3v1H18zM23 16h1v1H23zM10 17h1v1H10zM12 17h3v1H12zM18 17h1v1H18zM24 17h1v1H24zM0 18h7v1H0zM12 18h1v1H12zM14 18h6v1H14zM24 18h1v1H24zM0 19h1v1H0zM6 19h1v1H6zM11 19h6v1H11zM20 19h1v1H20zM23 19h1v1H23zM0 20h1v1H0zM2 20h3v1H2zM6 20h1v1H6zM9 20h1v1H9zM11 20h2v1H11zM15 20h2v1H15zM18 20h3v1H18zM22 20h1v1H22zM24 20h1v1H24zM0 21h1v1H0zM2 21h3v1H2zM6 21h1v1H6zM8 21h2v1H8zM12 21h1v1H12zM16 21h3v1H16zM20 21h3v1H20zM0 22h1v1H0zM2 22h3v1H2zM6 22h1v1H6zM8 22h2v1H8zM13 22h2v1H13zM16 22h2v1H16zM21 22h1v1H21zM23 22h1v1H23zM0 23h1v1H0zM6 23h1v1H6zM8 23h2v1H8zM12 23h2v1H12zM15 23h7v1H15zM23 23h1v1H23zM0 24h7v1H0zM8 24h5v1H8zM15 24h2v1H15zM18 24h1v1H18zM20 24h2v1H20zM23 24h1v1H23z"></path></svg>
+              <figcaption>QR · claude.ai/code/session/…</figcaption>
+            </figure>
+            <div class="rm-qrtx">
+              <b>修正登入 API 401</b>
+              <span>用 iPhone 相機掃描，在 Claude App 的 Code 分頁接手。</span>
+              <span class="rm-wait"><span class="lamp st-busy">●</span>手機在線 · 10:40 起</span>
+            </div>
+          </div>
+          <div class="rm-urlrow">
+            <span class="input ell" aria-label="session 網址">claude.ai/code/session/…</span>
+            <button class="btn sm" type="button">複製</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="rm-blk">
+        <div class="rm-cap">設定 · Remote &amp; Mobile</div>
+        <ul class="rm-tg">
+          <li><span class="rm-tgt">新 session 預設連 Remote Control<code>remoteControlAtStartup</code></span><button class="sw on" type="button" role="switch" aria-checked="true" aria-label="新 session 預設連 Remote Control"></button></li>
+          <li><span class="rm-tgt">需要操作時推播到手機<code>inputNeededNotifEnabled</code></span><button class="sw on" type="button" role="switch" aria-checked="true" aria-label="需要操作時推播到手機"></button></li>
+          <li><span class="rm-tgt">在 Mac 前時不推播<code>presence file · CLAUDE_CLIENT_PRESENCE_FILE</code></span><button class="sw on" type="button" role="switch" aria-checked="true" aria-label="在 Mac 前時不推播"></button></li>
+        </ul>
+        <span class="chip amber" style="align-self:flex-start">! 切帳號後手機需登入同一帳號</span>
+      </div>
+    </article>
+
+    <!-- ===== PHASE 1 ===== -->
+    <article class="card rm-ph rm-p1" aria-labelledby="rm-p1-t">
+      <div class="rm-phh">
+        <div class="rm-phl"><span class="rm-pno">Phase 1</span><h2 class="rm-pt" id="rm-p1-t">自架遠端</h2><span style="flex:1"></span><span class="chip">選用</span></div>
+        <p class="rm-ps">Tailscale / Cloudflare Tunnel</p>
+      </div>
+
+      <div class="field">
+        <span class="lbl" id="rm-prov">Provider</span>
+        <div class="seg" role="group" aria-labelledby="rm-prov"><button type="button">Off</button><button class="on" type="button">Tailscale</button><button type="button">Cloudflare</button></div>
+      </div>
+
+      <div class="field">
+        <span class="lbl">URL</span>
+        <div class="rm-urlrow">
+          <span class="input ell" aria-label="遠端網址">https://studio-mbp.example.ts.net</span>
+          <button class="icon-btn" type="button" aria-label="複製網址"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="6.75" y="6.75" width="10.5" height="10.5"></rect><path d="M13.25 6.75V2.75H2.75v10.5h4"></path></svg></button>
+        </div>
+        <span class="hint">tailscale serve → 127.0.0.1:47821 · 只有 tailnet 內的裝置連得到</span>
+      </div>
+
+      <div class="rm-health"><span class="lbl">Health</span><span class="ok">● 連線中</span><span class="faint">· HTTPS 憑證由 Tailscale 簽發</span></div>
+
+      <div class="panel rm-pair">
+        <div class="rm-cap">Pairing · 配對手機</div>
+        <div class="rm-pairrow">
+          <figure class="rm-qr sm">
+            <svg viewBox="-2 -2 29 29" shape-rendering="crispEdges" role="img" aria-label="配對 QR code 示意"><rect x="-2" y="-2" width="29" height="29"></rect><path d="M0 0h7v1H0zM8 0h1v1H8zM12 0h4v1H12zM18 0h7v1H18zM0 1h1v1H0zM6 1h1v1H6zM8 1h1v1H8zM10 1h3v1H10zM15 1h2v1H15zM18 1h1v1H18zM24 1h1v1H24zM0 2h1v1H0zM2 2h3v1H2zM6 2h1v1H6zM8 2h1v1H8zM16 2h1v1H16zM18 2h1v1H18zM20 2h3v1H20zM24 2h1v1H24zM0 3h1v1H0zM2 3h3v1H2zM6 3h1v1H6zM9 3h1v1H9zM12 3h5v1H12zM18 3h1v1H18zM20 3h3v1H20zM24 3h1v1H24zM0 4h1v1H0zM2 4h3v1H2zM6 4h1v1H6zM14 4h1v1H14zM16 4h1v1H16zM18 4h1v1H18zM20 4h3v1H20zM24 4h1v1H24zM0 5h1v1H0zM6 5h1v1H6zM8 5h2v1H8zM11 5h2v1H11zM14 5h3v1H14zM18 5h1v1H18zM24 5h1v1H24zM0 6h7v1H0zM8 6h1v1H8zM10 6h1v1H10zM12 6h1v1H12zM14 6h1v1H14zM16 6h1v1H16zM18 6h7v1H18zM8 7h5v1H8zM15 7h1v1H15zM1 8h2v1H1zM6 8h3v1H6zM12 8h1v1H12zM14 8h1v1H14zM16 8h1v1H16zM20 8h1v1H20zM24 8h1v1H24zM1 9h3v1H1zM5 9h1v1H5zM7 9h2v1H7zM12 9h5v1H12zM18 9h3v1H18zM22 9h3v1H22zM1 10h3v1H1zM6 10h2v1H6zM9 10h2v1H9zM14 10h1v1H14zM17 10h1v1H17zM19 10h6v1H19zM0 11h2v1H0zM4 11h1v1H4zM7 11h2v1H7zM10 11h4v1H10zM15 11h1v1H15zM17 11h7v1H17zM1 12h1v1H1zM3 12h1v1H3zM5 12h2v1H5zM9 12h3v1H9zM13 12h4v1H13zM18 12h1v1H18zM24 12h1v1H24zM4 13h2v1H4zM10 13h1v1H10zM12 13h4v1H12zM17 13h1v1H17zM22 13h1v1H22zM1 14h1v1H1zM3 14h2v1H3zM6 14h3v1H6zM10 14h10v1H10zM21 14h1v1H21zM24 14h1v1H24zM2 15h3v1H2zM8 15h4v1H8zM13 15h2v1H13zM18 15h1v1H18zM20 15h2v1H20zM23 15h1v1H23zM0 16h1v1H0zM3 16h1v1H3zM6 16h2v1H6zM9 16h1v1H9zM11 16h1v1H11zM13 16h2v1H13zM16 16h1v1H16zM18 16h2v1H18zM22 16h2v1H22zM8 17h1v1H8zM10 17h2v1H10zM13 17h2v1H13zM18 17h3v1H18zM22 17h1v1H22zM0 18h7v1H0zM8 18h1v1H8zM14 18h5v1H14zM22 18h2v1H22zM0 19h1v1H0zM6 19h1v1H6zM9 19h1v1H9zM15 19h1v1H15zM17 19h1v1H17zM19 19h1v1H19zM21 19h1v1H21zM23 19h1v1H23zM0 20h1v1H0zM2 20h3v1H2zM6 20h1v1H6zM10 20h4v1H10zM17 20h2v1H17zM21 20h4v1H21zM0 21h1v1H0zM2 21h3v1H2zM6 21h1v1H6zM8 21h1v1H8zM10 21h1v1H10zM12 21h2v1H12zM15 21h8v1H15zM24 21h1v1H24zM0 22h1v1H0zM2 22h3v1H2zM6 22h1v1H6zM8 22h1v1H8zM16 22h2v1H16zM22 22h1v1H22zM24 22h1v1H24zM0 23h1v1H0zM6 23h1v1H6zM8 23h3v1H8zM14 23h1v1H14zM16 23h1v1H16zM18 23h1v1H18zM21 23h1v1H21zM23 23h2v1H23zM0 24h7v1H0zM8 24h3v1H8zM13 24h1v1H13zM15 24h4v1H15zM20 24h2v1H20zM24 24h1v1H24z"></path></svg>
+            <figcaption>QR · 網址 + 一次性 token</figcaption>
+          </figure>
+          <div class="rm-code">
+            <span class="lbl">6 碼</span>
+            <span class="rm-digits">482 913</span>
+            <span class="rm-count"><span class="amber">◌</span> 04:59 後失效</span>
+            <button class="btn sm" type="button" style="align-self:flex-start">↻ 重新產生</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="rm-web">
+        <b>↗ CODD Web 介面當手機版（加入主畫面 + Web Push）</b>
+        <span class="hint">iPhone 要先用 Safari「加入主畫面」才收得到 Web Push（iOS 16.4+）。</span>
+      </div>
+      <div class="rm-web">
+        <b>Cloudflare Tunnel</b>
+        <span class="hint">沿用 CODD Web 現有的 named tunnel 與 Google 登入，不另開 port。</span>
+      </div>
+    </article>
+
+    <!-- ===== PHASE 2 ===== -->
+    <article class="card rm-ph rm-p2" aria-labelledby="rm-p2-t">
+      <div class="rm-phh">
+        <div class="rm-phl"><span class="rm-pno">Phase 2</span><h2 class="rm-pt" id="rm-p2-t">原生 iOS App</h2><span style="flex:1"></span><span class="chip">之後</span></div>
+        <p class="rm-ps">需 Apple Developer US$99/年 · SwiftUI</p>
+      </div>
+
+      <div class="rm-p2body">
+        <div class="rm-phone" role="group" aria-label="iPhone 鎖定畫面示意：動態島顯示 ◆3，Live Activity 顯示 3 個需要你的 session">
+          <div class="rm-screen">
+            <div class="rm-di" aria-hidden="true">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg>
+              <span class="n">◆3</span>
+            </div>
+            <div class="rm-lock" aria-hidden="true">
+              <span class="rm-date">10月15日 星期四</span>
+              <span class="rm-time">10:42</span>
+            </div>
+            <div class="rm-la">
+              <div class="rm-lah">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg>
+                <span class="brand">FANCY/CODD</span>
+                <span class="need">◆ 3 需要你</span>
+              </div>
+              <div class="rm-latop st-waiting">
+                <span class="t"><span class="lamp">◆</span><span class="ell">修正登入 API 401 · 需要授權</span></span>
+                <span class="s">Bash: npm test -- auth.spec.ts · 3m</span>
+              </div>
+              <div class="rm-labtns">
+                <button class="btn primary" type="button">允許</button>
+                <button class="btn" type="button">前往</button>
+              </div>
+              <div class="rm-lamore">
+                <span class="r st-waiting"><span class="lamp" style="animation:none">◆</span>發票匯出 CSV · 在問你<span class="d">12m</span></span>
+                <span class="r st-error"><span class="lamp">▲</span>場景載入優化 · API 過載<span class="d">1m</span></span>
+              </div>
+            </div>
+            <span class="rm-circ l" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><path d="M7 2.75h6v3l-1.5 2.5v9h-3v-9L7 5.75z"></path><path d="M10 10.5v2"></path></svg></span>
+            <span class="rm-circ r" aria-hidden="true"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"><rect x="2.75" y="5.75" width="14.5" height="10.5"></rect><path d="M7 5.75l1.25-2h3.5l1.25 2"></path><circle cx="10" cy="11" r="2.75"></circle></svg></span>
+            <span class="rm-home" aria-hidden="true"></span>
+          </div>
+        </div>
+
+        <div class="rm-side">
+          <section class="rm-blk" aria-labelledby="rm-dev-t">
+            <h3 class="rm-cap" id="rm-dev-t">Paired devices · 已配對</h3>
+            <div class="rm-dev">
+              <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="5.75" y="2.75" width="8.5" height="14.5"></rect><path d="M9 14.75h2"></path></svg>
+              <span class="who"><b>我的 iPhone</b><span>上次 10:40 · 區網</span></span>
+              <button class="btn sm" type="button">撤銷</button>
+            </div>
+            <button class="addrow" type="button">+ 配對新裝置</button>
+          </section>
+
+          <section class="rm-blk" aria-labelledby="rm-nat-t">
+            <h3 class="rm-cap" id="rm-nat-t">只有原生 App 做得到</h3>
+            <ul class="rm-bul">
+              <li><b>Bonjour 區網配對</b><span>同一個 Wi-Fi 下自動找到這台 Mac，掃 QR 完成配對；出門改走 Phase 1 的通道。</span></li>
+              <li><b>APNs 可操作通知</b><span>通知上直接按「允許 / 拒絕」，結果回傳到 Mac 上的 session。</span></li>
+              <li><b>Live Activity / 動態島</b><span>鎖定畫面常駐 NEEDS YOU，數字跟著 ◆ 等待與 ▲ 錯誤更新。</span></li>
+            </ul>
+          </section>
+
+          <div class="rm-req">
+            <span class="chip" style="align-self:flex-start">Apple Developer Program · US$99/年</span>
+            <span class="hint">免費佈建約 7 天就過期，TestFlight 與推播都要付費方案。</span>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <!-- ===== COMPARISON ===== -->
+  <section class="rm-cmp" aria-labelledby="rm-cmp-t">
+    <div class="sec"><span id="rm-cmp-t">Compare · 方案比較</span><span class="rule" style="flex:1;border-top:1px dashed var(--line-bright)"></span></div>
+    <div class="rm-tblw">
+      <table class="rm-tbl">
+        <thead>
+          <tr>
+            <th class="c-plan">方案<span class="en">Plan</span></th>
+            <th class="c-req">需要<span class="en">Requires</span></th>
+            <th>能做到<span class="en">Can do</span></th>
+            <th>限制<span class="en">Limits</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="rec">
+            <td class="c-plan"><span class="pl"><span class="chip fill caps">P0</span>Remote Control</span></td>
+            <td>Pro / Max 方案並登入 claude.ai · iPhone 的 Claude App</td>
+            <td>在手機接手 Mac 上正在跑的 session，回覆授權與問題，需要操作時推播</td>
+            <td class="lim">每個 process 一個遠端 session；/plugin、/resume 只能在本機；手機不能選 Bypass permissions</td>
+          </tr>
+          <tr>
+            <td class="c-plan"><span class="pl"><span class="chip caps">P1</span>Tailscale + Web</span></td>
+            <td>Tailscale 或 Cloudflare Tunnel · Mac 保持開機</td>
+            <td>完整 CODD Web：側欄、終端機、筆記；加入主畫面 + Web Push</td>
+            <td class="lim">Web Push 要先加入主畫面；沒有 Live Activity；Mac 睡眠就連不到</td>
+          </tr>
+          <tr>
+            <td class="c-plan"><span class="pl"><span class="chip caps">P2</span>原生 iOS</span></td>
+            <td>Apple Developer US$99/年 · SwiftUI App · TestFlight</td>
+            <td>Bonjour 區網配對、APNs 可操作通知、Live Activity / 動態島</td>
+            <td class="lim">開發與上架成本最高；離開區網仍要 P1 的通道</td>
+          </tr>
+          <tr>
+            <td class="c-plan"><span class="pl"><span class="chip caps">Alt</span>Screen Sharing</span></td>
+            <td>macOS 螢幕共享 + iPhone 上的 VNC App（Screens、Jump Desktop）</td>
+            <td>看到並操作整個 Mac 畫面，不用另外開發</td>
+            <td class="lim">手機上字太小、沒有通知；高效能模式只支援 Mac 對 Mac</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"crt":{"editor":"enum","options":["subtle","full","off"],"default":"subtle","section":"Look"},"$preview":{"width":1440,"height":1250}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const crt = this.props.crt ?? 'subtle';
+    return { crtClass: crt === 'off' ? '' : 'crt-' + crt };
+  }
+}
+</script>
+</body>
+</html>

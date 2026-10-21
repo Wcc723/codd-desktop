@@ -1,0 +1,9 @@
+{
+  "activeAccountNumber": 3,
+  "sequence": [1, 2, 3],
+  "accounts": {
+    "1": {"email": "personal@example.com", "organizationUuid": "", "alias": "個人", "disabled": true},
+    "2": {"email": "north@example.com", "organizationUuid": "00000000-0000-4000-8000-0000000000b2", "alias": "藍鵲"},
+    "3": {"email": "work@example.com", "organizationUuid": "", "alias": "工作"}
+  }
+}

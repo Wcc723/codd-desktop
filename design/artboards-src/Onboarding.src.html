@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>首次啟動 · 匯入專案</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<!--@HELMET-->
+<style>
+/* ===== Onboarding board (ob-) ===== */
+.ob-steps{flex:0 0 260px;height:900px;background:var(--bg);border-right:1px solid var(--line);display:flex;flex-direction:column;min-width:0}
+.ob-drag{height:52px;flex:none}
+.ob-brandblk{display:flex;flex-direction:column;gap:6px;padding:4px 22px 18px;border-bottom:1px dashed var(--line)}
+.ob-brandrow{display:flex;align-items:center;gap:8px;color:var(--amber)}
+.ob-brandrow svg{width:20px;height:20px;flex:none;filter:drop-shadow(0 0 6px rgba(255,184,74,.35))}
+.ob-brandblk .brand{font-size:17px}
+.ob-nav{padding:14px 12px 0}
+.ob-ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.ob-st{position:relative;display:flex;align-items:flex-start;gap:12px;padding:10px 10px 15px;color:var(--dim);text-decoration:none}
+.ob-st::before{content:'';position:absolute;left:23px;top:36px;bottom:-10px;border-left:1px dashed var(--line-bright)}
+.ob-ol li:last-child .ob-st::before{content:none}
+.ob-no{width:26px;height:26px;flex:none;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line-bright);background:var(--bg);color:var(--dim);font-size:11px;font-weight:600;font-variant-numeric:tabular-nums;position:relative;z-index:1}
+.ob-tx{display:flex;flex-direction:column;gap:2px;min-width:0;padding-top:1px}
+.ob-tx b{font-weight:500;font-size:13px;color:var(--bone);line-height:1.35}
+.ob-tx .en{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.ob-tx .ds{font-size:11px;color:var(--dimmer);font-variant-numeric:tabular-nums}
+.ob-st.done .ob-no{color:var(--success);border-color:rgba(124,255,154,.4)}
+.ob-st.done::before{border-left-color:rgba(82,196,114,.6)}
+.ob-st.done .ds{color:var(--dim)}
+.ob-st.done:hover b{color:var(--cream)}
+.ob-st.cur{background:linear-gradient(90deg,var(--amber-glow),transparent 85%);box-shadow:inset 2px 0 0 var(--amber)}
+.ob-st.cur .ob-no{background:var(--amber);border-color:var(--amber);color:#000;box-shadow:0 0 12px var(--amber-glow)}
+.ob-st.cur b{color:var(--amber);text-shadow:0 0 8px var(--amber-glow)}
+.ob-st.cur b::after{content:'_';margin-left:2px;animation:codd-blink 1s steps(1) infinite}
+.ob-st.cur .en{color:var(--amber-dim)}
+.ob-st.cur .ds{color:var(--bone)}
+.ob-st.todo b{color:var(--dim)}
+.ob-st .warn{color:var(--amber-dim)}
+.ob-sfoot{margin-top:auto;border-top:1px dashed var(--line);padding:14px 20px 16px;display:flex;flex-direction:column;gap:9px;font-size:11px;color:var(--dim)}
+.ob-sfoot .hint{text-wrap:pretty;line-height:1.55}
+.ob-sfoot code{font-size:10.5px}
+.ob-link{color:var(--bone);text-decoration:none;border-bottom:1px dashed var(--line-bright);align-self:flex-start;padding-bottom:1px}
+.ob-link:hover{color:var(--amber);border-bottom-color:var(--amber-dim)}
+
+.ob-body{flex:1;min-height:0;overflow:hidden;padding:28px 40px 14px;display:flex;flex-direction:column;gap:20px}
+.ob-boot{flex:none;border:1px solid var(--line-bright);background:#000;display:flex;flex-direction:column}
+.ob-bh{display:flex;align-items:center;gap:12px;height:28px;padding:0 6px 0 12px;background:var(--bg-soft);border-bottom:1px solid var(--line);font-size:10.5px;color:var(--dimmer)}
+.ob-bh .sec{font-size:10px}
+.codd .term.ob-term{flex:none;white-space:normal;padding:9px 14px 11px;font-size:12px;line-height:1.5;display:flex;flex-direction:column}
+.ob-bl{display:grid;grid-template-columns:64px 158px 236px minmax(0,1fr);white-space:nowrap}
+.ob-bl > span{overflow:hidden;text-overflow:ellipsis}
+.ob-head{display:flex;flex-direction:column;gap:7px}
+.ob-kick{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--amber-dim);font-variant-numeric:tabular-nums}
+.ob-lead{font-size:13px;color:var(--bone);text-wrap:pretty;max-width:820px}
+.ob-lead b{color:var(--cream);font-weight:600}
+.ob-work{display:flex;flex-direction:column;gap:10px}
+.ob-tools{display:flex;align-items:center;gap:10px}
+.ob-filter{display:flex;align-items:center;gap:8px;width:340px;height:30px;border:1px solid var(--line-bright);background:var(--bg-soft);padding:0 10px;color:var(--dimmer);font-size:12px}
+.ob-filter input{all:unset;flex:1;min-width:0;color:var(--cream);font-size:12px}
+.ob-filter input::placeholder{color:var(--dimmer)}
+.ob-tblwrap{border:1px solid var(--line-bright);background:var(--bg-soft)}
+.ob-tbl{width:100%;border-collapse:collapse;table-layout:fixed;font-size:12px}
+.ob-tbl th{height:30px;padding:0 10px;text-align:left;font-weight:500;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);border-bottom:1px solid var(--line-bright);background:var(--bg-lift);white-space:nowrap}
+.ob-tbl td{height:30px;padding:0 10px;border-bottom:1px dashed var(--line);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--bone);font-variant-numeric:tabular-nums}
+.ob-tbl tbody tr:hover td{background:var(--bg-lift)}
+.ob-tbl .c-chk{width:42px;text-align:center;padding:0}
+.ob-tbl .c-name{width:262px}
+.ob-tbl .c-last{width:118px}
+.ob-tbl .c-tr{width:112px;text-align:right}
+.ob-tbl .c-grp{width:214px;overflow:visible}
+.ob-tbl th.c-last{color:var(--amber-dim)}
+.ob-nm{color:var(--cream);cursor:pointer}
+.ob-nm .pp{color:var(--dim)}
+.ob-path{font-size:11.5px;color:var(--dimmer)}
+.ob-tbl tr.off td{color:var(--dimmer)}
+.ob-tbl tr.off .ob-nm,.ob-tbl tr.off .ob-nm .pp{color:var(--dim)}
+.ob-gwrap{position:relative}
+.codd .ob-gsel{min-height:24px;height:24px;padding:0 26px 0 8px;display:flex;align-items:center;gap:8px;font-size:12px;text-align:left;cursor:pointer;color:var(--bone);background-color:var(--bg)}
+.codd .ob-gsel .ell{flex:1}
+.codd .ob-gsel:hover{border-color:var(--amber-dim);color:var(--cream)}
+.codd .ob-gsel.open{border-color:var(--amber);color:var(--cream);box-shadow:inset 0 0 0 1px var(--amber),0 0 8px var(--amber-glow)}
+.codd .ob-gsel[disabled]{opacity:.45;cursor:not-allowed}
+.ob-gmenu{position:absolute;right:0;bottom:calc(100% + 4px);width:248px}
+.codd .ob-gmenu .mi{gap:9px}
+.ob-sug{height:16px;font-size:9.5px;padding:0 5px;margin-left:2px}
+.ob-note{display:flex;align-items:center;gap:10px;padding:0 4px 0 12px;height:36px;white-space:nowrap}
+.ob-note .comment{font-size:11.5px}
+.ob-note code{font-size:11px;color:var(--bone)}
+.ob-tbl tfoot td{height:36px;padding:0;border-bottom:0;background:var(--bg)}
+.ob-foot{flex:none;height:60px;display:flex;align-items:center;gap:10px;padding:0 40px;border-top:1px dashed var(--line-bright);background:var(--bg-soft)}
+.ob-sum{font-size:12px;color:var(--bone);font-variant-numeric:tabular-nums}
+.ob-sum b{color:var(--cream);font-weight:600}
+</style>
+</helmet>
+<div class="codd win {{ crtClass }}">
+<div class="tl" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<aside class="ob-steps" aria-label="首次啟動設定">
+  <div class="ob-drag"></div>
+  <div class="ob-brandblk">
+    <div class="ob-brandrow">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg>
+      <span class="brand">FANCY/CODD</span>
+    </div>
+    <span class="comment">// first boot · 首次啟動設定</span>
+  </div>
+
+  <nav class="ob-nav" aria-label="設定步驟">
+    <ol class="ob-ol">
+      <li><a class="ob-st done" href="#detect">
+        <span class="ob-no" aria-hidden="true">✓</span>
+        <span class="ob-tx"><b>偵測環境</b><span class="en">Detect</span><span class="ds">4 項正常 · 1 項待處理</span></span>
+      </a></li>
+      <li><a class="ob-st cur" href="#import" aria-current="step">
+        <span class="ob-no">2</span>
+        <span class="ob-tx"><b>匯入專案</b><span class="en">Import projects</span><span class="ds">已選 9 / 187</span></span>
+      </a></li>
+      <li><div class="ob-st todo">
+        <span class="ob-no">3</span>
+        <span class="ob-tx"><b>安裝 hooks</b><span class="en">Hooks &amp; statusline</span><span class="ds"><span class="warn">◆</span> 需要更新 · 缺 4 個事件</span></span>
+      </div></li>
+      <li><div class="ob-st todo">
+        <span class="ob-no">4</span>
+        <span class="ob-tx"><b>筆記本與 MCP</b><span class="en">Notebook &amp; MCP</span><span class="ds">~/.codd/notebook · :47821</span></span>
+      </div></li>
+      <li><div class="ob-st todo">
+        <span class="ob-no">5</span>
+        <span class="ob-tx"><b>帳號 (cswap)</b><span class="en">Accounts</span><span class="ds">偵測到 3 個帳號</span></span>
+      </div></li>
+      <li><div class="ob-st todo">
+        <span class="ob-no">6</span>
+        <span class="ob-tx"><b>完成</b><span class="en">Done</span><span class="ds">開第一個 session</span></span>
+      </div></li>
+    </ol>
+  </nav>
+
+  <div class="ob-sfoot">
+    <p class="hint">第 3 步按下套用前，不會改動 <code>~/.claude/settings.json</code>。每一步都能之後在 SETTINGS 調整。</p>
+    <a class="ob-link" href="#import-web">已在用 CODD Web？匯入它的設定 →</a>
+    <span class="faint num">0.1.0 (design) · Electron 44 · Node 24</span>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="ob-body">
+
+    <section class="ob-boot" aria-label="環境偵測結果">
+      <div class="ob-bh">
+        <span class="sec">Boot · 偵測環境</span>
+        <span class="num"><span class="ok">4 OK</span> · <span class="amber">1 待處理</span></span>
+        <span style="flex:1"></span>
+        <span class="num">10:41:58 · 0.8s</span>
+        <button class="btn sm" type="button">↻ 重新偵測</button>
+      </div>
+      <div class="term ob-term">
+        <div class="ob-bl"><span class="g">[ OK ]</span><span>claude</span><span>2.1.300</span><span class="d">~/.local/bin/claude</span></div>
+        <div class="ob-bl"><span class="g">[ OK ]</span><span>cswap</span><span>0.26.0 · 3 個帳號</span><span class="d">~/.local/bin/cswap</span></div>
+        <div class="ob-bl"><span class="a">[ .. ]</span><span>hooks</span><span class="a">需要更新（4 個事件）</span><span class="d">~/.claude/settings.json · 缺 PreCompact / PostCompact / SubagentStart / SubagentStop</span></div>
+        <div class="ob-bl"><span class="g">[ OK ]</span><span>node</span><span>24.21</span><span class="d">/opt/homebrew/bin/node</span></div>
+        <div class="ob-bl"><span class="g">[ OK ]</span><span>~/.codd/notebook</span><span>可寫入</span><span class="d">MCP 127.0.0.1:47821 可用</span></div>
+        <div class="ob-bl"><span class="a">[ .. ]</span><span>projects</span><span><span class="a">waiting for operator</span><span class="cursor">_</span></span><span></span></div>
+      </div>
+    </section>
+
+    <header class="ob-head">
+      <span class="ob-kick">Step 02 / 06 · Import projects</span>
+      <h1 class="h-page">匯入專案</h1>
+      <p class="ob-lead">從 <code>~/.claude.json</code> 找到 <b>187</b> 個專案（依最近使用排序）。只勾選你要的，CODD 不會一次全部匯入。</p>
+    </header>
+
+    <div class="ob-work">
+      <div class="ob-tools">
+        <label class="ob-filter"><span aria-hidden="true">/</span><input type="text" placeholder="篩選名稱或路徑…" aria-label="篩選專案"></label>
+        <button class="btn accent" type="button">依父資料夾建議分組</button>
+        <span class="chip amber num">已選 9</span>
+        <span style="flex:1"></span>
+        <span class="hint">依最近使用排序 · 群組可之後在側欄拖曳調整</span>
+      </div>
+
+      <div class="ob-tblwrap">
+        <table class="ob-tbl">
+          <thead>
+            <tr>
+              <th class="c-chk"><input type="checkbox" aria-label="全選目前顯示的專案"></th>
+              <th class="c-name">Project</th>
+              <th>Path</th>
+              <th class="c-last">Last used ↓</th>
+              <th class="c-tr">Transcripts</th>
+              <th class="c-grp">Group</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="c-chk"><input type="checkbox" id="ob-p1" checked="checked"></td>
+              <td class="c-name"><label class="ob-nm" for="ob-p1"><span class="pp">agent-lab-2026/</span>原型試做</label></td>
+              <td class="ob-path" title="~/Project/Northstar/lab/agent-lab-2026/原型試做">~/…/lab/agent-lab-2026/原型試做</td>
+              <td>今天 10:34</td>
+              <td class="c-tr">14</td>
+              <td class="c-grp"><div class="ob-gwrap"><button class="select ob-gsel" type="button" aria-haspopup="listbox" aria-label="原型試做 的群組：藍鵲 · 實驗室"><span class="tag" style="background:var(--t-orange)"></span><span class="ell">藍鵲 · 實驗室</span></button></div></td>
+            </tr>
+            <tr>
+              <td class="c-chk"><input type="checkbox" id="ob-p2" checked="checked"></td>
+              <td class="c-name"><label class="ob-nm" for="ob-p2"><span class="pp">整合範例/</span>MCP</label></td>
+              <td class="ob-path" title="~/Project/Northstar/lab/agent-lab-2026/整合範例/MCP">~/…/agent-lab-2026/整合範例/MCP</td>
+              <td>今天 10:12</td>
+              <td class="c-tr">9</td>
+              <td class="c-grp"><div class="ob-gwrap"><button class="select ob-gsel" type="button" aria-haspopup="listbox" aria-label="MCP 的群組：藍鵲 · 實驗室"><span class="tag" style="background:var(--t-orange)"></span><span class="ell">藍鵲 · 實驗室</span></button></div></td>
+            </tr>
+            <tr class="off">
+              <td class="c-chk"><input type="checkbox" id="ob-p3"></td>
+              <td class="c-name"><label class="ob-nm" for="ob-p3"><span class="pp">整合範例/</span>Skills</label></td>
+              <td class="ob-path" title="~/Project/Northstar/lab/agent-lab-2026/整合範例/Skills">~/…/agent-lab-2026/整合範例/Skills</td>
+              <td>今天 08:50</td>
+              <td class="c-tr">6</td>
+              <td class="c-grp"><div class="ob-gwrap"><button class="select ob-gsel" type="button" disabled="disabled" aria-label="Skills 的群組：藍鵲 · 實驗室（未勾選）"><span class="tag" style="background:var(--t-orange)"></span><span class="ell">藍鵲 · 實驗室</span></button></div></td>
+            </tr>
+            <tr>
+              <td class="c-chk"><input type="checkbox" id="ob-p4" checked="checked"></td>
+              <td class="c-name"><label class="ob-nm" for="ob-p4">orb-toolkit-backend</label></td>
+              <td class="ob-path" title="~/Project/Northstar/websites/orb-toolkit-suite/orb-toolkit-backend">~/…/orb-toolkit-suite/orb-toolkit-backend</td>
+              <td>今天 08:21</td>
+              <td class="c-tr">31</td>
+              <td class="c-grp"><div class="ob-gwrap"><button class="select ob-gsel" type="button" aria-haspopup="listbox" aria-label="orb-toolkit-backend 的群組：藍鵲 · 網站"><span class="tag" style="background:var(--t-blue)"></span><span class="ell">藍鵲 · 網站</span></button></div></td>
+            </tr>
+            <tr>
+              <td class="c-chk"><input type="checkbox" id="ob-p5" checked="checked"></td>
+              <td class="c-name"><label class="ob-nm" for="ob-p5">orb-toolkit-frontend</label></td>
+              <td class="ob-path" title="~/Project/Northstar/websites/orb-toolkit-suite/orb-toolkit-frontend">~/…/orb-toolkit-suite/orb-toolkit-frontend</td>
+              <td>昨天 22:47</td>
+              <td class="c-tr">23</td>
+              <td class="c-grp"><div class="ob-gwrap"><button class="select ob-gsel" type="button" aria-haspopup="listbox" aria-label="orb-toolkit-frontend 的群組：藍鵲 · 網站"><span class="tag" style="background:var(--t-blue)"></span><span class="ell">藍鵲 · 網站</span></button></div></td>
+            </tr>
+            <tr>
+              <td class="c-chk"><input type="checkbox" id="ob-p6" checked="checked"></td>
+              <td class="c-name"><label class="ob-nm" for="ob-p6">Northstar invoice system</label></td>
+              <td class="ob-path" title="~/Project/Northstar/websites/業主/Northstar invoice system">~/…/websites/業主/Northstar invoice system</td>
+              <td>昨天 18:05</td>
+              <td class="c-tr">8</td>
+              <td class="c-grp"><div class="ob-gwrap"><button class="select ob-gsel" type="button" aria-haspopup="listbox" aria-label="Northstar invoice system 的群組：藍鵲 · 網站"><span class="tag" style="background:var(--t-blue)"></span><span class="ell">藍鵲 · 網站</span></button></div></td>
+            </tr>
+            <tr>
+              <td class="c-chk"><input type="checkbox" id="ob-p7" checked="checked"></td>
+              <td class="c-name"><label class="ob-nm" for="ob-p7">Gear3D</label></td>
+              <td class="ob-path" title="~/Github/Gear3D">~/Github/Gear3D</td>
+              <td>10/13</td>
+              <td class="c-tr">17</td>
+              <td class="c-grp"><div class="ob-gwrap"><button class="select ob-gsel" type="button" aria-haspopup="listbox" aria-label="Gear3D 的群組：個人 · Github"><span class="tag" style="background:var(--t-green)"></span><span class="ell">個人 · Github</span></button></div></td>
+            </tr>
+            <tr>
+              <td class="c-chk"><input type="checkbox" id="ob-p8" checked="checked"></td>
+              <td class="c-name"><label class="ob-nm" for="ob-p8">keynote-deck</label></td>
+              <td class="ob-path" title="~/Github/keynote-deck">~/Github/keynote-deck</td>
+              <td>10/13</td>
+              <td class="c-tr">5</td>
+              <td class="c-grp"><div class="ob-gwrap"><button class="select ob-gsel" type="button" aria-haspopup="listbox" aria-label="keynote-deck 的群組：個人 · Github"><span class="tag" style="background:var(--t-green)"></span><span class="ell">個人 · Github</span></button></div></td>
+            </tr>
+            <tr>
+              <td class="c-chk"><input type="checkbox" id="ob-p9" checked="checked"></td>
+              <td class="c-name"><label class="ob-nm" for="ob-p9">pixel-town-demo</label></td>
+              <td class="ob-path" title="~/Github/pixel-town-demo">~/Github/pixel-town-demo</td>
+              <td>10/11</td>
+              <td class="c-tr">12</td>
+              <td class="c-grp"><div class="ob-gwrap"><button class="select ob-gsel" type="button" aria-haspopup="listbox" aria-label="pixel-town-demo 的群組：個人 · Github"><span class="tag" style="background:var(--t-green)"></span><span class="ell">個人 · Github</span></button></div></td>
+            </tr>
+            <tr class="off">
+              <td class="c-chk"><input type="checkbox" id="ob-p10"></td>
+              <td class="c-name"><label class="ob-nm" for="ob-p10">UsageBar</label></td>
+              <td class="ob-path" title="~/Github/UsageBar">~/Github/UsageBar</td>
+              <td>10/09</td>
+              <td class="c-tr">4</td>
+              <td class="c-grp"><div class="ob-gwrap"><button class="select ob-gsel" type="button" disabled="disabled" aria-label="UsageBar 的群組：個人 · Github（未勾選）"><span class="tag" style="background:var(--t-green)"></span><span class="ell">個人 · Github</span></button></div></td>
+            </tr>
+            <tr class="off">
+              <td class="c-chk"><input type="checkbox" id="ob-p11"></td>
+              <td class="c-name"><label class="ob-nm" for="ob-p11">chat-bot-mcp</label></td>
+              <td class="ob-path" title="~/Github/chat-bot-mcp">~/Github/chat-bot-mcp</td>
+              <td>10/02</td>
+              <td class="c-tr">3</td>
+              <td class="c-grp"><div class="ob-gwrap"><button class="select ob-gsel" type="button" disabled="disabled" aria-label="chat-bot-mcp 的群組：未分類（未勾選）"><span class="tag" style="background:transparent;border:1px dashed var(--dimmer)"></span><span class="ell">未分類</span></button></div></td>
+            </tr>
+            <tr>
+              <td class="c-chk"><input type="checkbox" id="ob-p12" checked="checked"></td>
+              <td class="c-name"><label class="ob-nm" for="ob-p12">mysite.github.io</label></td>
+              <td class="ob-path" title="~/Github/mysite.github.io">~/Github/mysite.github.io</td>
+              <td>9/21</td>
+              <td class="c-tr">2</td>
+              <td class="c-grp"><div class="ob-gwrap">
+                <button class="select ob-gsel open" type="button" aria-haspopup="listbox" aria-expanded="true" aria-label="mysite.github.io 的群組：個人 · Github"><span class="tag" style="background:var(--t-green)"></span><span class="ell">個人 · Github</span></button>
+                <div class="menu ob-gmenu" aria-label="選擇群組">
+                  <div class="mh">移到群組 · Group</div>
+                  <button class="mi" type="button"><span class="tag" style="background:var(--t-orange)"></span>藍鵲 · 實驗室</button>
+                  <button class="mi" type="button"><span class="tag" style="background:var(--t-blue)"></span>藍鵲 · 網站</button>
+                  <button class="mi hl" type="button" aria-current="true"><span class="tag" style="background:var(--t-green)"></span>個人 · Github<span class="chip amber ob-sug">建議</span><span class="k amber">✓</span></button>
+                  <button class="mi" type="button"><span class="tag" style="background:var(--t-purple)"></span>CODD</button>
+                  <button class="mi" type="button"><span class="tag" style="background:transparent;border:1px dashed var(--dimmer)"></span>未分類</button>
+                  <div class="sep"></div>
+                  <button class="mi" type="button"><span class="g">+</span>新群組…<span class="k">命名後套用</span></button>
+                </div>
+              </div></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="6"><div class="ob-note">
+                <span class="comment">// <code>~/.claude-worktrees/*</code> 與 SDK 產生的專案預設隱藏</span>
+                <button class="btn sm plain" type="button">顯示隱藏項目</button>
+                <span style="flex:1"></span>
+                <span class="hint num">顯示 12 / 187</span>
+                <button class="btn sm" type="button">載入更多 ↓</button>
+              </div></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer class="ob-foot">
+    <button class="btn" type="button">← 上一步</button>
+    <button class="btn" type="button">略過</button>
+    <span style="flex:1"></span>
+    <span class="ob-sum"><b>9</b> 個專案 → <b>3</b> 個群組 <span class="faint">· 之後可用 ⌘N 或側欄加入更多</span></span>
+    <button class="btn primary" type="button">下一步：安裝 hooks →</button>
+    <span class="kbd">⏎</span>
+  </footer>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"crt":{"editor":"enum","options":["subtle","full","off"],"default":"subtle","section":"Look"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const crt = this.props.crt ?? 'subtle';
+    return { crtClass: crt === 'off' ? '' : 'crt-' + crt };
+  }
+}
+</script>
+</body>
+</html>

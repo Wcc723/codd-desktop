@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 2,
+  "accounts": {
+    "1": {
+      "email": "personal@example.com",
+      "organizationUuid": "00000000-0000-4000-8000-0000000000b1",
+      "lastGood": {
+        "five_hour": {"pct": 0.0},
+        "seven_day": {"pct": 0.0, "resets_at": "2026-10-19T12:00:00.441208+00:00", "countdown": "4d 9h", "clock": "Oct 19 20:00"},
+        "scoped": [{"name": "Fable", "pct": 0.0, "resets_at": "2026-10-19T12:00:00+00:00"}]
+      },
+      "fetchedAt": 1792031940.0,
+      "lastAttemptAt": 1792031940.0,
+      "consecutiveFailures": 0,
+      "lastError": null,
+      "authDeadStrikes": 0,
+      "pollIntervalS": 600
+    },
+    "2": {
+      "email": "north@example.com",
+      "organizationUuid": "00000000-0000-4000-8000-0000000000b2",
+      "lastGood": {
+        "five_hour": {"pct": 2.0, "resets_at": "2026-10-15T05:19:00+00:00", "countdown": "2h 37m", "clock": "13:19"},
+        "seven_day": {"pct": 54.0, "resets_at": "2026-10-16T14:59:00+00:00", "countdown": "1d 12h", "clock": "Oct 16 22:59"},
+        "scoped": [{"name": "Fable", "pct": 0.0}]
+      },
+      "fetchedAt": 1792031940,
+      "consecutiveFailures": 0,
+      "authDeadStrikes": 0
+    },
+    "3": {
+      "email": "work@example.com",
+      "organizationUuid": "00000000-0000-4000-8000-0000000000b3",
+      "lastGood": {
+        "five_hour": {"pct": 9.0, "resets_at": "2026-10-15T05:39:00+00:00", "countdown": "2h 57m", "clock": "13:39"},
+        "seven_day": {"pct": 85.0, "resets_at": "2026-10-18T04:00:00+00:00", "countdown": "3d 1h", "clock": "Oct 18 12:00"},
+        "spend": {"used": 0.0, "limit": 50.0, "pct": 0.0, "currency": "USD"},
+        "scoped": [{"name": "Fable", "pct": 0.0, "resets_at": "2026-10-18T04:00:00+00:00"}]
+      },
+      "fetchedAt": 1792032108.0,
+      "consecutiveFailures": 0,
+      "authDeadStrikes": 0
+    }
+  }
+}

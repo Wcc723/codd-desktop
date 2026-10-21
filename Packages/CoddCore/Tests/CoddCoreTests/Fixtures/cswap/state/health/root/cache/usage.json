@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 2,
+  "accounts": {
+    "1": {"email": "personal@example.com", "organizationUuid": "",
+          "lastGood": {"five_hour": {"pct": 1.0, "resets_at": "2026-10-15T05:00:00+00:00"}, "seven_day": {"pct": 10.0, "resets_at": "2026-10-19T12:00:00+00:00"}},
+          "fetchedAt": 1792031000, "consecutiveFailures": 0, "authDeadStrikes": 0},
+    "2": {"email": "north@example.com", "organizationUuid": "00000000-0000-4000-8000-0000000000b2",
+          "lastGood": {"five_hour": {"pct": 3.0, "resets_at": "2026-10-15T05:19:00+00:00"}, "seven_day": {"pct": 20.0, "resets_at": "2026-10-16T14:59:00+00:00"}},
+          "fetchedAt": 1792031940, "consecutiveFailures": 4, "lastError": "invalid_grant", "authDeadStrikes": 1},
+    "3": {"email": "work@example.com", "organizationUuid": "",
+          "lastGood": {"five_hour": {"pct": 99.0, "resets_at": "2026-10-15T05:39:00+00:00"}, "seven_day": {"pct": 99.0, "resets_at": "2026-10-18T04:00:00+00:00"}},
+          "fetchedAt": 1792031940, "consecutiveFailures": 2, "lastError": "http-500 for work@example.com", "authDeadStrikes": 0}
+  }
+}

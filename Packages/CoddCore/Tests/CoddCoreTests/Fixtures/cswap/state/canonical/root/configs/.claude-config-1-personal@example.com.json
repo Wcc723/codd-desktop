@@ -1,0 +1,12 @@
+{
+  "numStartups": 12,
+  "oauthAccount": {
+    "accountUuid": "00000000-0000-4000-8000-0000000000a1",
+    "emailAddress": "personal@example.com",
+    "organizationUuid": "00000000-0000-4000-8000-0000000000b1",
+    "organizationName": "personal@example.com's Organization",
+    "organizationRateLimitTier": "default_claude_max_20x",
+    "organizationType": "claude_max",
+    "displayName": "Synthetic 1"
+  }
+}

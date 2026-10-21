@@ -1,0 +1,93 @@
+name: TermSpike
+# Terminal engine spike: libghostty (libghostty-spm) vs SwiftTerm, same harness.
+# Build: cd Spikes && xcodegen generate && xcodebuild -project TermSpike.xcodeproj -scheme TermSpike \
+#   -configuration Debug -derivedDataPath ../build/spike -skipPackagePluginValidation -skipMacroValidation build
+# Test:  same, with `test` instead of `build` (runs TermSpikeKitTests, Swift Testing).
+options:
+  bundleIdPrefix: app.fancycodd
+  deploymentTarget:
+    macOS: "26.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    MACOSX_DEPLOYMENT_TARGET: "26.0"
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGN_STYLE: Manual
+    DEVELOPMENT_TEAM: ""
+    ENABLE_HARDENED_RUNTIME: NO
+packages:
+  GhosttyKit:
+    url: https://github.com/Lakr233/libghostty-spm.git
+    exactVersion: 2.2.2026101301
+  SwiftTerm:
+    url: https://github.com/migueldeicaza/SwiftTerm.git
+    exactVersion: 1.99.0
+targets:
+  TermSpikeKit:
+    # Engine-independent pieces (PTY, stream generator, probe decoder, metrics).
+    # Kept separate so they can be unit-tested without launching the app.
+    type: framework
+    platform: macOS
+    sources:
+      - path: TermSpikeKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.fancycodd.TermSpikeKit
+        GENERATE_INFOPLIST_FILE: YES
+        SKIP_INSTALL: YES
+        DEFINES_MODULE: YES
+  TermSpike:
+    type: application
+    platform: macOS
+    sources:
+      - path: TermSpike
+        excludes:
+          - "*.md"
+          - "results/**"
+    dependencies:
+      - target: TermSpikeKit
+      - package: GhosttyKit
+        product: GhosttyTerminal
+      - package: GhosttyKit
+        product: GhosttyKit
+      - package: SwiftTerm
+        product: SwiftTerm
+    info:
+      path: TermSpike/Info.plist
+      properties:
+        CFBundleName: TermSpike
+        CFBundleShortVersionString: "0.1.0"
+        CFBundleVersion: "1"
+        LSMinimumSystemVersion: "26.0"
+        NSPrincipalClass: NSApplication
+        # Where --probe / --bench write results/*.json and RESULTS.md (overridable with --out).
+        TermSpikeResultsDir: $(SRCROOT)/TermSpike
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.fancycodd.TermSpike
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+  TermSpikeKitTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: TermSpikeKitTests
+    dependencies:
+      - target: TermSpikeKit
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: app.fancycodd.TermSpikeKitTests
+        GENERATE_INFOPLIST_FILE: YES
+schemes:
+  TermSpike:
+    build:
+      targets:
+        TermSpike: all
+        TermSpikeKitTests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - TermSpikeKitTests

@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>清理建議 · Cleanup</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<!--@HELMET-->
+<style>
+/* ===== Cleanup board (.nb-) ===== */
+.codd .nb-cl-page{flex:1;min-height:0;overflow:hidden;padding:18px 36px 18px;display:flex;flex-direction:column;gap:18px}
+.codd .nb-cl-head{display:flex;flex-direction:column;gap:8px}
+.codd .nb-cl-crumb{display:flex;align-items:center;gap:8px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim)}
+.codd .nb-cl-crumb a{color:var(--dim);text-decoration:none}
+.codd .nb-cl-crumb a:hover{color:var(--amber)}
+.codd .nb-cl-crumb .sl{color:var(--dimmer)}
+.codd .nb-cl-crumb .cur{color:var(--bone)}
+.codd .nb-cl-grid{display:grid;grid-template-columns:minmax(0,1fr) 344px;gap:20px 24px;align-items:stretch}
+.codd .nb-cl-tw{flex:1;min-height:0}
+.codd .nb-cl-review{display:flex;flex-direction:column;min-width:0}
+.codd .nb-cl-review .tab .n{color:var(--dim);letter-spacing:0;font-variant-numeric:tabular-nums}
+.codd .nb-cl-review .tab.on .n{color:var(--amber)}
+.codd .nb-cl-review .tfill .kbd{height:16px;font-size:10px}
+.codd .nb-cl-tbl{width:100%;border-collapse:collapse;table-layout:fixed}
+.codd .nb-cl-tbl th{font-size:10px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);text-align:left;padding:0 8px;height:30px;border-bottom:1px solid var(--line-bright);background:var(--bg);white-space:nowrap}
+.codd .nb-cl-tbl th .cjk{letter-spacing:.04em;color:var(--dimmer);margin-left:4px;font-size:10.5px}
+.codd .nb-cl-tbl td{padding:6px 8px;border-bottom:1px dashed var(--line-bright);vertical-align:middle;font-size:12px;color:var(--bone)}
+.codd .nb-cl-tbl td:first-child,.codd .nb-cl-tbl th:first-child{padding-left:14px;padding-right:0}
+.codd .nb-cl-tbl tr.sel td{background:rgba(255,184,74,.05)}
+.codd .nb-cl-tbl tr.sel td:first-child{box-shadow:inset 2px 0 0 var(--amber)}
+.codd .nb-cl-tbl tr:hover td{background:var(--bg-lift)}
+.codd .nb-cl-it{display:flex;flex-direction:column;gap:4px;min-width:0}
+.codd .nb-cl-it .tt{font-size:12.5px;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.codd .nb-cl-it .l2{display:flex;align-items:center;gap:6px;min-width:0;font-size:10.5px;color:var(--dim)}
+.codd .chip.nb-xs{height:17px;font-size:9.5px;padding:0 5px;gap:4px;letter-spacing:.12em;flex:none}
+.codd .chip.nb-dash{border-style:dashed}
+.codd .nb-cl-why{display:flex;flex-direction:column;gap:2px;line-height:1.45}
+.codd .nb-cl-why .sub{font-size:10.5px;color:var(--dimmer)}
+.codd .nb-cl-tbl tr.sel .nb-cl-why .sub,.codd .nb-cl-tbl tr:hover .nb-cl-why .sub{color:var(--dim)}
+.codd .nb-cl-st .chip{font-size:10.5px;padding:0 6px;font-variant-numeric:tabular-nums}
+.codd .nb-cl-ai{display:flex;align-items:flex-start;gap:6px;font-size:11.5px;line-height:1.45;color:var(--dim)}
+.codd .nb-cl-ai svg{width:13px;height:13px;flex:none;margin-top:2px}
+.codd .nb-cl-ai .g{flex:none;width:13px;text-align:center}
+.codd .nb-cl-ai.keep{color:var(--cyan)}
+.codd .nb-cl-ai.sum{color:var(--amber-dim)}
+.codd .nb-cl-acts{display:flex;justify-content:flex-end;gap:6px}
+.codd .nb-cl-bulk{position:sticky;bottom:0;display:flex;align-items:center;gap:8px;padding:9px 10px 9px 14px;background:linear-gradient(90deg,rgba(255,184,74,.10),rgba(255,184,74,.02)),var(--bg-soft);border-top:1px solid var(--amber-dim);font-size:12px}
+.codd .nb-cl-bulk .chip.fill{height:22px}
+
+.codd .nb-cl-cond{display:flex;flex-direction:column;gap:10px}
+.codd .nb-cl-cond .card-h,.codd .nb-cl-pol .card-h{margin:0}
+.codd .nb-cl-cond .card-h .r,.codd .nb-cl-pol .card-h .r{margin-left:auto;font-family:var(--mono);font-weight:400;letter-spacing:.12em;font-size:10px;color:var(--dim)}
+.codd .nb-cl-big{font-family:var(--display);font-weight:700;font-size:15px;color:var(--cream);display:flex;align-items:center;gap:10px}
+.codd .nb-cl-big .ar{color:var(--amber)}
+.codd .nb-cl-src{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border:1px solid var(--line);background:var(--bg)}
+.codd .nb-cl-src li{display:flex;align-items:center;gap:8px;height:20px;padding:0 8px;font-size:11.5px;color:var(--bone);border-bottom:1px dashed var(--line)}
+.codd .nb-cl-src li:last-child{border-bottom:0}
+.codd .nb-cl-src .k{margin-left:auto;font-size:10px;letter-spacing:.12em;color:var(--dim);flex:none}
+.codd .nb-cl-src .tag{flex:none}
+.codd .nb-cl-prevh{display:flex;align-items:center;gap:8px}
+.codd .nb-cl-prevh .lbl{flex:none}
+.codd .nb-cl-prev{position:relative;flex:1;min-height:120px;overflow:hidden;background:#000;border:1px dashed var(--line-bright);padding:10px 12px;display:flex;flex-direction:column;gap:3px;font-size:11px;line-height:1.5;color:var(--bone);-webkit-mask-image:linear-gradient(180deg,#000 72%,transparent);mask-image:linear-gradient(180deg,#000 72%,transparent)}
+.codd .nb-cl-prev .h1{font-family:var(--display);font-weight:700;font-size:12.5px;color:var(--amber)}
+.codd .nb-cl-prev .q{color:var(--dim);border-left:2px solid var(--amber-dim);padding-left:7px;font-size:10.5px}
+.codd .nb-cl-prev .h2{font-family:var(--display);font-weight:700;font-size:11px;color:var(--amber-dim);margin-top:4px}
+.codd .nb-cl-prev .li{padding-left:12px;position:relative}
+.codd .nb-cl-prev .li::before{content:'';position:absolute;left:2px;top:.68em;width:4px;height:4px;background:var(--amber-dim)}
+.codd .nb-cl-prev .lk{color:var(--cyan)}
+.codd .nb-cl-note{display:flex;align-items:flex-start;gap:8px;font-size:11.5px;line-height:1.5;color:var(--bone);padding:7px 10px;border:1px solid var(--line-bright);border-left:2px solid var(--cyan);background:var(--bg);text-wrap:pretty}
+.codd .nb-cl-note .g{color:var(--cyan);flex:none}
+.codd .nb-cl-go{display:flex;align-items:center;gap:10px}
+
+.codd .nb-cl-pol{grid-column:1 / -1;display:flex;flex-direction:column;gap:12px;padding:14px 18px 16px}
+.codd .nb-cl-polb{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;align-items:start}
+.codd .nb-cl-life{list-style:none;margin:0;padding:0;display:flex;align-items:flex-start;gap:0}
+.codd .nb-cl-life li{display:flex;flex-direction:column;gap:5px;flex:1;min-width:0}
+.codd .nb-cl-life .nd{display:flex;align-items:center;gap:0;min-width:0}
+.codd .nb-cl-life .bx{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px;border:1px solid var(--st,var(--line-bright));color:var(--st,var(--bone));font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;background:var(--bg);flex:none}
+.codd .nb-cl-life .bx .d{letter-spacing:.02em;text-transform:none;color:var(--bone)}
+.codd .nb-cl-life .ln{flex:1;min-width:18px;display:flex;align-items:center;gap:2px;padding:0 4px;color:var(--dimmer);font-size:10.5px}
+.codd .nb-cl-life .ln::before{content:'';flex:1;border-top:1px dashed var(--line-bright)}
+.codd .nb-cl-life .sb{font-size:10.5px;color:var(--dim);line-height:1.4;padding-right:8px;text-wrap:pretty}
+.codd .nb-cl-life .act{--st:var(--success)}
+.codd .nb-cl-life .stl{--st:var(--amber-dim)}
+.codd .nb-cl-life .arc{--st:var(--cyan)}
+.codd .nb-cl-life .trs{--st:var(--danger)}
+.codd .nb-cl-life .prg{--st:var(--dimmer)}
+.codd .nb-cl-life li:last-child{flex:none}
+.codd .nb-cl-rules{display:grid;grid-template-columns:auto minmax(0,1fr) auto minmax(0,1fr);gap:5px 14px;margin:0;font-size:11.5px;padding-left:20px;border-left:1px dashed var(--line-bright)}
+.codd .nb-cl-rules dt{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);white-space:nowrap;padding-top:1px}
+.codd .nb-cl-rules dd{margin:0;color:var(--bone)}
+</style>
+</helmet>
+<div class="codd win {{ crtClass }}">
+<!--@RAIL on=notes-->
+<div class="main">
+  <div class="nb-cl-page">
+    <header class="nb-cl-head">
+      <nav class="nb-cl-crumb" aria-label="位置"><a href="#notebook">← Notebook</a><span class="sl">/</span><span class="cur">Cleanup</span><span style="flex:1"></span><span class="kbd">esc</span><span style="letter-spacing:.04em;text-transform:none">返回筆記本</span></nav>
+      <h1 class="h-page">CLEANUP · 清理建議</h1>
+      <div class="meta-rule">每週一 09:00 · 15 項 · 上次 10/08</div>
+    </header>
+
+    <div class="nb-cl-grid">
+      <!-- ===== REVIEW TABLE ===== -->
+      <section class="panel nb-cl-review" aria-label="清理候選項目">
+        <div class="tabs" role="tablist" aria-label="候選類別">
+          <button class="tab on" type="button" role="tab" aria-selected="true"><span class="tlabel">Notes</span><span class="n">8</span></button>
+          <button class="tab" type="button" role="tab" aria-selected="false">Sessions <span class="n">5</span></button>
+          <button class="tab" type="button" role="tab" aria-selected="false">Files <span class="n">2</span></button>
+          <span class="tfill"><span class="kbd">space</span>勾選<span class="kbd">⌘A</span>全選<span class="kbd">⌫</span>封存</span>
+        </div>
+        <div class="nb-cl-tw">
+        <table class="nb-cl-tbl">
+          <colgroup><col style="width:36px"><col style="width:226px"><col style="width:184px"><col style="width:128px"><col style="width:156px"><col style="width:196px"></colgroup>
+          <thead>
+            <tr>
+              <th scope="col"><input type="checkbox" aria-label="全選 8 個項目"></th>
+              <th scope="col">Item<span class="cjk">項目</span></th>
+              <th scope="col">Why<span class="cjk">原因</span></th>
+              <th scope="col">Status</th>
+              <th scope="col">AI</th>
+              <th scope="col" style="text-align:right">已選 5 / 8</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input type="checkbox" aria-label="選取「Gear3D 載入效能想法」"></td>
+              <td><div class="nb-cl-it"><span class="tt">Gear3D 載入效能想法</span><span class="l2"><span class="chip nb-xs">NOTE</span><span class="tag" style="background:var(--t-green)"></span><span class="ell">Gear3D</span></span></div></td>
+              <td><div class="nb-cl-why"><span>21 天未開啟</span><span class="sub">最後開啟 9/24</span></div></td>
+              <td class="nb-cl-st"><span class="chip">stale 21d</span></td>
+              <td><div class="nb-cl-ai keep"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2 10s3-5.25 8-5.25S18 10 18 10s-3 5.25-8 5.25S2 10 2 10z"></path><circle cx="10" cy="10" r="2.25"></circle></svg><span>AI 2d 前讀取 → 建議保留</span></div></td>
+              <td><div class="nb-cl-acts"><button class="btn sm" type="button">保留 30 天</button><button class="btn sm" type="button">封存</button></div></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" aria-label="選取「給後端的 prompt：auth 測試範圍」"></td>
+              <td><div class="nb-cl-it"><span class="tt">給後端的 prompt：auth 測試範圍</span><span class="l2"><span class="chip nb-xs amber">PROMPT</span><span class="tag" style="background:var(--t-blue)"></span><span class="ell">orb-toolkit-backend</span></span></div></td>
+              <td><div class="nb-cl-why"><span>已送出 7 天</span><span class="sub">送到 auth middleware 單元測試</span></div></td>
+              <td class="nb-cl-st"><span class="chip amber">archives in 0d</span></td>
+              <td><div class="nb-cl-ai"><span class="g">—</span></div></td>
+              <td><div class="nb-cl-acts"><button class="btn sm" type="button">保留 30 天</button><button class="btn sm" type="button">封存</button></div></td>
+            </tr>
+            <tr>
+              <td><input type="checkbox" aria-label="選取「隨手記 10/15」"></td>
+              <td><div class="nb-cl-it"><span class="tt">隨手記 10/15</span><span class="l2"><span class="chip nb-xs nb-dash">SCRATCH</span><span class="faint">未連結專案</span></span></div></td>
+              <td><div class="nb-cl-why"><span>SCRATCH</span><span class="sub">快速筆記 7 天後自動封存</span></div></td>
+              <td class="nb-cl-st"><span class="chip">archives in 6d</span></td>
+              <td><div class="nb-cl-ai"><span class="g">—</span></div></td>
+              <td><div class="nb-cl-acts"><button class="btn sm" type="button">保留 30 天</button><button class="btn sm" type="button">封存</button></div></td>
+            </tr>
+            <tr class="sel">
+              <td><input type="checkbox" checked="checked" aria-label="選取「keynote 第 2 章大綱」"></td>
+              <td><div class="nb-cl-it"><span class="tt">keynote 第 2 章大綱</span><span class="l2"><span class="chip nb-xs amber">PROMPT</span><span class="tag" style="background:var(--t-green)"></span><span class="ell">keynote-deck</span></span></div></td>
+              <td><div class="nb-cl-why"><span>近似重複（與第 3 章 82% 相同）</span><span class="sub">對照「keynote 第 3 章大綱」</span></div></td>
+              <td class="nb-cl-st"><span class="chip cy">dup 82%</span></td>
+              <td><div class="nb-cl-ai sum"><span class="g" aria-hidden="true">✻</span><span>適合濃縮</span></div></td>
+              <td><div class="nb-cl-acts"><button class="btn sm" type="button">保留 30 天</button><button class="btn sm" type="button">封存</button></div></td>
+            </tr>
+            <tr class="sel">
+              <td><input type="checkbox" checked="checked" aria-label="選取「舊審查清單草稿」"></td>
+              <td><div class="nb-cl-it"><span class="tt">舊審查清單草稿</span><span class="l2"><span class="chip nb-xs">NOTE</span><span class="tag" style="background:var(--t-orange)"></span><span class="ell">原型試做</span></span></div></td>
+              <td><div class="nb-cl-why"><span>30 天未動</span><span class="sub">已有「程式碼審查標準 v2」</span></div></td>
+              <td class="nb-cl-st"><span class="chip">stale 30d</span></td>
+              <td><div class="nb-cl-ai"><span class="g">—</span></div></td>
+              <td><div class="nb-cl-acts"><button class="btn sm" type="button">保留 30 天</button><button class="btn sm" type="button">封存</button></div></td>
+            </tr>
+            <tr class="sel">
+              <td><input type="checkbox" checked="checked" aria-label="選取「每日工作日誌」"></td>
+              <td><div class="nb-cl-it"><span class="tt">每日工作日誌</span><span class="l2"><span class="chip nb-xs">NOTE</span><span class="faint">未連結專案</span></span></div></td>
+              <td><div class="nb-cl-why"><span>長期筆記 · 9 段超過 30 天</span><span class="sub">9/01–9/12 的段落</span></div></td>
+              <td class="nb-cl-st"><span class="chip">9 段 &gt; 30d</span></td>
+              <td><div class="nb-cl-ai sum"><span class="g" aria-hidden="true">✻</span><span>適合濃縮舊段落</span></div></td>
+              <td><div class="nb-cl-acts"><button class="btn sm" type="button">保留 30 天</button><button class="btn sm" type="button">封存</button></div></td>
+            </tr>
+            <tr class="sel">
+              <td><input type="checkbox" checked="checked" aria-label="選取「Pixel Town 對話樹草稿」"></td>
+              <td><div class="nb-cl-it"><span class="tt">Pixel Town 對話樹草稿</span><span class="l2"><span class="chip nb-xs amber nb-dash">PROMPT · 草稿</span><span class="tag" style="background:var(--t-green)"></span><span class="ell">pixel-town-demo</span></span></div></td>
+              <td><div class="nb-cl-why"><span>草稿 18 天未動</span><span class="sub">從未送出</span></div></td>
+              <td class="nb-cl-st"><span class="chip">stale 18d</span></td>
+              <td><div class="nb-cl-ai"><span class="g">—</span></div></td>
+              <td><div class="nb-cl-acts"><button class="btn sm" type="button">保留 30 天</button><button class="btn sm" type="button">封存</button></div></td>
+            </tr>
+            <tr class="sel">
+              <td><input type="checkbox" checked="checked" aria-label="選取「Remote Control 測試紀錄」"></td>
+              <td><div class="nb-cl-it"><span class="tt">Remote Control 測試紀錄</span><span class="l2"><span class="chip nb-xs">NOTE</span><span class="tag" style="background:var(--t-purple)"></span><span class="ell">codd-web</span></span></div></td>
+              <td><div class="nb-cl-why"><span>27 天無活動</span><span class="sub">3 天後自動封存</span></div></td>
+              <td class="nb-cl-st"><span class="chip">archives in 3d</span></td>
+              <td><div class="nb-cl-ai"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2 10s3-5.25 8-5.25S18 10 18 10s-3 5.25-8 5.25S2 10 2 10z"></path><circle cx="10" cy="10" r="2.25"></circle></svg><span>AI 9d 前讀取</span></div></td>
+              <td><div class="nb-cl-acts"><button class="btn sm" type="button">保留 30 天</button><button class="btn sm" type="button">封存</button></div></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+        <div class="nb-cl-bulk" role="toolbar" aria-label="批次動作">
+          <span class="chip fill">已選 5</span>
+          <button class="btn sm" type="button">封存</button>
+          <button class="btn sm danger" type="button">移到垃圾桶</button>
+          <button class="btn sm accent" type="button"><span aria-hidden="true">✻</span>交給 Claude 濃縮…</button>
+          <span style="flex:1"></span>
+          <span class="hint">封存可隨時還原 · 垃圾桶 30 天後清除</span>
+          <button class="icon-btn" type="button" aria-label="取消選取">✕</button>
+        </div>
+      </section>
+
+      <!-- ===== CONDENSE PREVIEW ===== -->
+      <aside class="card hot nb-cl-cond" aria-label="交給 Claude 濃縮">
+        <h2 class="card-h"><span aria-hidden="true">✻</span>Condense<span class="r">PREVIEW</span></h2>
+        <p class="nb-cl-big">濃縮 5 則 <span class="ar">→</span> 1 則摘要</p>
+        <ul class="nb-cl-src" aria-label="來源筆記">
+          <li><span class="tag" style="background:var(--t-green)"></span><span class="ell">keynote 第 2 章大綱</span><span class="k">PROMPT</span></li>
+          <li><span class="tag" style="background:var(--t-orange)"></span><span class="ell">舊審查清單草稿</span><span class="k">NOTE</span></li>
+          <li><span class="tag" style="background:transparent;border:1px dashed var(--dimmer)"></span><span class="ell">每日工作日誌（舊段落 9 段）</span><span class="k">NOTE</span></li>
+          <li><span class="tag" style="background:var(--t-green)"></span><span class="ell">Pixel Town 對話樹草稿</span><span class="k">PROMPT</span></li>
+          <li><span class="tag" style="background:var(--t-purple)"></span><span class="ell">Remote Control 測試紀錄</span><span class="k">NOTE</span></li>
+        </ul>
+        <label class="field">
+          <span class="lbl">帳號 / 模型 · Account</span>
+          <select class="select" aria-label="濃縮使用的帳號與模型"><option>#1 個人 · sonnet-5.5</option></select>
+          <span class="hint">#1 個人 5h 未開始 · 1w 剩 100% · 不佔用 #3 工作的額度</span>
+        </label>
+        <div class="nb-cl-prevh"><span class="lbl">摘要預覽</span><span class="hint">codd://note/cleanup-1015-q8m3</span></div>
+        <div class="nb-cl-prev" aria-label="摘要預覽內容">
+          <span class="h1">摘要 · 10/15 清理（5 則）</span>
+          <span class="q">濃縮自 5 則筆記 · 2026-09-01 → 09-27 · 原稿在 <span class="lk">ARCHIVE</span></span>
+          <span class="h2">keynote 第 2 章大綱</span>
+          <span class="li">重複的 3 節已併入第 3 章；保留「2-4 demo 順序」</span>
+          <span class="h2">舊審查清單草稿</span>
+          <span class="li">v1 的「程式碼風格」在 v2 改成「驗證方式」</span>
+          <span class="h2">每日工作日誌（9/01–9/12）</span>
+          <span class="li">9/03 改用 cswap 管理 3 個帳號</span>
+          <span class="li">9/09 hooks 改成 HTTP 回報狀態</span>
+          <span class="h2">Pixel Town 對話樹草稿</span>
+        </div>
+        <p class="nb-cl-note"><span class="g" aria-hidden="true">◇</span><span>原稿會移到封存（不刪除），摘要連回原稿</span></p>
+        <div class="nb-cl-go">
+          <button class="btn primary" type="button"><span aria-hidden="true">✻</span>產生摘要</button>
+          <span class="hint">claude -p · 掛載 codd MCP</span>
+        </div>
+      </aside>
+
+      <!-- ===== POLICY ===== -->
+      <section class="card nb-cl-pol" aria-label="保留規則">
+        <h2 class="card-h">Policy · 保留規則<span class="r" style="letter-spacing:.04em;text-transform:none"><button class="btn sm" type="button">調整規則 → 設定</button></span></h2>
+        <div class="nb-cl-polb">
+          <ol class="nb-cl-life" aria-label="筆記生命週期">
+            <li class="act"><span class="nd"><span class="bx">Active</span><span class="ln" aria-hidden="true">→</span></span><span class="sb">編輯、開啟、送出都算活動</span></li>
+            <li class="stl"><span class="nd"><span class="bx">Stale <span class="d">14d</span></span><span class="ln" aria-hidden="true">→</span></span><span class="sb">變暗 · 仍可搜尋</span></li>
+            <li class="arc"><span class="nd"><span class="bx">Archive <span class="d">30d</span></span><span class="ln" aria-hidden="true">→</span></span><span class="sb">MCP 預設不列出 · 可還原</span></li>
+            <li class="trs"><span class="nd"><span class="bx">Trash</span><span class="ln" aria-hidden="true">→</span></span><span class="sb">只有你能丟</span></li>
+            <li class="prg"><span class="nd"><span class="bx">Purge <span class="d">30d</span></span></span><span class="sb">tombstone 90 天</span></li>
+          </ol>
+          <dl class="nb-cl-rules">
+            <dt>Scratch</dt><dd>7 天後封存 · 含已送出 prompt</dd>
+            <dt>豁免</dt><dd>釘選 · 使用中 session 的筆記</dd>
+            <dt>提醒</dt><dd>週一 09:00 · ≥5 項才提醒</dd>
+            <dt>濃縮</dt><dd>手動 · 原稿只封存不刪除</dd>
+            <dt>Sessions</dt><dd>停止 3 天 → stale · 7 天 → 封存</dd>
+            <dt>Logs</dt><dd>終端機紀錄封存 30 天後刪除</dd>
+          </dl>
+        </div>
+      </section>
+    </div>
+  </div>
+<!--@STATUSBAR-->
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"crt":{"editor":"enum","options":["subtle","full","off"],"default":"subtle","section":"Look"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const crt = this.props.crt ?? 'subtle';
+    return { crtClass: crt === 'off' ? '' : 'crt-' + crt };
+  }
+}
+</script>
+</body>
+</html>

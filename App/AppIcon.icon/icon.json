@@ -1,0 +1,98 @@
+{
+  "fill": {
+    "solid": "srgb:0.07843,0.07843,0.07843,1.00000"
+  },
+  "groups": [
+    {
+      "layers": [
+        {
+          "image-name-specializations": [
+            {
+              "value": "accent.svg"
+            },
+            {
+              "appearance": "tinted",
+              "value": "accent-tinted.svg"
+            }
+          ],
+          "name": "accent",
+          "glass": false
+        },
+        {
+          "image-name-specializations": [
+            {
+              "value": "cells.svg"
+            },
+            {
+              "appearance": "tinted",
+              "value": "cells-tinted.svg"
+            }
+          ],
+          "name": "cells",
+          "glass": false,
+          "opacity-specializations": [
+            {
+              "value": 1
+            },
+            {
+              "appearance": "tinted",
+              "value": 0.45
+            }
+          ]
+        },
+        {
+          "image-name-specializations": [
+            {
+              "value": "brackets.svg"
+            },
+            {
+              "appearance": "tinted",
+              "value": "brackets-tinted.svg"
+            }
+          ],
+          "name": "brackets",
+          "glass": false
+        }
+      ],
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.5
+      },
+      "translucency": {
+        "enabled": false,
+        "value": 0.5
+      }
+    },
+    {
+      "layers": [
+        {
+          "image-name": "background.png",
+          "name": "background",
+          "glass": false,
+          "hidden-specializations": [
+            {
+              "value": false
+            },
+            {
+              "appearance": "tinted",
+              "value": true
+            }
+          ]
+        }
+      ],
+      "shadow": {
+        "kind": "none",
+        "opacity": 0
+      },
+      "translucency": {
+        "enabled": false,
+        "value": 0
+      }
+    }
+  ],
+  "supported-platforms": {
+    "squares": [
+      "macOS"
+    ]
+  }
+}

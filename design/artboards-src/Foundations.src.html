@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>設計基礎 · Foundations</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<!--@HELMET-->
+<style>
+/* ===== Foundations board (fd-) ===== */
+.codd .fd-page{display:flex;flex-direction:column;gap:20px}
+.codd .fd-top{display:flex;flex-direction:column;gap:10px}
+.codd .fd-tl{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.codd .fd-lead{font-size:12.5px;color:var(--bone);text-wrap:pretty}
+.codd .fd-row{display:flex;flex-wrap:wrap;gap:20px 40px;align-items:flex-start}
+.codd .fd-s{display:flex;flex-direction:column;gap:14px;min-width:0}
+.codd .fd-sh{display:flex;align-items:center;gap:14px;min-width:0}
+.codd .fd-sh h2{margin:0;font-weight:500;flex:none}
+.codd .fd-sh .meta-rule{flex:1;min-width:0;white-space:nowrap}
+.codd .fd-no{color:var(--amber);letter-spacing:.08em}
+.codd .fd-line{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.codd .fd-cap{font-size:10.5px;color:var(--dimmer);letter-spacing:.02em;white-space:nowrap}
+.codd .fd-lc{text-transform:none;letter-spacing:.02em}
+
+/* color */
+.codd .fd-fams{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:18px 24px}
+.codd .fd-fam{display:flex;flex-direction:column;gap:7px;min-width:0}
+.codd .fd-fam .lbl{margin-bottom:1px}
+.codd .fd-tok{display:grid;grid-template-columns:28px minmax(0,1fr);column-gap:10px;align-items:center;line-height:1.3}
+.codd .fd-sw{grid-row:span 2;width:28px;height:28px;border:1px solid var(--line-bright)}
+.codd .fd-tt{display:flex;justify-content:space-between;align-items:baseline;gap:8px;min-width:0}
+.codd .fd-tn{font-size:12px;color:var(--cream);white-space:nowrap}
+.codd .fd-hx{font-size:10.5px;color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+.codd .fd-tu{font-size:11px;color:var(--dim)}
+
+/* tags */
+.codd .fd-tags{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 12px}
+.codd .fd-tg{display:flex;align-items:center;gap:8px;min-width:0;line-height:1.3}
+.codd .fd-tg .sw8{cursor:default}
+.codd .fd-tgt{display:flex;flex-direction:column;min-width:0}
+.codd .fd-usage{display:flex;flex-direction:column;gap:8px;padding-top:12px}
+.codd .gblk.fd-gmini{margin:0;padding:0;width:40px;height:20px;flex:none}
+
+/* type */
+.codd .fd-ty{display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;column-gap:14px;padding:6px 0;min-width:0}
+.codd .fd-ty:first-child{padding-top:0}
+.codd .fd-sz{font-family:var(--display);font-weight:700;font-size:12px;color:var(--amber-dim);font-variant-numeric:tabular-nums}
+.codd .fd-fm{font-size:10.5px;color:var(--dim);text-align:right;white-space:nowrap}
+.codd .fd-shx{height:auto;padding:0;background:transparent;border:0}
+.codd .fd-mt{font-size:11px;color:var(--dim)}
+.codd .fd-wide{grid-column:2 / 4;display:flex;flex-direction:column;gap:5px;min-width:0}
+.codd .fd-term{flex:none;padding:8px 12px;border:1px solid var(--line)}
+.codd .fd-help{grid-column:2 / 4;display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-width:0}
+
+/* status table */
+.codd .fd-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.codd .fd-tbl th{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);font-weight:500;text-align:left;padding:0 8px 6px;border-bottom:1px solid var(--line-bright);white-space:nowrap}
+.codd .fd-tbl td{height:21px;padding:0 8px;border-bottom:1px dashed var(--line);white-space:nowrap;color:var(--bone)}
+.codd .fd-stc{display:inline-flex;align-items:center;gap:8px;font-size:11px;color:var(--dim)}
+.codd .fd-mods{display:flex;flex-direction:column;gap:7px}
+.codd .fd-mods .lbl{width:92px;flex:none}
+
+/* components */
+.codd .fd-cmp{display:flex;flex-wrap:wrap;gap:14px}
+.codd .fd-c{flex:1 1 240px;min-width:0;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.codd .fd-ch{display:flex;align-items:baseline;gap:10px;min-width:0}
+.codd .fd-ch .lbl{flex:none}
+.codd .fd-cls{font-size:10.5px;color:var(--dimmer);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.codd .fd-btns{display:flex;flex-wrap:wrap;gap:10px 12px}
+.codd .fd-bt{display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
+.codd .fd-stack{display:flex;flex-direction:column;gap:6px}
+.codd .fd-chk{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--bone);cursor:pointer}
+.codd .fd-bd{position:relative;height:150px;overflow:hidden;border:1px solid var(--line);background:var(--bg)}
+.codd .fd-bdterm{position:absolute;inset:0;padding:8px 10px;font-size:11px;line-height:1.45;color:#8a8578}
+.codd .fd-acan{display:flex;flex-wrap:wrap;gap:14px 36px;align-items:flex-start}
+.codd .fd-acl{flex:0 1 330px;min-width:0;margin:0}
+.codd .fd-ann{flex:1 1 320px;min-width:0;display:flex;align-items:flex-start;gap:16px;padding-top:4px}
+.codd .fd-annimg{width:48px;height:86px;flex:none;border:1px solid var(--line-bright);background:linear-gradient(180deg,var(--bg-raise) 0 12px,var(--bg) 12px)}
+.codd .fd-annimg::before{content:'';position:absolute;left:0;right:0;bottom:0;height:9px;background:var(--line-bright)}
+.codd .fd-annl{flex:1;min-width:0}
+
+/* anatomy */
+.codd .fd-anat{position:relative;height:152px;overflow:hidden;border:1px solid var(--line);background-color:var(--bg);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:16px 16px}
+.codd .fd-anat-row{position:absolute;left:16px;top:32px;width:260px;transform:scale(2);transform-origin:0 0}
+.codd .fd-dh{position:absolute;height:0;border-top:1px solid var(--amber-dim)}
+.codd .fd-dh::before,.codd .fd-dh::after{content:'';position:absolute;top:-4px;width:1px;height:7px;background:var(--amber-dim)}
+.codd .fd-dh::before{left:0}
+.codd .fd-dh::after{right:0}
+.codd .fd-dv{position:absolute;width:0;border-left:1px solid var(--amber-dim)}
+.codd .fd-dv::before,.codd .fd-dv::after{content:'';position:absolute;left:-4px;width:7px;height:1px;background:var(--amber-dim)}
+.codd .fd-dv::before{top:0}
+.codd .fd-dv::after{bottom:0}
+.codd .fd-dh b,.codd .fd-dv b{position:absolute;font-size:10.5px;font-weight:700;line-height:1;color:var(--amber);white-space:nowrap;font-variant-numeric:tabular-nums;text-shadow:0 0 6px var(--amber-glow)}
+.codd .fd-dh b{left:50%;bottom:4px;transform:translateX(-50%)}
+.codd .fd-dh.below b{bottom:auto;top:4px}
+.codd .fd-dv b{left:7px;top:50%;transform:translateY(-50%)}
+.codd .fd-xl{position:absolute;height:0;border-top:1px dashed var(--dimmer)}
+.codd .fd-legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(146px,1fr));gap:4px 16px;font-size:11px;color:var(--dim)}
+.codd .fd-legend b{color:var(--amber);font-weight:700;margin-right:6px;font-variant-numeric:tabular-nums}
+
+.codd .fd-tree{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:4px 24px;align-items:center}
+.codd .fd-tree .grp,.codd .fd-tree .addrow,.codd .fd-tree .needs,.codd .fd-tree .gblk{margin:0}
+.codd .fd-railx{position:relative;width:72px;flex:none}
+.codd .fd-railx .tl{top:10px;left:10px}
+.codd .fd-railx .rail{height:auto;padding:32px 0 6px;border:1px solid var(--line)}
+
+/* icons */
+.codd .fd-icons{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px}
+.codd .fd-ic{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px 8px;border:1px solid var(--line);background:var(--bg-soft);color:var(--bone);min-width:0}
+.codd .fd-ic svg{width:20px;height:20px;display:block}
+.codd .fd-ic span{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);white-space:nowrap}
+.codd .fd-glyphs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:6px 20px}
+.codd .fd-gg{display:flex;align-items:center;gap:2px;flex-wrap:wrap;min-width:0}
+.codd .fd-gg .lbl{width:48px;flex:none}
+.codd .fd-gl{width:21px;height:22px;display:inline-flex;align-items:center;justify-content:center;flex:none;border:1px solid var(--line);background:var(--bg-soft);color:var(--cream);font-size:13px;line-height:1}
+.codd .fd-gl.st{color:var(--st)}
+
+/* motion */
+.codd .fd-motion{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.codd .fd-mo{display:grid;grid-template-columns:52px minmax(0,1fr);align-items:center;column-gap:12px;padding:10px 12px;border:1px solid var(--line);background:var(--bg-soft);min-width:0}
+.codd .fd-stage{width:52px;height:44px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#000;border:1px solid var(--line-bright)}
+.codd .fd-mo .tx{display:flex;flex-direction:column;min-width:0;line-height:1.35}
+.codd .fd-mo .nm{font-size:11.5px;color:var(--cream)}
+.codd .fd-mo .tm{font-size:11px;color:var(--amber-dim);font-variant-numeric:tabular-nums}
+.codd .fd-mo .us{font-size:10.5px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.codd .fd-big{font-size:18px}
+.codd .fd-scanbox::after{content:'';position:absolute;left:0;right:0;top:-14px;height:14px;background:linear-gradient(180deg,transparent,rgba(255,184,74,.42),transparent);animation:fd-scan 2.4s linear infinite}
+.codd .fd-scanbox i{display:block;width:34px;height:3px;background:var(--line-bright);box-shadow:0 7px 0 var(--line-bright),0 -7px 0 var(--line-bright)}
+.codd .fd-menuspec{min-width:0;width:38px;padding:3px;gap:3px;animation:fd-menuin 2.2s ease-out infinite}
+.codd .fd-menuspec i{display:block;height:4px;background:var(--line-bright)}
+.codd .fd-menuspec i.hl{background:var(--amber-dim)}
+.codd .fd-spin{display:inline-block;color:var(--amber);animation:codd-spin 1.2s linear infinite}
+@keyframes fd-scan{0%{top:-14px}25%{top:44px}100%{top:44px}}
+@keyframes fd-menuin{0%{opacity:0;transform:translateY(-4px)}5%,80%{opacity:1;transform:none}85%,100%{opacity:0;transform:translateY(-4px)}}
+
+/* brand */
+.codd .fd-brand{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.codd .fd-fig{margin:0;display:flex;flex-direction:column;align-items:center;gap:6px;flex:none}
+.codd .fd-appicon{width:128px;height:128px;border-radius:28px;position:relative;overflow:hidden;flex:none;display:flex;align-items:center;justify-content:center;color:var(--amber);background:radial-gradient(ellipse at 50% 42%,#1c1508 0%,#070605 60%,#000 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 10px 30px rgba(0,0,0,.6)}
+.codd .fd-appicon::after{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(180deg,rgba(255,184,74,.07) 0,rgba(255,184,74,.07) 1px,transparent 1px,transparent 3px)}
+.codd .fd-appicon svg{width:76px;height:76px;filter:drop-shadow(0 0 6px rgba(255,184,74,.55))}
+.codd .fd-appicon.s32{width:32px;height:32px;border-radius:7px}
+.codd .fd-appicon.s32 svg{width:19px;height:19px;filter:drop-shadow(0 0 2px rgba(255,184,74,.5))}
+.codd .fd-bcol{flex:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+.codd .fd-mark{width:32px;height:32px;color:var(--amber);filter:drop-shadow(0 0 4px var(--amber-glow))}
+.codd .fd-mbar{display:inline-flex;align-items:center;gap:8px;height:24px;padding:0 8px;background:rgba(20,20,22,.85);border-bottom:1px solid rgba(255,255,255,.08);color:#ececec;font-family:var(--cjk);font-size:12px}
+.codd .fd-mbar.light{background:#e9e9eb;border-bottom-color:rgba(0,0,0,.12);color:#1d1d1f}
+.codd .fd-mbi{display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 6px;border-radius:4px;background:rgba(255,255,255,.16);font-family:var(--mono);font-size:11.5px}
+.codd .fd-mbar.light .fd-mbi{background:rgba(0,0,0,.1)}
+.codd .fd-mbi svg{width:16px;height:16px;display:block}
+.codd .fd-crt{width:96px;height:52px;display:flex;align-items:center;justify-content:center;gap:5px;border:1px solid var(--line-bright);font-size:11px}
+</style>
+</helmet>
+<div class="codd {{ crtClass }}" style="width:100%; min-height:2100px; padding:48px 56px">
+<div class="fd-page">
+
+<!-- ================= PAGE HEADER ================= -->
+<header class="fd-top">
+  <div class="fd-tl">
+    <h1 class="h-page">FOUNDATIONS · 設計基礎</h1>
+    <span class="chip caps amber">spec/helmet.html</span>
+    <span class="chip caps">Phosphor console</span>
+  </div>
+  <div class="meta-rule">Desktop 13px · radius 0 · dashed rules · bracket buttons · glyph lamps</div>
+  <p class="fd-lead">所有畫板共用同一份 helmet.html；本頁每個樣本都直接套用正式 class 繪製，改 helmet 即全部同步。琥珀色只留給標題、目前位置、需要你與主要動作。</p>
+</header>
+
+<!-- ================= 01 COLOR · 02 TAG ================= -->
+<div class="fd-row">
+  <section class="fd-s" style="flex:2 1 720px" aria-labelledby="fd-h1">
+    <div class="fd-sh"><h2 class="sec" id="fd-h1"><span class="fd-no">01</span>Color</h2><div class="meta-rule">17 tokens + term · .codd 自訂屬性</div></div>
+    <div class="fd-fams">
+      <div class="fd-fam">
+        <span class="lbl">Surface · Line</span>
+        <div class="fd-tok"><span class="fd-sw" style="background:var(--bg)"></span><span class="fd-tt"><span class="fd-tn">--bg</span><span class="fd-hx">#050505</span></span><span class="fd-tu ell">視窗底色 · rail · 側欄</span></div>
+        <div class="fd-tok"><span class="fd-sw" style="background:var(--bg-soft)"></span><span class="fd-tt"><span class="fd-tn">--bg-soft</span><span class="fd-hx">#0a0a0a</span></span><span class="fd-tu ell">卡片 · 標題列 · 輸入框</span></div>
+        <div class="fd-tok"><span class="fd-sw" style="background:var(--bg-lift)"></span><span class="fd-tt"><span class="fd-tn">--bg-lift</span><span class="fd-hx">#111111</span></span><span class="fd-tu ell">選單 · 目前列 · toast</span></div>
+        <div class="fd-tok"><span class="fd-sw" style="background:var(--bg-raise)"></span><span class="fd-tt"><span class="fd-tn">--bg-raise</span><span class="fd-hx">#161616</span></span><span class="fd-tu ell">選單 hover · 第二層浮起</span></div>
+        <div class="fd-tok"><span class="fd-sw" style="background:var(--line)"></span><span class="fd-tt"><span class="fd-tn">--line</span><span class="fd-hx">#1a1a1a</span></span><span class="fd-tu ell">虛線分隔 · 區塊邊</span></div>
+        <div class="fd-tok"><span class="fd-sw" style="background:var(--line-bright)"></span><span class="fd-tt"><span class="fd-tn">--line-bright</span><span class="fd-hx">#2a2a2a</span></span><span class="fd-tu ell">框線 · 按鈕 · chip</span></div>
+      </div>
+      <div class="fd-fam">
+        <span class="lbl">Phosphor · Text</span>
+        <div class="fd-tok"><span class="fd-sw" style="background:var(--amber);border-color:var(--amber);box-shadow:0 0 10px var(--amber-glow)"></span><span class="fd-tt"><span class="fd-tn">--amber</span><span class="fd-hx">#ffb84a</span></span><span class="fd-tu ell">標題 · 需要你 · 主要動作</span></div>
+        <div class="fd-tok"><span class="fd-sw" style="background:var(--amber-dim);border-color:var(--amber-dim)"></span><span class="fd-tt"><span class="fd-tn">--amber-dim</span><span class="fd-hx">#e09a2c</span></span><span class="fd-tu ell">hover 框 · ASCII 角 · 計數</span></div>
+        <div class="fd-tok"><span class="fd-sw" style="background:var(--amber-glow);box-shadow:0 0 12px var(--amber-glow)"></span><span class="fd-tt"><span class="fd-tn">--amber-glow</span><span class="fd-hx">rgba(255,184,74,.22)</span></span><span class="fd-tu ell">光暈 · 目前位置</span></div>
+        <div class="fd-tok"><span class="fd-sw" style="background:var(--cream)"></span><span class="fd-tt"><span class="fd-tn">--cream</span><span class="fd-hx">#f5ecd6</span></span><span class="fd-tu ell cream">主要文字 · .cream</span></div>
+        <div class="fd-tok"><span class="fd-sw" style="background:var(--bone)"></span><span class="fd-tt"><span class="fd-tn">--bone</span><span class="fd-hx">#d4cdb8</span></span><span class="fd-tu ell">次要文字 · 列標題</span></div>
+        <div class="fd-tok"><span class="fd-sw" style="background:var(--dim)"></span><span class="fd-tt"><span class="fd-tn">--dim</span><span class="fd-hx">#a8a298</span></span><span class="fd-tu ell">說明 · meta · .muted</span></div>
+      </div>
+      <div class="fd-fam">
+        <span class="lbl">Signal · Terminal</span>
+        <div class="fd-tok"><span class="fd-sw" style="background:var(--dimmer)"></span><span class="fd-tt"><span class="fd-tn">--dimmer</span><span class="fd-hx">#7a7468</span></span><span class="fd-tu ell faint">.faint · 只用在深底且 ≥10.5px</span></div>
+        <div class="fd-tok"><span class="fd-sw" style="background:var(--cyan);border-color:var(--cyan)"></span><span class="fd-tt"><span class="fd-tn">--cyan</span><span class="fd-hx">#6ee0f0</span></span><span class="fd-tu ell">DONE · IDLE · 帳號 #2</span></div>
+        <div class="fd-tok"><span class="fd-sw" style="background:var(--danger);border-color:var(--danger)"></span><span class="fd-tt"><span class="fd-tn">--danger</span><span class="fd-hx">#ff7058</span></span><span class="fd-tu ell">ERROR · 破壞性動作 · .bad</span></div>
+        <div class="fd-tok"><span class="fd-sw" style="background:var(--success);border-color:var(--success)"></span><span class="fd-tt"><span class="fd-tn">--success</span><span class="fd-hx">#7cff9a</span></span><span class="fd-tu ell">BUSY · ok · 剩餘充足</span></div>
+        <div class="fd-tok"><span class="fd-sw" style="background:var(--success-dim);border-color:var(--success-dim)"></span><span class="fd-tt"><span class="fd-tn">--success-dim</span><span class="fd-hx">#52c472</span></span><span class="fd-tu ell">COMPACT · 次要成功</span></div>
+        <div class="fd-tok"><span class="fd-sw" style="background:#000;box-shadow:inset 0 0 0 3px #000,inset 0 0 0 4px #e8e6d8"></span><span class="fd-tt"><span class="fd-tn">.term</span><span class="fd-hx">#000 / #e8e6d8</span></span><span class="fd-tu ell">xterm 底色與文字（非 token）</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="fd-s" style="flex:1 1 380px" aria-labelledby="fd-h2">
+    <div class="fd-sh"><h2 class="sec" id="fd-h2"><span class="fd-no">02</span>Tag palette</h2><div class="meta-rule">/color · 8 + none</div></div>
+    <div class="fd-tags">
+      <div class="fd-tg"><span class="sw8" style="background:var(--t-red)"></span><span class="fd-tgt"><span class="fd-tn">/color red</span><span class="fd-hx">#ef5b5b</span></span></div>
+      <div class="fd-tg"><span class="sw8" style="background:var(--t-blue)"></span><span class="fd-tgt"><span class="fd-tn">/color blue</span><span class="fd-hx">#5b8def</span></span></div>
+      <div class="fd-tg"><span class="sw8" style="background:var(--t-green)"></span><span class="fd-tgt"><span class="fd-tn">/color green</span><span class="fd-hx">#4ec9b0</span></span></div>
+      <div class="fd-tg"><span class="sw8" style="background:var(--t-yellow)"></span><span class="fd-tgt"><span class="fd-tn">/color yellow</span><span class="fd-hx">#e6c84e</span></span></div>
+      <div class="fd-tg"><span class="sw8" style="background:var(--t-purple)"></span><span class="fd-tgt"><span class="fd-tn">/color purple</span><span class="fd-hx">#b07cff</span></span></div>
+      <div class="fd-tg"><span class="sw8" style="background:var(--t-orange)"></span><span class="fd-tgt"><span class="fd-tn">/color orange</span><span class="fd-hx">#ff9b4e</span></span></div>
+      <div class="fd-tg"><span class="sw8" style="background:var(--t-pink)"></span><span class="fd-tgt"><span class="fd-tn">/color pink</span><span class="fd-hx">#ff7cb5</span></span></div>
+      <div class="fd-tg"><span class="sw8" style="background:var(--t-cyan)"></span><span class="fd-tgt"><span class="fd-tn">/color cyan</span><span class="fd-hx">#4ed1e6</span></span></div>
+      <div class="fd-tg"><span class="sw8 none" aria-hidden="true">✕</span><span class="fd-tgt"><span class="fd-tn">none</span><span class="fd-hx">不加顏色</span></span></div>
+    </div>
+    <div class="fd-usage dash-top">
+      <div class="fd-line" style="gap:8px 10px">
+        <span class="tag" style="background:var(--t-pink)"></span><span class="fd-cap">8 · 列</span>
+        <span class="gblk g-blue fd-gmini" aria-hidden="true"></span><span class="fd-cap">群組 = 淺底色區塊</span>
+        <span class="sw8" style="background:var(--t-purple);cursor:default"></span><span class="fd-cap">20 · 色票</span>
+      </div>
+      <div class="fd-line">
+        <div class="swatches" role="radiogroup" aria-label="session 顏色">
+          <button class="sw8" type="button" role="radio" aria-checked="false" aria-label="red" style="background:var(--t-red)"></button>
+          <button class="sw8" type="button" role="radio" aria-checked="false" aria-label="blue" style="background:var(--t-blue)"></button>
+          <button class="sw8" type="button" role="radio" aria-checked="false" aria-label="green" style="background:var(--t-green)"></button>
+          <button class="sw8" type="button" role="radio" aria-checked="false" aria-label="yellow" style="background:var(--t-yellow)"></button>
+          <button class="sw8" type="button" role="radio" aria-checked="false" aria-label="purple" style="background:var(--t-purple)"></button>
+          <button class="sw8" type="button" role="radio" aria-checked="false" aria-label="orange" style="background:var(--t-orange)"></button>
+          <button class="sw8 on" type="button" role="radio" aria-checked="true" aria-label="pink" style="background:var(--t-pink)"></button>
+          <button class="sw8" type="button" role="radio" aria-checked="false" aria-label="cyan" style="background:var(--t-cyan)"></button>
+          <button class="sw8 none" type="button" role="radio" aria-checked="false" aria-label="不加顏色">✕</button>
+        </div>
+        <span class="hint">.swatches .sw8 · 1–8 快速選色</span>
+      </div>
+      <p class="hint">session 列用方塊；群組用淺底色區塊；lamp 與標題的顏色永遠屬於狀態。</p>
+    </div>
+  </section>
+</div>
+
+<!-- ================= 03 TYPE · 04 STATUS ================= -->
+<div class="fd-row">
+  <section class="fd-s" style="flex:1 1 540px" aria-labelledby="fd-h3">
+    <div class="fd-sh"><h2 class="sec" id="fd-h3"><span class="fd-no">03</span>Type</h2><div class="meta-rule">JetBrains Mono · Space Mono · CJK → PingFang TC</div></div>
+    <div>
+      <div class="fd-ty dash-bot"><span class="fd-sz">26</span><span class="h-page">CLEANUP · 清理建議</span><span class="fd-fm"><span class="disp">Space Mono</span> 700 · .h-page</span></div>
+      <div class="fd-ty dash-bot"><span class="fd-sz">15</span><div class="sh fd-shx"><div class="ident"><div class="l1"><span class="lamp st-waiting">◆</span><span class="ttl">修正登入 API 401</span></div><div class="meta"><span>~/…/orb-toolkit-backend</span><span class="sep">·</span><span>⎇ fix/login-401</span><span class="sep">·</span><span>opus-5.5</span></div></div></div><span class="fd-fm"><span class="disp">Space Mono</span> 700 · .sh .ttl</span></div>
+      <div class="fd-ty dash-bot"><span class="fd-sz">13</span><span>修正登入 API 401 · Bash: npm test</span><span class="fd-fm"><span class="mono">Mono 400</span> · CJK → <span class="cjk">PingFang TC</span></span></div>
+      <div class="fd-ty dash-bot"><span class="fd-sz">10.5</span><span class="lbl">Project · 專案 · Account</span><span class="fd-fm">caps .16em · .lbl .sec</span></div>
+      <div class="fd-ty dash-bot"><span class="fd-sz">11</span><span class="fd-mt num">opus-5.5 · CTX 58% · $2.14 · UP 42m · 3m</span><span class="fd-fm">tabular-nums · meta</span></div>
+      <div class="fd-ty dash-bot"><span class="fd-sz">12.5</span>
+        <div class="fd-wide">
+<pre class="term fd-term"><span class="cc">●</span> <span class="w">Update</span>(src/middleware/auth.ts) <span class="d">· 12 additions, 3 removals</span>
+  <span class="del"> 41 -   if (isExpired(token)) return res.status(401).end() </span>
+  <span class="add"> 41 +   if (isExpired(token)) {                            </span>
+<span class="cc">✻</span> <span class="a">Running…</span> <span class="d">(12s ·</span> <span class="inv">esc</span> <span class="d">to interrupt)</span>  <span class="g">✓ 12 passed</span>  <span class="r">✕ 1 failed</span>  <span class="c">◇</span> <span class="cur"> </span></pre>
+          <span class="hint">.term · line-height 1.45 · spans <code>.d .w .a .g .c .r .cc .inv .cur .add .del</code></span>
+        </div>
+      </div>
+      <div class="fd-ty dash-bot" style="border-bottom:0"><span class="fd-sz">aux</span>
+        <div class="fd-help"><span class="h-sub">Accounts</span><span class="comment">// 沒有選取 session</span><code>--session-id</code><span class="path">~/Github/Gear3D</span><span><span class="muted">&gt;</span> <span class="cursor">_</span></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="fd-s" style="flex:1.25 1 640px" aria-labelledby="fd-h4">
+    <div class="fd-sh"><h2 class="sec" id="fd-h4"><span class="fd-no">04</span>Status</h2><div class="meta-rule">11 states · glyph + color 雙重編碼</div></div>
+    <table class="fd-tbl">
+      <thead><tr><th scope="col">State</th><th scope="col">Pill</th><th scope="col">Header chip</th><th scope="col">意義</th><th scope="col">Attn</th></tr></thead>
+      <tbody>
+        <tr><td><span class="fd-stc st-waiting"><span class="lamp">◆</span>st-waiting</span></td><td><span class="state st-waiting">Waiting</span></td><td><span class="stchip st-waiting">◆ Waiting · Permission · <span class="fd-lc">3m</span></span></td><td>需要授權／回答／核准計畫</td><td class="amber">高</td></tr>
+        <tr><td><span class="fd-stc st-error"><span class="lamp">▲</span>st-error</span></td><td><span class="state st-error">Error</span></td><td><span class="stchip st-error">▲ Error · Overloaded · <span class="fd-lc">1m</span></span></td><td>本輪失敗 · StopFailure</td><td class="bad">高</td></tr>
+        <tr><td><span class="fd-stc st-done"><span class="lamp">◇</span>st-done</span></td><td><span class="state st-done">Done</span></td><td><span class="stchip st-done">◇ Done · <span class="fd-lc">4m</span></span></td><td>你不在時完成（未讀）</td><td class="cy">輕</td></tr>
+        <tr><td><span class="fd-stc st-busy"><span class="lamp">●</span>st-busy</span></td><td><span class="state st-busy">Busy</span></td><td><span class="stchip st-busy">● Busy · Edit · <span class="fd-lc">6m</span></span></td><td>生成中或執行工具</td><td class="faint">—</td></tr>
+        <tr><td><span class="fd-stc st-compacting"><span class="lamp">◌</span>st-compacting</span></td><td><span class="state st-compacting">Compact</span></td><td><span class="stchip st-compacting">◌ Compacting · <span class="fd-lc">20s</span></span></td><td>壓縮對話脈絡</td><td class="faint">—</td></tr>
+        <tr><td><span class="fd-stc st-idle"><span class="lamp">○</span>st-idle</span></td><td><span class="state st-idle">Idle</span></td><td><span class="stchip st-idle">○ Idle · <span class="fd-lc">2h</span></span></td><td>輪到你，已看過</td><td class="faint">—</td></tr>
+        <tr><td><span class="fd-stc st-starting"><span class="lamp">◌</span>st-starting</span></td><td><span class="state st-starting">Start</span></td><td><span class="stchip st-starting">◌ Starting · <span class="fd-lc">4s</span></span></td><td>剛啟動 · 尚無 hook 資料</td><td class="faint">—</td></tr>
+        <tr><td><span class="fd-stc st-unknown"><span class="lamp">●</span>st-unknown</span></td><td><span class="faint">—</span> <span class="ext">! NO HOOK</span></td><td><span class="faint">—</span></td><td>執行中 · ≥20s 無 hook 資料</td><td>提醒</td></tr>
+        <tr><td><span class="fd-stc st-shell"><span class="lamp">$</span>st-shell</span></td><td><span class="state st-shell">Shell</span></td><td><span class="stchip st-shell">$ Shell · zsh</span></td><td>PTY 存活 · 純終端機</td><td class="faint">—</td></tr>
+        <tr><td><span class="fd-stc st-exited"><span class="lamp">✕</span>st-exited</span></td><td><span class="state st-exited">Exited</span></td><td><span class="stchip st-exited">✕ Exited · code 0 · <span class="fd-lc">3h</span></span></td><td>本次執行已結束</td><td class="faint">—</td></tr>
+        <tr><td><span class="fd-stc st-stopped"><span class="lamp">⟲</span>st-stopped</span></td><td><span class="state st-stopped">Stopped</span></td><td><span class="stchip st-stopped">⟲ Stopped · 可接續</span></td><td>上次執行留下 · 可接續</td><td class="faint">—</td></tr>
+      </tbody>
+    </table>
+    <div class="fd-mods">
+      <div class="fd-line"><span class="lbl">Modifiers</span><span class="ext">EXT</span><span class="muted" style="font-size:11px">◉ rc</span><span class="faint" style="font-size:11px">stale · 75%</span><span class="chip" style="height:15px;font-size:9.5px;padding:0 4px;color:var(--cyan);border-color:rgba(110,224,240,.4)">#2</span><span class="chip caps" style="height:15px;font-size:9px;padding:0 4px">AI</span><span class="chip caps" style="height:15px;font-size:9px;padding:0 4px">BG</span><span class="fd-cap">NEEDS YOU 細分</span><span class="state st-waiting">Perm</span><span class="state st-waiting">Ask</span><span class="state st-waiting">Plan</span></div>
+      <div class="fd-line"><span class="lbl">Aggregate</span><span class="agg" style="margin-left:0"><span class="st-waiting"><span class="lamp" style="animation:none">◆</span>2</span><span class="st-error"><span class="lamp">▲</span>1</span><span class="st-done"><span class="lamp">◇</span>1</span><span class="st-busy"><span class="lamp">●</span>3</span><span class="st-compacting"><span class="lamp">◌</span>1</span><span class="st-idle"><span class="lamp">○</span>4</span><span class="st-shell"><span class="lamp">$</span>1</span><span class="st-exited"><span class="lamp">✕</span>1</span></span><span class="fd-cap">群組標題只顯示非零 · 需要你 = ◆ + ▲</span></div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= 05 COMPONENTS ================= -->
+<section class="fd-s" aria-labelledby="fd-h5">
+  <div class="fd-sh"><h2 class="sec" id="fd-h5"><span class="fd-no">05</span>Components</h2><div class="meta-rule">helmet.html · 全部是正式 class</div></div>
+  <div class="fd-cmp">
+    <!-- row 1 -->
+    <div class="panel fd-c" style="flex-basis:480px">
+      <div class="fd-ch"><span class="lbl">Button</span><span class="fd-cls">.btn · .primary .danger .accent .sm .plain · [disabled]</span></div>
+      <div class="fd-btns">
+        <div class="fd-bt"><button class="btn" type="button">取消</button><span class="fd-cap">default</span></div>
+        <div class="fd-bt"><button class="btn hover" type="button">前往 ⌘1</button><span class="fd-cap">hover</span></div>
+        <div class="fd-bt"><button class="btn primary" type="button">建立 ⌘⏎</button><span class="fd-cap">.primary</span></div>
+        <div class="fd-bt"><button class="btn danger" type="button">全部停止</button><span class="fd-cap">.danger</span></div>
+        <div class="fd-bt"><button class="btn accent" type="button">+ New ▾</button><span class="fd-cap">.accent</span></div>
+        <div class="fd-bt"><button class="btn sm" type="button">⟲ Resume</button><span class="fd-cap">.sm</span></div>
+        <div class="fd-bt"><button class="btn plain" type="button">重新命名</button><span class="fd-cap">.plain</span></div>
+        <div class="fd-bt"><button class="btn" type="button" disabled="disabled">Active</button><span class="fd-cap">disabled</span></div>
+      </div>
+    </div>
+    <div class="panel fd-c" style="flex-basis:220px">
+      <div class="fd-ch"><span class="lbl">Icon · Pill</span><span class="fd-cls">.icon-btn .on · .pillbtn · .kbd</span></div>
+      <div class="fd-line">
+        <button class="icon-btn" type="button" aria-label="快速切換 ⌘K"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><circle cx="9" cy="9" r="5.25"></circle><path d="M13 13l4.25 4.25"></path></svg></button>
+        <button class="icon-btn on" type="button" aria-label="檔案（開啟中）"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2.75 4.75h5l1.75 2h7.75v9.5H2.75z"></path></svg></button>
+        <button class="icon-btn" type="button" aria-label="更多動作">⋯</button>
+        <span class="fd-cap">normal · .on</span>
+      </div>
+      <div class="fd-line"><button class="pillbtn" type="button">✎ Notes 2</button><button class="pillbtn on" type="button"><svg class="ico" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2 10s3-5.25 8-5.25S18 10 18 10s-3 5.25-8 5.25S2 10 2 10z"></path><circle cx="10" cy="10" r="2.25"></circle></svg>Read ▾</button></div>
+      <div class="fd-line"><span class="kbd">⌘K</span><span class="kbd">⌘⏎</span><span class="kbd">⇧⌘N</span><span class="kbd">⌥⇧↑</span><span class="kbd">esc</span></div>
+    </div>
+    <div class="panel fd-c" style="flex-basis:270px">
+      <div class="fd-ch"><span class="lbl">Input · Field</span><span class="fd-cls">.input .focus · .field .lbl .hint</span></div>
+      <input class="input" type="text" placeholder="篩選 session、專案…" aria-label="篩選 session">
+      <div class="field">
+        <label class="lbl" for="fd-name">名稱 Name</label>
+        <input id="fd-name" class="input focus" type="text" value="修正登入 API 401">
+        <span class="hint">Enter 建立 · esc 取消</span>
+      </div>
+    </div>
+    <div class="panel fd-c" style="flex-basis:250px">
+      <div class="fd-ch"><span class="lbl">Switch · Seg</span><span class="fd-cls">.sw .on · .seg · .select</span></div>
+      <div class="fd-line">
+        <button class="sw" type="button" role="switch" aria-checked="false" aria-label="自動切換帳號"></button><span class="fd-cap">off</span>
+        <button class="sw on" type="button" role="switch" aria-checked="true" aria-label="登入時啟動"></button><span class="fd-cap">on</span>
+      </div>
+      <div class="seg" role="group" aria-label="CRT 效果"><button type="button">Full</button><button class="on" type="button">Subtle</button><button type="button">Off</button></div>
+      <select class="select" aria-label="模型"><option>預設 (opus-5.5)</option><option>sonnet-5.5</option></select>
+      <div class="fd-line" style="gap:14px">
+        <label class="fd-chk"><input type="checkbox" checked="checked">同時暫停自動切換</label>
+        <label class="fd-chk"><input type="radio" name="fd-r" checked="checked">接續</label>
+      </div>
+    </div>
+
+    <!-- row 2 -->
+    <div class="panel fd-c" style="flex-basis:400px">
+      <div class="fd-ch"><span class="lbl">Chip · Toast</span><span class="fd-cls">.chip .amber .ok .cy .bad .fill .caps · .ext · .toast</span></div>
+      <div class="fd-btns">
+        <div class="fd-bt"><span class="chip">pid 48211</span><span class="fd-cap">.chip</span></div>
+        <div class="fd-bt"><span class="chip amber">◆ 3 需要你</span><span class="fd-cap">.amber</span></div>
+        <div class="fd-bt"><span class="chip ok">● ok</span><span class="fd-cap">.ok</span></div>
+        <div class="fd-bt"><span class="chip cy">#2 藍鵲</span><span class="fd-cap">.cy</span></div>
+        <div class="fd-bt"><span class="chip bad">▲ 529</span><span class="fd-cap">.bad</span></div>
+        <div class="fd-bt"><span class="chip fill">推薦</span><span class="fd-cap">.fill</span></div>
+        <div class="fd-bt"><span class="chip caps">Max <span class="fd-lc">20x</span></span><span class="fd-cap">.caps</span></div>
+        <div class="fd-bt"><span class="ext">EXT</span><span class="fd-cap">.ext</span></div>
+      </div>
+      <div class="toast" role="status" style="align-self:flex-start"><span>✕ 3 個 session 已封存</span><button class="btn sm" type="button">Undo</button><span class="faint num">5s</span></div>
+    </div>
+    <div class="panel fd-c" style="flex-basis:250px">
+      <div class="fd-ch"><span class="lbl">Badge · Tag</span><span class="fd-cls">.badge .cy .bad .dim · .tag .lg · .pop</span></div>
+      <div class="fd-line" style="gap:10px"><span class="badge">3</span><span class="badge cy">1</span><span class="badge bad">2</span><span class="badge dim">34</span><span class="fd-cap">attention · done · error · count</span></div>
+      <div class="fd-line" style="gap:10px"><span class="tag" style="background:var(--t-pink)"></span><span class="fd-cap">.tag 8</span><span class="tag lg" style="background:var(--t-blue);color:var(--t-blue)"></span><span class="fd-cap">.tag.lg 10 + glow</span></div>
+      <div class="pop" style="padding:8px 10px;display:flex;flex-direction:column;gap:2px;font-size:11.5px">
+        <span class="st-waiting" style="display:flex;align-items:center;gap:6px;color:var(--amber)"><span class="lamp">◆</span>權限確認 · 3m</span>
+        <span style="color:var(--cream)">修正登入 API 401</span>
+      </div>
+    </div>
+    <div class="panel fd-c" style="flex-basis:290px">
+      <div class="fd-ch"><span class="lbl">Bar · Meter</span><span class="fd-cls">.qrow .bar10 · tone-* · .meter · .spark</span></div>
+      <div class="fd-stack">
+        <div class="qrow tone-ok"><span class="k">5h</span><span class="bar10"><b style="width:91%"></b></span><span class="v">91%</span><span class="fd-cap" style="width:66px">tone-ok</span></div>
+        <div class="qrow tone-warn"><span class="k">1w</span><span class="bar10"><b style="width:46%"></b></span><span class="v">46%</span><span class="fd-cap" style="width:66px">tone-warn</span></div>
+        <div class="qrow tone-crit"><span class="k">1w</span><span class="bar10"><b style="width:15%"></b></span><span class="v">15%</span><span class="fd-cap" style="width:66px">tone-crit</span></div>
+        <div class="qrow tone-muted"><span class="k">5h</span><span class="bar10"><b style="width:100%"></b></span><span class="v">100%</span><span class="fd-cap" style="width:66px">tone-muted</span></div>
+      </div>
+      <div class="fd-line" style="flex-wrap:nowrap;gap:12px">
+        <div class="fd-stack" style="flex:1;min-width:0;gap:5px"><span class="meter"><b style="width:23%"></b></span><span class="fd-cap">.meter · cpu 23%</span></div>
+        <svg class="spark" viewBox="0 0 120 28" preserveAspectRatio="none" style="width:110px;flex:none" aria-hidden="true"><polyline points="0,20 10,18 20,21 30,15 40,17 50,12 60,14 70,9 80,13 90,11 100,16 110,12 120,14" vector-effect="non-scaling-stroke"></polyline></svg>
+      </div>
+    </div>
+    <div class="panel fd-c" style="flex-basis:300px">
+      <div class="fd-ch"><span class="lbl">Tabs · Composer</span><span class="fd-cls">.tabs .tab .on .tfill · .composer .ta · .statusbar</span></div>
+      <div class="tabs">
+        <button class="tab on" type="button"><span class="lamp st-waiting">◆</span><span class="tlabel">Claude</span></button>
+        <button class="tab" type="button">$ zsh<span class="x" aria-hidden="true">✕</span></button>
+        <button class="tab" type="button" aria-label="新增 shell 分頁 ⌘T">+</button>
+        <span class="tfill">⌘J</span>
+      </div>
+      <div class="composer" style="border:1px solid var(--line)">
+        <textarea class="ta" rows="1" aria-label="給 Claude 的訊息">iPhone SE 的打卡按鈕改成固定在底部</textarea>
+        <button class="btn sm primary" type="button">Send</button>
+      </div>
+      <div class="statusbar" style="border:1px solid var(--line)"><span><span class="lamp st-busy" style="width:auto">●</span> MCP · 3 clients</span><span>hooks <span class="ok">●</span> ok</span><span style="flex:1"></span><span class="kbd">⌘K</span></div>
+    </div>
+
+    <!-- row 3 -->
+    <div class="panel fd-c" style="flex-basis:220px;background:var(--bg)">
+      <div class="fd-ch"><span class="lbl">Card</span><span class="fd-cls">.card ┌─ ─┘ · .hot · .card-h</span></div>
+      <div class="card hot" style="margin:6px 4px 8px">
+        <h3 class="card-h">#3 工作<span style="flex:1"></span><span class="chip ok caps" style="height:16px;font-size:9px">Active</span></h3>
+        <div class="fd-stack">
+          <div class="qrow tone-ok"><span class="k">5h</span><span class="bar10"><b style="width:91%"></b></span><span class="v">91%</span></div>
+          <div class="qrow tone-crit"><span class="k">1w</span><span class="bar10"><b style="width:15%"></b></span><span class="v">15%</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel fd-c" style="flex-basis:260px">
+      <div class="fd-ch"><span class="lbl">Menu</span><span class="fd-cls">.menu .mh .mi .hl .danger .sep</span></div>
+      <div class="menu" role="menu" aria-label="Session 選單" style="min-width:0">
+        <div class="mh">打卡頁 RWD 調整</div>
+        <button class="mi hl" type="button" role="menuitem"><span class="g">✎</span>重新命名<span class="k">⏎</span></button>
+        <button class="mi" type="button" role="menuitem"><span class="g">⟲</span>接續對話 resume</button>
+        <div class="sep" role="separator"></div>
+        <button class="mi danger" type="button" role="menuitem"><span class="g">■</span>停止<span class="k">⌘.</span></button>
+      </div>
+    </div>
+    <div class="panel fd-c" style="flex-basis:300px">
+      <div class="fd-ch"><span class="lbl">Modal</span><span class="fd-cls">.backdrop · .modal .m-h .m-b .m-f</span></div>
+      <div class="fd-bd">
+<pre class="term fd-bdterm" aria-hidden="true"><span class="d">></span> 登入 API 在 token 過期後會回 401
+<span class="cc">●</span> Read(src/middleware/auth.ts)
+  <span class="d">⎿  Read 84 lines</span>
+<span class="cc">●</span> Update(src/middleware/auth.ts)
+  <span class="d">⎿  12 additions and 3 removals</span>
+<span class="cc">●</span> Bash(npm test -- auth.spec.ts)</pre>
+        <div class="backdrop" style="padding-top:14px">
+          <div class="modal" role="dialog" aria-label="新增 session">
+            <h3 class="m-h">New session<span style="flex:1"></span><span class="kbd">⌘N</span></h3>
+            <div class="m-b" style="padding:8px 20px"><span class="path ell">~/…/orb-toolkit-backend</span></div>
+            <div class="m-f"><button class="btn" type="button">取消</button><button class="btn primary" type="button">建立 ⌘⏎</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel fd-c" style="flex-basis:460px">
+      <div class="fd-ch"><span class="lbl">Answer bar · Banner</span><span class="fd-cls">.answerbar .keybtn .danger · .banner .warn .bad</span></div>
+      <div class="answerbar" style="border:1px solid var(--amber-dim)"><span class="lamp st-waiting">◆</span><span>需要授權</span><span style="flex:1"></span><button class="keybtn" type="button"><span class="k">1</span>Yes</button><button class="keybtn" type="button"><span class="k">2</span>Always</button><button class="keybtn danger" type="button"><span class="k">3</span>No</button><button class="keybtn" type="button"><span class="k">ESC</span>取消</button></div>
+      <div class="banner warn" style="border:1px solid var(--amber-dim)"><span class="amber">!</span><span>磁碟上的檔案已被 AI 變更</span><span style="flex:1"></span><button class="btn sm" type="button">重新載入</button></div>
+      <div class="banner bad" style="border:1px solid rgba(255,112,88,.45)"><span class="bad">▲</span><span>API 過載（529）· 1m 前 · 本輪未完成</span><span style="flex:1"></span><button class="btn sm" type="button">↻ 重送</button></div>
+    </div>
+
+    <!-- row 4 -->
+    <div class="panel fd-c" style="flex-basis:640px">
+      <div class="fd-ch"><span class="lbl">Account row · Annotation</span><span class="fd-cls">.acctlist .acrow .on .a1 .go .q2 · .ann-wrap .ann-box .ann-pin · .ann-list .ann-item .no .xy</span></div>
+      <div class="fd-acan">
+        <div class="acctlist fd-acl">
+          <button class="acrow on" type="button" aria-current="true">
+            <span class="a1"><b>#3</b><span>工作</span><span class="muted">MAX 20x · 12s 前</span><span class="go">✓ ACTIVE</span></span>
+            <span class="q2"><span class="qrow tone-ok"><span class="k">5h</span><span class="bar10"><b style="width:91%"></b></span><span class="v">91%</span></span><span class="qrow tone-crit"><span class="k">1w</span><span class="bar10"><b style="width:15%"></b></span><span class="v">15%</span></span></span>
+          </button>
+          <button class="acrow" type="button" aria-label="切換到 #2 藍鵲，5 小時剩 98%，本週剩 46%">
+            <span class="a1"><b>#2</b><span>藍鵲</span><span class="muted">MAX 20x · 3m 前</span><span class="go">切換 →</span></span>
+            <span class="q2"><span class="qrow tone-ok"><span class="k">5h</span><span class="bar10"><b style="width:98%"></b></span><span class="v">98%</span></span><span class="qrow tone-warn"><span class="k">1w</span><span class="bar10"><b style="width:46%"></b></span><span class="v">46%</span></span></span>
+          </button>
+          <span class="fd-cap" style="padding-left:8px">.on = 目前帳號 · 其他列點一下直接切換</span>
+        </div>
+        <div class="fd-ann">
+          <span class="ann-wrap fd-annimg" aria-hidden="true"><span class="ann-box sel" style="left:2px;top:73px;width:44px;height:8px"><span class="ann-pin">1</span></span></span>
+          <ul class="ann-list fd-annl">
+            <li class="ann-item"><span class="no">1</span><span>上班打卡按鈕被底部導覽列蓋住 → 改 position: sticky，底部留 env(safe-area-inset-bottom)</span><span class="xy">rect · x 20 · y 1150 · 710×120 · 原圖 750×1334 px</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 06 ANATOMY · 07 ICONS ================= -->
+<div class="fd-row">
+  <section class="fd-s" style="flex:1 1 600px" aria-labelledby="fd-h6">
+    <div class="fd-sh"><h2 class="sec" id="fd-h6"><span class="fd-no">06</span>Sidebar row anatomy</h2><div class="meta-rule">.srow · 2× 放大</div></div>
+    <div class="fd-anat">
+      <div class="fd-anat-row">
+        <a class="srow st-waiting current" href="#s1"><span class="grip" aria-hidden="true" style="opacity:.7">⠿</span>
+          <span class="l1"><span class="lamp">◆</span><span class="tag" style="background:var(--t-red)"></span><span class="title">修正登入 API 401</span><span class="state">Waiting</span></span>
+          <span class="l2"><span class="dur">perm · 3m</span><span>·</span><span>up 42m</span><span>·</span><span>◉ rc</span></span>
+        </a>
+      </div>
+      <!-- top: indent 24 · lamp 12 · tag 8 -->
+      <span class="fd-dh" style="left:20px;top:20px;width:48px"><b>24</b></span>
+      <span class="fd-dh" style="left:68px;top:20px;width:24px"><b>12</b></span>
+      <span class="fd-dh" style="left:106px;top:20px;width:16px"><b>8</b></span>
+      <!-- pill 15 -->
+      <span class="fd-xl" style="left:520px;top:44px;width:30px"></span>
+      <span class="fd-xl" style="left:520px;top:74px;width:30px"></span>
+      <span class="fd-dv" style="left:546px;top:44px;height:30px"><b>15</b></span>
+      <!-- row height -->
+      <span class="fd-xl" style="left:536px;top:32px;width:52px"></span>
+      <span class="fd-xl" style="left:536px;top:119px;width:52px"></span>
+      <span class="fd-dv" style="left:584px;top:32px;height:87px"><b>≥38</b></span>
+      <!-- line 2 indent 19 -->
+      <span class="fd-dh below" style="left:68px;top:128px;width:38px"><b>19</b></span>
+    </div>
+    <div class="fd-legend">
+      <span><b>24</b>左縮排 · 容納 ⠿ 拖曳把手</span>
+      <span><b>12</b>lamp 寬 · glyph 11px</span>
+      <span><b>8</b>tag 方塊</span>
+      <span><b>15</b>state pill 高</span>
+      <span><b>≥38</b>min-height · 兩行約 44</span>
+      <span><b>19</b>第二行縮排</span>
+      <span><b>2</b>左邊線 current / ◆ / ▲</span>
+      <span><b>12.5</b>標題 · 第二行 10.5</span>
+    </div>
+    <div class="fd-tree">
+      <section class="needs" aria-label="需要你處理"><button class="sbsec" type="button"><span class="caret open">▸</span>◆ Needs you <span class="badge">3</span><span class="rule"></span></button></section>
+      <div class="gblk g-blue">
+        <button class="grp" type="button" aria-expanded="true"><span class="caret open">▸</span>藍鵲 · 網站<span class="agg"><span class="st-waiting"><span class="lamp" style="animation:none">◆</span>2</span><span class="st-busy"><span class="lamp">●</span>1</span><span class="st-shell"><span class="lamp">$</span>1</span></span></button>
+        <button class="proj" type="button"><span class="caret open">▸</span><span class="pname">orb-toolkit-frontend</span><span class="pcount">1</span></button>
+      </div>
+      <button class="addrow" type="button">+ 新增群組</button>
+    </div>
+  </section>
+
+  <section class="fd-s" style="flex:1 1 600px" aria-labelledby="fd-h7">
+    <div class="fd-sh"><h2 class="sec" id="fd-h7"><span class="fd-no">07</span>Icons</h2><div class="meta-rule">20×20 · stroke 1.5 · square caps · currentColor</div></div>
+    <div class="fd-icons">
+      <div class="fd-ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="2.75" y="3.75" width="14.5" height="12.5"></rect><path d="M6 8l2.5 2L6 12M10.5 12.5H14"></path></svg><span>Sessions</span></div>
+      <div class="fd-ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M5 2.75h7.5l3 3v11.5H5z"></path><path d="M12.25 2.75V6h3.25M7.5 9.5h5M7.5 12.5h5M7.5 15h3"></path></svg><span>Notes</span></div>
+      <div class="fd-ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2 11h3.5l2-5.5 4 10 2-4.5H18"></path></svg><span>Status</span></div>
+      <div class="fd-ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M3 5.5h14M3 10h14M3 14.5h14"></path><rect x="11.25" y="4" width="3" height="3" fill="currentColor"></rect><rect x="5.25" y="8.5" width="3" height="3" fill="currentColor"></rect><rect x="9.25" y="13" width="3" height="3" fill="currentColor"></rect></svg><span>Settings</span></div>
+      <div class="fd-ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><circle cx="9" cy="9" r="5.25"></circle><path d="M13 13l4.25 4.25"></path></svg><span>Search ⌘K</span></div>
+      <div class="fd-ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2.75 4.75h5l1.75 2h7.75v9.5H2.75z"></path></svg><span>Files</span></div>
+      <div class="fd-ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="2.75" y="3.75" width="14.5" height="12.5"></rect><path d="M2.75 11.25h14.5M5.25 13.75h3"></path></svg><span>Term ⌘J</span></div>
+      <div class="fd-ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="2.75" y="3.75" width="14.5" height="12.5"></rect><path d="M10 3.75v12.5"></path></svg><span>Split</span></div>
+      <div class="fd-ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M10 4v12M4 10h12"></path></svg><span>New ⌘N</span></div>
+      <div class="fd-ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M5 2.75h6.5l3.5 3.5v11H5z"></path><path d="M10 9.5v5M7.5 12h5"></path></svg><span>New file</span></div>
+      <div class="fd-ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="3.75" y="3.75" width="12.5" height="12.5"></rect><path d="M7 10h6"></path></svg><span>Collapse</span></div>
+      <div class="fd-ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2 10s3-5.25 8-5.25S18 10 18 10s-3 5.25-8 5.25S2 10 2 10z"></path><circle cx="10" cy="10" r="2.25"></circle></svg><span>AI read</span></div>
+      <div class="fd-ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="4.75" y="9" width="10.5" height="8.25"></rect><path d="M7 9V6.5a3 3 0 0 1 6 0V9"></path></svg><span>AI off</span></div>
+      <div class="fd-ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="6.75" y="6.75" width="10.5" height="10.5"></rect><path d="M13.25 3.25H2.75v10.5"></path></svg><span>Copy ref</span></div>
+      <div class="fd-ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M3 10h10.5M9.5 5.75L13.75 10 9.5 14.25M17 4v12"></path></svg><span>Send</span></div>
+      <div class="fd-ic" style="color:var(--amber)"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg><span>Brand</span></div>
+    </div>
+    <div class="fd-glyphs">
+      <div class="fd-gg"><span class="lbl">State</span><span class="fd-gl st st-waiting">◆</span><span class="fd-gl st st-done">◇</span><span class="fd-gl st st-busy">●</span><span class="fd-gl st st-idle">○</span><span class="fd-gl st st-compacting">◌</span><span class="fd-gl">◉</span><span class="fd-gl st st-error">▲</span><span class="fd-gl st st-exited">✕</span><span class="fd-gl st st-stopped">⟲</span><span class="fd-gl st st-shell">$</span></div>
+      <div class="fd-gg"><span class="lbl">Nav</span><span class="fd-gl">▸</span><span class="fd-gl">▾</span><span class="fd-gl">→</span><span class="fd-gl">←</span><span class="fd-gl">↑</span><span class="fd-gl">↓</span><span class="fd-gl">↗</span><span class="fd-gl">↻</span><span class="fd-gl">⋯</span><span class="fd-gl">⠿</span></div>
+      <div class="fd-gg"><span class="lbl">Keys</span><span class="fd-gl">⌘</span><span class="fd-gl">⌥</span><span class="fd-gl">⌃</span><span class="fd-gl">⇧</span><span class="fd-gl">⏎</span><span class="fd-gl">⎋</span></div>
+      <div class="fd-gg"><span class="lbl">Marks</span><span class="fd-gl">■</span><span class="fd-gl">□</span><span class="fd-gl">▮</span><span class="fd-gl">▯</span><span class="fd-gl">⎇</span><span class="fd-gl">✓</span><span class="fd-gl">✎</span><span class="fd-gl">&#9733;</span><span class="fd-gl">·</span><span class="fd-gl">…</span></div>
+      <div class="fd-gg"><span class="lbl">TUI</span><span class="fd-gl">┌</span><span class="fd-gl">─</span><span class="fd-gl">┘</span><span class="fd-gl">│</span><span class="fd-gl">╭</span><span class="fd-gl">╮</span><span class="fd-gl">╰</span><span class="fd-gl">╯</span><span class="fd-gl">⎿</span><span class="fd-gl">❯</span><span class="fd-gl">✻</span></div>
+    </div>
+    <p class="hint">只用上列字元或 inline SVG；U+1F000 以上與會被畫成 emoji 的符號一律禁用。</p>
+  </section>
+</div>
+
+<!-- ================= 08 MOTION · 09 BRAND ================= -->
+<div class="fd-row">
+  <section class="fd-s" style="flex:1 1 600px" aria-labelledby="fd-h8">
+    <div class="fd-sh"><h2 class="sec" id="fd-h8"><span class="fd-no">08</span>Motion</h2><div class="meta-rule">prefers-reduced-motion → 全部停用</div></div>
+    <div class="fd-motion">
+      <div class="fd-mo"><span class="fd-stage"><span class="lamp st-waiting fd-big">◆</span></span><span class="tx"><span class="nm">codd-lamp</span><span class="tm">1.1s ease-in-out ∞</span><span class="us">WAITING 呼吸燈</span></span></div>
+      <div class="fd-mo"><span class="fd-stage"><span class="cursor fd-big">_</span></span><span class="tx"><span class="nm">codd-blink</span><span class="tm">1s steps(1) ∞</span><span class="us">游標 · 目前分頁</span></span></div>
+      <div class="fd-mo"><span class="fd-stage fd-scanbox" aria-hidden="true"><i></i></span><span class="tx"><span class="nm">scan</span><span class="tm">600ms linear · 1 次</span><span class="us">切換 session 時一次</span></span></div>
+      <div class="fd-mo"><span class="fd-stage"><span class="menu fd-menuspec" aria-hidden="true"><i></i><i class="hl"></i><i></i></span></span><span class="tx"><span class="nm">menu-in</span><span class="tm">110ms ease-out</span><span class="us">opacity + 4px</span></span></div>
+      <div class="fd-mo"><span class="fd-stage"><span class="lamp st-starting fd-big">◌</span></span><span class="tx"><span class="nm">codd-soft</span><span class="tm">1.2s ease-in-out ∞</span><span class="us">STARTING · &lt;20s</span></span></div>
+      <div class="fd-mo"><span class="fd-stage"><span class="fd-spin fd-big">↻</span></span><span class="tx"><span class="nm">codd-spin</span><span class="tm">1.2s linear ∞</span><span class="us">重新整理 · 讀取用量</span></span></div>
+    </div>
+  </section>
+
+  <section class="fd-s" style="flex:1 1 600px" aria-labelledby="fd-h9">
+    <div class="fd-sh"><h2 class="sec" id="fd-h9"><span class="fd-no">09</span>Brand</h2><div class="meta-rule">[■] · app icon · menu bar · window chrome</div></div>
+    <div class="fd-brand">
+      <figure class="fd-fig">
+        <span class="fd-appicon" role="img" aria-label="FANCY/CODD app icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg></span>
+        <figcaption class="fd-cap">app icon · 128 · 唯一的圓角</figcaption>
+      </figure>
+      <div class="fd-railx">
+        <div class="tl" aria-hidden="true"><i></i><i></i><i></i></div>
+        <nav class="rail" aria-label="Rail 樣本">
+          <a class="ri on" href="#sessions" aria-current="page"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="2.75" y="3.75" width="14.5" height="12.5"></rect><path d="M6 8l2.5 2L6 12M10.5 12.5H14"></path></svg><span>Sessions</span><span class="badge">3</span></a>
+          <div class="grow"></div>
+          <a class="acct tone-crit" href="#accounts" aria-label="目前帳號 #3 工作，5 小時剩 91%，本週剩 15%"><span style="display:flex;justify-content:space-between"><b style="color:var(--amber)">#3</b><span class="faint">MAX</span></span><span class="mini tone-ok"><b style="width:91%"></b></span><span class="mini tone-crit"><b style="width:15%"></b></span></a>
+        </nav>
+      </div>
+      <div class="fd-bcol">
+        <div class="fd-line" style="gap:10px">
+          <div class="side-head" style="width:280px;border:1px solid var(--line)"><a class="brand" href="#home">FANCY/CODD</a><span style="flex:1"></span><button class="icon-btn" type="button" aria-label="快速切換 ⌘K"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><circle cx="9" cy="9" r="5.25"></circle><path d="M13 13l4.25 4.25"></path></svg></button><button class="btn sm accent" type="button">+ New ▾</button></div>
+          <svg class="fd-mark" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg>
+        </div>
+        <div class="fd-line" style="gap:10px">
+          <span class="fd-mbar" aria-label="選單列圖示（深色 · 需要你）"><span class="fd-mbi"><svg class="mbi need" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect class="core" x="8.25" y="8.25" width="3.5" height="3.5"></rect></svg></span><span>週四 10:42</span></span>
+          <span class="fd-mbar light" aria-label="選單列圖示（淺色 · 一般）"><span class="fd-mbi"><svg class="mbi" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect class="core" x="8.25" y="8.25" width="3.5" height="3.5"></rect></svg></span></span>
+          <span class="fd-appicon s32" role="img" aria-label="32px app icon"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M6 3H3v14h3M14 3h3v14h-3"></path><rect x="8.25" y="8.25" width="3.5" height="3.5" fill="currentColor"></rect></svg></span>
+          <span class="fd-cap">template 16px</span>
+        </div>
+        <span class="fd-cap">選單列只放一個圖示 · 中間方塊亮琥珀色 = 需要你</span>
+        <div class="fd-line" style="gap:10px;align-items:flex-start">
+          <div class="fd-bt"><div class="codd fd-crt"><span class="amber">◆ 3</span>需要你</div><span class="fd-cap">crt off</span></div>
+          <div class="fd-bt"><div class="codd crt-subtle fd-crt"><span class="amber">◆ 3</span>需要你</div><span class="fd-cap">.crt-subtle</span></div>
+          <div class="fd-bt"><div class="codd crt-full fd-crt"><span class="amber">◆ 3</span>需要你</div><span class="fd-cap">.crt-full</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"crt":{"editor":"enum","options":["subtle","full","off"],"default":"subtle","section":"Look"},"$preview":{"width":1440,"height":2100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const crt = this.props.crt ?? 'subtle';
+    return { crtClass: crt === 'off' ? '' : 'crt-' + crt };
+  }
+}
+</script>
+</body>
+</html>

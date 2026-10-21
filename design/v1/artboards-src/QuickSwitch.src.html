@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<title>快速切換 ⌘K</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<!--@HELMET-->
+<style>
+/* ===== QuickSwitch board (qs-) ===== */
+.codd .qs-fs{display:inline-flex;align-items:center;gap:0;border:1px solid var(--line);height:28px}
+.codd .qs-fs .icon-btn{font-size:11px;width:26px;height:26px}
+.codd .qs-fs .num{font-size:11px;color:var(--bone);min-width:18px;text-align:center}
+.codd .qs-pal{width:640px}
+.codd .qs-in{display:flex;align-items:center;gap:12px;padding:14px 16px 13px 18px;border-bottom:1px dashed var(--line-bright)}
+.codd .qs-gt{font-family:var(--display);font-weight:700;font-size:18px;line-height:1;color:var(--amber);text-shadow:0 0 10px var(--amber-glow)}
+.codd .qs-field{position:relative;flex:1;min-width:0;display:flex}
+.codd .qs-input{all:unset;flex:1;min-width:0;height:28px;line-height:28px;font-family:var(--mono);font-size:16px;color:var(--cream);caret-color:transparent}
+.codd .qs-caret{position:absolute;left:33px;top:5px;width:2px;height:18px;background:var(--amber);box-shadow:0 0 6px var(--amber-glow);animation:codd-blink 1s steps(1) infinite}
+.codd .qs-n{font-size:11px;color:var(--dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+.codd .qs-list{background:transparent;border:0;box-shadow:none;padding:4px 6px 8px;min-width:0}
+.codd .qs-list .mh{display:flex;align-items:center;gap:8px;padding:9px 10px 4px}
+.codd .qs-list .mh .c{color:var(--dimmer);letter-spacing:.04em}
+.codd .qs-list .mi{height:36px}
+.codd .qs-list .mi .g svg{width:14px;height:14px;display:block;margin:0 auto}
+.codd .qs-t{flex:none;white-space:nowrap;color:var(--bone);font-size:12.5px}
+.codd .qs-list .mi.hl .qs-t{color:var(--cream)}
+.codd .qs-m{color:var(--amber);text-shadow:0 0 8px var(--amber-glow)}
+.codd .qs-s{flex:0 1 auto;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font-size:11px;color:var(--dim)}
+.codd .qs-s .tag{margin-right:6px;vertical-align:0}
+.codd .qs-r{margin-left:auto;display:inline-flex;align-items:center;gap:8px;flex:none;font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums}
+.codd .qs-r .dur{color:var(--st,var(--dim))}
+.codd .qs-foot{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:9px 16px 10px;border-top:1px dashed var(--line);font-size:11px;color:var(--dim)}
+.codd .qs-foot span{display:inline-flex;align-items:center;gap:5px}
+</style>
+</helmet>
+<div class="codd win {{ crtClass }}">
+<!--@SHELL on=sessions current=s1-->
+<div class="main">
+  <header class="sh st-waiting">
+    <span class="lamp">◆</span>
+    <div class="ident">
+      <div class="l1"><span class="ttl">修正登入 API 401</span><span class="stchip st-waiting"><span class="lamp">◆</span>Waiting · Permission · <span style="text-transform:none">3m</span></span></div>
+      <div class="meta"><span>~/…/orb-toolkit-suite/orb-toolkit-backend</span><span class="sep">·</span><span>⎇ fix/login-401</span><span class="sep">·</span><span>opus-5.5</span><span class="sep">·</span><span>CTX 58%</span><span class="sep">·</span><span>$2.14</span><span class="sep">·</span><span>UP 42m</span><span class="sep">·</span><span class="chip cy" style="height:16px;font-size:10px;padding:0 5px">#3 工作</span><span class="cy">◉ RC</span></div>
+    </div>
+    <div class="acts">
+      <button class="pillbtn" type="button"><span aria-hidden="true">✎</span>Notes <span class="num">2</span></button>
+      <button class="icon-btn" type="button" aria-label="檔案"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2.75 4.75h5l1.5 1.75h8v9.75H2.75z"></path></svg></button>
+      <button class="icon-btn" type="button" aria-label="下方終端機 ⌘J"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><rect x="2.75" y="3.75" width="14.5" height="12.5"></rect><path d="M2.75 11.25h14.5M5.5 13.75h3.5"></path></svg></button>
+      <span class="qs-fs" role="group" aria-label="終端機字級"><button class="icon-btn" type="button" aria-label="縮小字級">A−</button><span class="num">13</span><button class="icon-btn" type="button" aria-label="放大字級">A+</button></span>
+      <button class="icon-btn" type="button" aria-label="更多動作">⋯</button>
+    </div>
+  </header>
+  <div class="tabs" role="tablist" aria-label="Session 分頁">
+    <button class="tab on" type="button" role="tab" aria-selected="true"><span class="amber">◆</span><span class="tlabel">Claude</span></button>
+    <button class="tab" type="button" role="tab" aria-selected="false"><span>$</span><span class="tlabel">zsh</span></button>
+    <button class="tab" type="button" aria-label="新增 shell 分頁 ⌘T">+</button>
+    <div class="tfill"><span class="num">120×38</span><span>·</span><span>⌘J 終端機</span></div>
+  </div>
+<pre class="term"><span class="d">&gt;</span> 登入 API 在 token 過期後會回 401，幫我修好並補測試
+
+<span class="cc">●</span> 我先看 auth middleware 的流程。
+
+<span class="cc">●</span> <span class="w">Read</span>(src/middleware/auth.ts)
+  <span class="d">⎿  Read 84 lines</span>
+
+<span class="cc">●</span> <span class="w">Update</span>(src/middleware/auth.ts)
+  <span class="d">⎿  Updated src/middleware/auth.ts with 12 additions and 3 removals</span>
+     <span class="del"> 41 -   if (isExpired(token)) return res.status(401).end()        </span>
+     <span class="add"> 41 +   if (isExpired(token)) {                                    </span>
+     <span class="add"> 42 +     const next = await refreshSession(req, res)              </span>
+     <span class="add"> 43 +     if (!next) return res.status(401).json({ code: 'EXPIRED' })</span>
+
+<span class="a">╭──────────────────────────────────────────────────────────────────────╮</span>
+<span class="a">│</span> <span class="w">Bash command</span>                                                         <span class="a">│</span>
+<span class="a">│</span>                                                                      <span class="a">│</span>
+<span class="a">│</span>   npm test -- auth.spec.ts                                           <span class="a">│</span>
+<span class="a">│</span>   <span class="d">執行 auth 相關的單元測試</span>
+<span class="a">│</span>                                                                      <span class="a">│</span>
+<span class="a">│</span> Do you want to proceed?                                              <span class="a">│</span>
+<span class="a">│</span> <span class="a">❯ 1. Yes</span>                                                             <span class="a">│</span>
+<span class="a">│</span>   2. Yes, and don't ask again for <span class="w">npm test</span> commands in this project  <span class="a">│</span>
+<span class="a">│</span>   3. No, and tell Claude what to do differently <span class="d">(esc)</span>                  <span class="a">│</span>
+<span class="a">╰──────────────────────────────────────────────────────────────────────╯</span></pre>
+  <div class="answerbar"><span class="lamp st-waiting">◆</span><span>Claude 需要授權 · <code>Bash: npm test -- auth.spec.ts</code></span><span style="flex:1"></span>
+    <button class="keybtn" type="button"><span class="k">1</span>Yes</button><button class="keybtn" type="button"><span class="k">2</span>Always</button>
+    <button class="keybtn danger" type="button"><span class="k">3</span>No</button><button class="keybtn" type="button"><span class="k">ESC</span>取消</button><span class="kbd">⌘⏎</span></div>
+<!--@STATUSBAR-->
+</div>
+
+<!-- ===== ⌘K quick switch palette ===== -->
+<div class="backdrop" style="padding-top:80px">
+  <div class="modal qs-pal" role="dialog" aria-modal="true" aria-label="快速切換 ⌘K">
+    <div class="qs-in">
+      <span class="qs-gt" aria-hidden="true">&gt;</span>
+      <span class="qs-field"><input class="qs-input" type="text" value="打卡" aria-label="搜尋 session、筆記、專案與動作"><span class="qs-caret" aria-hidden="true"></span></span>
+      <span class="qs-n">6 筆</span>
+      <span class="kbd">esc</span>
+    </div>
+
+    <div class="menu qs-list">
+      <div class="mh">Sessions <span class="c">1</span></div>
+      <button class="mi hl st-busy" type="button" aria-current="true">
+        <span class="g"><span class="lamp">●</span></span>
+        <span class="tag" style="background:var(--t-pink)"></span>
+        <span class="qs-t"><span class="qs-m">打卡</span>頁 RWD 調整</span>
+        <span class="qs-s"><span class="tag" style="background:var(--t-blue)"></span>藍鵲·網站 / orb-toolkit-frontend</span>
+        <span class="qs-r"><span class="state">Busy</span><span class="dur">6m</span><span class="kbd">⌘9</span></span>
+      </button>
+
+      <div class="mh">Notes <span class="c">1</span></div>
+      <button class="mi" type="button">
+        <span class="g"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M5 2.75h7.5l3 3v11.5H5z"></path><path d="M12.25 2.75V6h3.25M7.5 9.5h5M7.5 12.5h5M7.5 15h3"></path></svg></span>
+        <span class="qs-t"><span class="qs-m">打卡</span>頁 RWD 跑版紀錄</span>
+        <span class="qs-s">note · #rwd #punch</span>
+        <span class="qs-r"><span>10:05</span></span>
+      </button>
+
+      <div class="mh">Projects <span class="c">1</span></div>
+      <button class="mi" type="button">
+        <span class="g"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" aria-hidden="true"><path d="M2.75 4.75h5l1.5 1.75h8v9.75H2.75z"></path></svg></span>
+        <span class="qs-t"><span class="muted">orb-toolkit-suite/</span>每日<span class="qs-m">打卡</span>前端介面</span>
+        <span class="qs-s">未加入 · 來自 ~/.claude.json</span>
+        <span class="qs-r"><span class="chip amber">+ 加入</span></span>
+      </button>
+
+      <div class="mh">Actions <span class="c">3</span></div>
+      <button class="mi" type="button"><span class="g">&gt;</span><span class="qs-t">在 orb-toolkit-frontend 新增 session</span><span class="k">⌘N</span></button>
+      <button class="mi" type="button"><span class="g">&gt;</span><span class="qs-t">在 orb-toolkit-frontend 開啟終端機</span><span class="k">$ zsh</span></button>
+      <button class="mi" type="button"><span class="g">&gt;</span><span class="qs-t">切換帳號到 #2 藍鵲</span><span class="k">5h 剩 98% · 1w 剩 46%</span></button>
+    </div>
+
+    <div class="qs-foot">
+      <span><span class="kbd">↑↓</span>選擇</span>
+      <span><span class="kbd">⏎</span>開啟</span>
+      <span><span class="kbd">⌘⏎</span>在下方終端機開啟</span>
+      <span><span class="kbd">⌥⏎</span>新視窗</span>
+      <span style="flex:1"></span>
+      <span><span class="kbd">esc</span>關閉</span>
+    </div>
+  </div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"crt":{"editor":"enum","options":["subtle","full","off"],"default":"subtle","section":"Look"},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const crt = this.props.crt ?? 'subtle';
+    return { crtClass: crt === 'off' ? '' : 'crt-' + crt };
+  }
+}
+</script>
+</body>
+</html>
