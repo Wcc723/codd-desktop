@@ -204,18 +204,66 @@ scripts/release.sh --install              # build, then install to /Applications
   certificate's name and Team ID end up in the signature of the app and the zip, where anyone can read
   them with `codesign -dvv`. The embedded helpers (`codd-holder`, `codd-hook`, `codd-statusline`,
   identifiers `app.codd.<name>`) are signed first, then any nested code in `Contents/Frameworks` and
-  `Contents/PlugIns` (none today), then the app, never with `--deep`; hardened runtime is off; the result
-  is checked with `codesign --verify --strict --deep`. No notarization and no Sparkle, so a downloaded
-  copy is blocked by Gatekeeper on other Macs: that is why the README has people build from source.
-- Output: `build/release/CODD.app`, `build/release/CODD-<version>-<build>.zip` and `xcodebuild.log`, and the
+  `Contents/PlugIns` (none today), then the app, never with `--deep`; the result is checked with
+  `codesign --verify --strict --deep`. No notarization and no Sparkle, so a downloaded copy is blocked by
+  Gatekeeper on other Macs until the user allows it in System Settings › Privacy & Security (the README's
+  download steps); a build from source is not blocked.
+- Hardened runtime: every signature the script makes gets `--options runtime`, and the re-sign still drops
+  Xcode's entitlements (no `get-task-allow`). `scripts/release.entitlements` holds the seven resource-access
+  entitlements Ghostty also ships: `com.apple.security.automation.apple-events`,
+  `com.apple.security.device.audio-input`, `com.apple.security.device.camera` and
+  `com.apple.security.personal-information.addressbook`, `.calendars`, `.location`, `.photos-library`.
+  CODD is a terminal host: while CODD runs, macOS attributes the privacy (TCC) requests of the programs
+  run in its sessions (`osascript`, a CLI that wants the camera or the microphone) to the responsible app,
+  CODD, and asks in its name. Under the hardened runtime tccd prompts only when that app has both the
+  entitlement and the matching purpose string in its `Info.plist`; without either it refuses without a
+  prompt (Apple Events alone still prompts without a string). The strings (`NSAppleEventsUsageDescription`,
+  `NSCameraUsageDescription`, `NSMicrophoneUsageDescription`, `NSContactsUsageDescription`,
+  `NSCalendarsUsageDescription` / `NSCalendarsFullAccessUsageDescription`,
+  `NSRemindersUsageDescription` / `NSRemindersFullAccessUsageDescription`,
+  `NSLocationUsageDescription` / `NSLocationWhenInUseUsageDescription`, `NSPhotoLibraryUsageDescription`)
+  live in `project.yml` (`targets.CODD.info.properties`, which xcodegen writes to `App/Info.plist`); the
+  script's `usage_keys` maps each entitlement to the strings it needs and refuses an entitlement it does
+  not know. The file is signed into `CODD.app` and `codd-holder` (holders are spawned with
+  `POSIX_SPAWN_SETSID`, without disclaiming responsibility, and outlive the app; for the holder it is a
+  precaution, see the comment at `ENTITLEMENTS` in the script), not into `codd-hook` or
+  `codd-statusline` (TCC looks at the responsible process, not at intermediate ones such as the
+  status line's chained command). None of them is restricted, so ad-hoc signing takes them.
+- Strip: after the copy and before signing, `strip -S` removes the debug map from every Mach-O in
+  `Contents/MacOS` (and in nested code, none today), so no binary names build-machine paths such as
+  `/Users/<name>/<project folder>`; the symbol table stays.
+- Verify, besides the bundle id, the versions and the helper identifiers: the runtime flag on the app and
+  each helper for every architecture (`codesign -dvv --arch <arch>` shows `flags=0x10002(adhoc,runtime)`
+  ad-hoc, the runtime flag with an identity); the entitlements (`codesign -d --entitlements - --xml`) of
+  `CODD.app` and `codd-holder` equal to the file and none on the other two helpers; a non-empty purpose
+  string in the built `Info.plist` for each of the file's entitlements (PlistBuddy `Print`); no Mach-O
+  containing the repository path, the derived-data path or `$HOME/` (`grep -a -c`). A miss fails with
+  `RELEASE error: verify: …`.
+- Debug builds keep `ENABLE_HARDENED_RUNTIME: NO`, so the e2e scripts never run hardened code. When the
+  signing, entitlements, strip or `Info.plist` steps change, also smoke-launch the Release app once
+  (`CODD_BACKGROUND=1`, a `make-root.sh` root, `scripts/lib/zorder-guard.sh`; scripts/TEST-MAP.md). A
+  Release build honours only the mode, the data root and the Claude directory (no `-codd-spawn-shell`),
+  so check that the hook endpoint binds and start a holder from the root's `bin/` copy with
+  `codd-holderctl spawn` (`.build-holder/debug/codd-holderctl`).
+- Zip: `ditto -c -k --keepParent --norsrc --noextattr --noqtn --noacl`, so the zip has no `._`
+  AppleDouble entries (checked with `zipinfo -1`); a copy unpacked from the zip must verify and carry the
+  app's CDHash.
+- Output: `build/release/CODD.app`, `build/release/CODD-<version>-<build>.zip` and `xcodebuild.log`, the
+  checksum lines `RELEASE sha256 <hex> CODD-<version>-<build>.zip` (`shasum -a 256`) and
+  `RELEASE cdhash arm64=<hex> x86_64=<hex>` (the `CDHash=` line of `codesign -dvvv --arch <arch>`), and the
   line `RELEASE app=<path> zip=<path> version=<v> build=<n> identity=<adhoc|name> bundle=app.codd.CODD`.
-  `RELEASE_EXPECT_BUNDLE` (default `app.codd.CODD`) is the bundle id the built app must carry.
+  `RELEASE_EXPECT_BUNDLE` (default `app.codd.CODD`) is the bundle id the built app must carry. Put both
+  checksums in the release notes: users compare the zip's SHA-256 (`shasum -a 256 <zip>`) or, when Safari
+  has already unpacked the zip and moved it to the Trash, the CDHash of `/Applications/CODD.app` for their
+  Mac (`codesign -dvvv /Applications/CODD.app 2>&1 | grep '^CDHash='` shows the host architecture's: arm64
+  on Apple silicon, x86_64 on Intel).
 - `--output <dir>` puts derived data in `<dir>/dd` and the app, zip and log in `<dir>`. It refuses a folder
   inside the repository but outside `build/` (where `git add -A` would pick the zip and log up),
   `build/user-*`, `build/wt-*`, `/Applications`, `~/Applications` and folders inside them, and a folder
   holding a `CODD.app` the script did not make (no `.codd-release-output` marker next to it).
 - Publishing: GhosttyKit carries GNU libintl (LGPL-2.1) and z2d (MPL-2.0). After the zip the script prints
-  the two source archives (names, URLs and SHA-256) to attach to the same GitHub release; see
+  the two source archives (names, URLs and SHA-256) to attach to the same GitHub release, next to the
+  zip; list the SHA-256 of every attached file in the release notes. See
   [THIRD-PARTY-NOTICES.md](../THIRD-PARTY-NOTICES.md) "Source of the MPL-2.0 and LGPL-2.1 parts". When
   libghostty-spm or another package changes, recheck that file with the `nm` commands at its end.
 - `--install` is for the user only: it refuses inside a Claude Code shell (`CLAUDECODE` set) and while

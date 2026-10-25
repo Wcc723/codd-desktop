@@ -1,10 +1,13 @@
 #!/bin/bash
 # Release packaging for CODD Desktop (docs/M5-PLAN.md D18, §2.10): builds the Release
 # configuration with the package graph pinned by App/Package.resolved, copies the app out of derived
-# data, re-signs it inside-out (the three helpers in Contents/MacOS with their own identifiers, then
-# any nested code, then the app; never --deep, which would give the helpers the app's identifier),
-# ad-hoc unless an identity is asked for, verifies it, zips it and, only when the user asks for it,
-# installs it into /Applications.
+# data, strips the debug map (strip -S: no build-machine paths), re-signs it inside-out with the
+# hardened runtime (the three helpers in Contents/MacOS with their own identifiers, then any nested
+# code, then the app; never --deep, which would give the helpers the app's identifier; the app and
+# codd-holder with scripts/release.entitlements), ad-hoc unless an identity is asked for, verifies
+# it (signatures, entitlements, the Info.plist purpose strings they need, no build-machine paths),
+# zips it without AppleDouble entries, prints the zip's SHA-256 and the app's CDHash per
+# architecture and, only when the user asks for it, installs it into /Applications.
 #
 # Usage: scripts/release.sh [--dry-run] [--output <dir>] [--identity <name>] [--install]
 #   --dry-run          print the resolved values and every command it would run; nothing is
@@ -40,7 +43,8 @@ step() { printf 'RELEASE step %s\n' "$*"; }
 warn() { printf 'RELEASE warning: %s\n' "$*" >&2; }
 die() { printf 'RELEASE error: %s\n' "$*" >&2; exit 1; }
 refuse() { printf 'RELEASE refused: %s\n' "$*" >&2; exit 3; }
-usage() { sed -n '9,26s/^# \{0,1\}//p' "${BASH_SOURCE[0]}"; }
+# The header's "Usage:" through "Exit status:" lines (a pattern range, so the header may grow).
+usage() { sed -n '/^# Usage: /,/^# Exit status: /s/^# \{0,1\}//p' "${BASH_SOURCE[0]}"; }
 usage_error() { printf 'RELEASE error: %s\n' "$1" >&2; usage >&2; exit 2; }
 
 # Shell-quotes each argument for the dry-run listing (bash 3.2's printf %q mangles UTF-8, and the
@@ -181,12 +185,60 @@ PLIST=$APP/Contents/Info.plist
 PLISTBUDDY=/usr/libexec/PlistBuddy
 EXPECT_BUNDLE=${RELEASE_EXPECT_BUNDLE:-app.codd.CODD}
 HELPERS=(codd-holder codd-hook codd-statusline)
+# Hardened runtime (the owner's decision for the public download): every signature below gets
+# --options runtime. Under it a TCC request is refused without a prompt when the responsible app
+# has not declared the matching resource-access entitlement, and macOS attributes the requests of
+# the programs run in a session (osascript, a CLI that wants the camera or the microphone, ...) to
+# CODD, so scripts/release.entitlements declares the seven that Ghostty, also a terminal host, ships.
+# - CODD.app needs them: HolderSpawner posix_spawns holders with POSIX_SPAWN_SETSID but without
+#   responsibility_spawnattrs_setdisclaim, so while CODD runs a holder and everything it starts
+#   report CODD as their responsible process.
+# - codd-holder carries the same set as a precaution; nothing attributes a request to it today. A
+#   probe (2026-10-25, macOS 27: an app spawned with responsibility disclaimed, a SETSID child, its
+#   children started before and after the app exits) showed that once the app is gone each process
+#   reports itself, not the holder, as responsible. A holder becomes the responsible process only if
+#   it is ever spawned with responsibility disclaimed, and then it has to prompt, not refuse (it has
+#   no Info.plist, so that change would also have to embed the purpose strings below, a
+#   __TEXT,__info_plist section). The holder does not ask for these resources itself.
+# - codd-hook and codd-statusline: no entitlements. codd-statusline does start the user's chained
+#   status-line command, but TCC looks at the responsible process (CODD while it runs), not at
+#   intermediate processes; the same is why codd-holder's copy does not matter today.
+# - The entitlement alone is not enough: tccd also wants the matching purpose string in the
+#   responsible app's Info.plist (NSCameraUsageDescription, ...) and refuses without a prompt when
+#   it is missing (only Apple Events prompts without one). usage_keys below names the strings each
+#   entitlement needs; project.yml (targets.CODD.info.properties) carries them, and the verify step
+#   fails when the built Info.plist lacks one.
+# - Ad-hoc signing takes them: they are unrestricted (no provisioning profile needed, unlike
+#   com.apple.developer.*); `codesign -s - --options runtime --entitlements` signs with them and the
+#   kernel runs the result (checked on arm64 and, under Rosetta, x86_64). Xcode's own entitlements
+#   (get-task-allow) are never kept: no --preserve-metadata.
+ENTITLEMENTS=$ROOT/scripts/release.entitlements
+ENTITLED_HELPERS=(codd-holder)
+# The Info.plist purpose strings tccd wants next to each resource-access entitlement (EventKit asks
+# for the full-access keys on macOS 14 and later, Core Location for the when-in-use key on 11 and
+# later). An entitlement not listed here fails the entitlements step.
+usage_keys() {
+    case $1 in
+        com.apple.security.automation.apple-events) echo NSAppleEventsUsageDescription ;;
+        com.apple.security.device.audio-input) echo NSMicrophoneUsageDescription ;;
+        com.apple.security.device.camera) echo NSCameraUsageDescription ;;
+        com.apple.security.personal-information.addressbook) echo NSContactsUsageDescription ;;
+        com.apple.security.personal-information.calendars)
+            echo NSCalendarsUsageDescription NSCalendarsFullAccessUsageDescription \
+                NSRemindersUsageDescription NSRemindersFullAccessUsageDescription ;;
+        com.apple.security.personal-information.location) echo NSLocationUsageDescription NSLocationWhenInUseUsageDescription ;;
+        com.apple.security.personal-information.photos-library) echo NSPhotoLibraryUsageDescription ;;
+        *) return 1 ;;
+    esac
+}
+# The architectures whose CDHash is printed for users to compare (Apple silicon, Intel).
+CDHASH_ARCHS=(arm64 x86_64)
 PINNED_RESOLVED=$ROOT/App/Package.resolved
 WORKSPACE_RESOLVED=$ROOT/CODD.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
 START=$SECONDS
 
 step "tools"
-for tool in xcodebuild codesign ditto git security "$PLISTBUDDY"; do
+for tool in xcodebuild codesign ditto git security strip file lipo plutil shasum zipinfo "$PLISTBUDDY"; do
     command -v "$tool" >/dev/null 2>&1 || die "$tool not found"
 done
 (( INSTALL == 0 )) || [[ -x /usr/bin/trash ]] || die "/usr/bin/trash not found (macOS 15 or later)"
@@ -209,6 +261,21 @@ step "packages"
 pins=$(awk -F'"' '/"identity"/ { id = $4 } /"revision"/ { rev = substr($4, 1, 7) }
     /"version"/ && id != "" { printf "%s%s %s (%s)", sep, id, $4, rev; sep = ", "; id = "" }' "$PINNED_RESOLVED")
 say "value packages=${pins:-none} (App/Package.resolved, -onlyUsePackageVersionsFromResolvedFile)"
+
+step "entitlements"
+[[ -f $ENTITLEMENTS ]] || die "$ENTITLEMENTS is missing (the hardened runtime's resource-access entitlements)"
+plutil -lint -s "$ENTITLEMENTS" || die "$ENTITLEMENTS is not a valid property list"
+WANT_ENTITLEMENTS=$(plutil -convert xml1 -o - -- "$ENTITLEMENTS") || die "plutil cannot read $ENTITLEMENTS"
+[[ $WANT_ENTITLEMENTS != *get-task-allow* ]] || die "$ENTITLEMENTS must not carry get-task-allow (it would let any process debug the app)"
+ent_keys=$(printf '%s\n' "$WANT_ENTITLEMENTS" | sed -n 's/^[[:space:]]*<key>\(.*\)<\/key>$/\1/p' | tr '\n' ' ')
+say "value entitlements=$ENTITLEMENTS keys=${ent_keys% } (CODD.app and ${ENTITLED_HELPERS[*]}; hardened runtime on every signature)"
+USAGE_KEYS=()
+for key in $ent_keys; do
+    keys=$(usage_keys "$key") || die "$ENTITLEMENTS declares $key, but no Info.plist purpose string is known for it (add it to usage_keys in this script and to project.yml targets.CODD.info.properties)"
+    for usage in $keys; do USAGE_KEYS+=("$usage"); done
+done
+(( ${#USAGE_KEYS[@]} > 0 )) || die "$ENTITLEMENTS declares no resource-access entitlement"
+say "value usage-descriptions=${USAGE_KEYS[*]} (the built Info.plist must carry each; project.yml targets.CODD.info.properties)"
 
 step "identity"
 # Ad-hoc unless asked (MISS-1): a certificate's signature carries its holder's name and Team ID into
@@ -326,17 +393,60 @@ else
     fi
 fi
 
-# Inside-out: every nested code item is signed before what contains it; the app last.
+# Every Mach-O file (regular files only) below the given folders, one path per line.
+macho_files() {
+    local dir file
+    for dir in "$@"; do
+        [[ -d $dir ]] || continue
+        while IFS= read -r -d '' file; do
+            case $(file -b "$file") in Mach-O*) printf '%s\n' "$file" ;; esac
+        done < <(find "$dir" -type f -print0)
+    done
+}
+
+# strip -S, keeping its other output but not its warning that the old signature is now invalid
+# (the signing steps below replace it).
+strip_debug() {
+    local out status=0
+    out=$(strip -S "$1" 2>&1) || status=$?
+    out=$(printf '%s\n' "$out" | grep -v -e 'invalidate the code signature' -e '^$' || true)
+    [[ -z $out ]] || printf '%s\n' "$out" | sed 's/^/RELEASE strip: /' >&2
+    (( status == 0 )) || die "strip -S $1 failed (status $status)"
+}
+
+# The linker's debug map (N_SO / N_OSO entries) names the sources and the object files in derived
+# data, that is build-machine paths such as /Users/<name>/<project folder>. strip -S drops it before
+# signing; the symbol table stays. The verify step fails if such a path is still in a binary.
+step "strip debug map (Contents/MacOS, Contents/Frameworks, Contents/PlugIns)"
+if (( DRY_RUN )); then
+    for name in CODD "${HELPERS[@]}"; do run strip -S "$APP/Contents/MacOS/$name"; done
+    say "would also strip -S each Mach-O in Contents/Frameworks and Contents/PlugIns (none today)"
+else
+    stripped=0
+    while IFS= read -r file; do
+        strip_debug "$file"
+        stripped=$((stripped + 1))
+    done < <(macho_files "$APP/Contents/MacOS" "$APP/Contents/Frameworks" "$APP/Contents/PlugIns")
+    (( stripped > 0 )) || die "no Mach-O file in $APP/Contents/MacOS"
+    say "stripped $stripped Mach-O files"
+fi
+
+# Inside-out: every nested code item is signed before what contains it; the app last. All of them
+# with the hardened runtime; the entitlements only where the comment at ENTITLEMENTS says.
 step "sign helpers"
 for name in "${HELPERS[@]}"; do
     helper=$APP/Contents/MacOS/$name
     (( DRY_RUN )) || [[ -f $helper ]] || die "missing helper $helper"
-    run codesign --force --sign "$SIGN_ID" --timestamp=none --identifier "app.codd.$name" "$helper"
+    entitlements=()
+    case " ${ENTITLED_HELPERS[*]} " in *" $name "*) entitlements=(--entitlements "$ENTITLEMENTS") ;; esac
+    # ${a[@]+...}: bash 3.2 treats an empty array as unset under set -u.
+    run codesign --force --sign "$SIGN_ID" --timestamp=none --options runtime \
+        ${entitlements[@]+"${entitlements[@]}"} --identifier "app.codd.$name" "$helper"
 done
 
 step "sign nested code (Contents/Frameworks, Contents/PlugIns)"
 if (( DRY_RUN )); then
-    say "would sign each *.framework, *.dylib, *.bundle, *.appex, *.xpc, *.app there, deepest first (none today)"
+    say "would sign each *.framework, *.dylib, *.bundle, *.appex, *.xpc, *.app there, deepest first, with $(quote codesign --force --sign "$SIGN_ID" --timestamp=none --options runtime) (none today)"
 else
     nested=()
     while IFS= read -r item; do
@@ -352,19 +462,48 @@ else
         say "nested code none"
     else
         for item in "${nested[@]}"; do
-            codesign --force --sign "$SIGN_ID" --timestamp=none "$item"
+            codesign --force --sign "$SIGN_ID" --timestamp=none --options runtime "$item"
             say "signed nested $item"
         done
     fi
 fi
 
 step "sign app"
-run codesign --force --sign "$SIGN_ID" --timestamp=none "$APP"
+run codesign --force --sign "$SIGN_ID" --timestamp=none --options runtime --entitlements "$ENTITLEMENTS" "$APP"
+
+# The CodeDirectory flags of <code> (for <arch>, when given), e.g. adhoc,runtime (codesign -dvv).
+code_flags() {
+    local out
+    out=$(codesign -dvv ${2:+--arch "$2"} "$1" 2>&1) || true
+    printf '%s\n' "$out" | sed -n 's/^CodeDirectory .* flags=0x[0-9a-fA-F]*(\([^)]*\)).*/\1/p'
+}
+# The entitlements of <code> for <arch> as plutil's XML, or nothing when it has none.
+code_entitlements() {
+    local xml
+    xml=$(codesign -d --arch "$2" --entitlements - --xml "$1" 2>/dev/null) || true
+    [[ $xml == *"<key>"* ]] || return 0
+    printf '%s' "$xml" | plutil -convert xml1 -o - - || die "plutil cannot read the entitlements of $1 ($2)"
+}
+# The CDHash of <code> for <arch> (the CDHash= line of codesign -dvvv).
+code_cdhash() {
+    local out
+    out=$(codesign -dvvv --arch "$2" "$1" 2>&1) || true
+    printf '%s\n' "$out" | sed -n 's/^CDHash=//p'
+}
+
+# Build-machine paths no Mach-O may name: the repository, derived data (when outside it), $HOME/.
+leaks=("$ROOT")
+[[ $DD == "$ROOT"/* ]] || leaks+=("$DD")
+if [[ -n ${HOME:-} && -n ${HOME%/} ]]; then leaks+=("${HOME%/}/"); fi
 
 step "verify"
 run codesign --verify --strict --deep --verbose=2 "$APP"
 if (( DRY_RUN )); then
     say "would check CFBundleIdentifier=$EXPECT_BUNDLE, CFBundleShortVersionString=$VERSION, CFBundleVersion=$BUILD, helper identifiers app.codd.{${HELPERS[*]}} (codesign --verify --strict each)"
+    say "would check the hardened runtime on CODD.app and each helper, every architecture (codesign -dvv --arch <arch>: flags=0x10002(adhoc,runtime) ad-hoc, the runtime flag with an identity)"
+    say "would check the entitlements (codesign -d --arch <arch> --entitlements - --xml): CODD.app and ${ENTITLED_HELPERS[*]} equal to $ENTITLEMENTS, none on the other helpers"
+    say "would check that $(quote "$PLIST") carries a non-empty ${USAGE_KEYS[*]} ($(quote "$PLISTBUDDY") -c 'Print :<key>')"
+    say "would check that no Mach-O in the app names any of ${leaks[*]} (LC_ALL=C grep -a -F -c)"
 else
     bundle=$(plist_get CFBundleIdentifier || true)
     [[ $bundle == "$EXPECT_BUNDLE" ]] || die "verify: CFBundleIdentifier '$bundle', expected $EXPECT_BUNDLE"
@@ -379,12 +518,107 @@ else
         say "verify helper $name identifier=$ident"
     done
     say "verify signature $(codesign -d --verbose=2 "$APP" 2>&1 | grep -E '^(Identifier|Signature|Authority|TeamIdentifier)=' | tr '\n' ' ')"
+
+    # Hardened runtime on every signature and every architecture; the entitlements exactly where
+    # the comment at ENTITLEMENTS puts them (and so never Xcode's get-task-allow).
+    for name in CODD "${HELPERS[@]}"; do
+        code=$APP/Contents/MacOS/$name
+        [[ $name != CODD ]] || code=$APP
+        archs=$(lipo -archs "$APP/Contents/MacOS/$name") || die "verify: lipo -archs $APP/Contents/MacOS/$name failed"
+        expect=none
+        case " CODD ${ENTITLED_HELPERS[*]} " in *" $name "*) expect=release.entitlements ;; esac
+        for arch in $archs; do
+            flags=$(code_flags "$code" "$arch")
+            [[ ,$flags, == *,runtime,* ]] || die "verify: $name ($arch) is signed without the hardened runtime (flags (${flags:-none}); codesign -dvv --arch $arch $code)"
+            [[ $IDENTITY != adhoc || ,$flags, == *,adhoc,* ]] || die "verify: $name ($arch) is not signed ad-hoc (flags ($flags))"
+            got=$(code_entitlements "$code" "$arch")
+            if [[ $expect == none ]]; then
+                [[ -z $got ]] || die "verify: $name ($arch) carries entitlements, expected none (codesign -d --arch $arch --entitlements - --xml $code)"
+            else
+                [[ $got == "$WANT_ENTITLEMENTS" ]] || die "verify: the entitlements of $name ($arch) differ from $ENTITLEMENTS (codesign -d --arch $arch --entitlements - --xml $code)"
+            fi
+        done
+        say "verify runtime $name archs=$(printf '%s' "$archs" | tr ' ' ',') flags=($flags) entitlements=$expect"
+    done
+    for item in ${nested[@]+"${nested[@]}"}; do
+        flags=$(code_flags "$item" "")
+        [[ ,$flags, == *,runtime,* ]] || die "verify: $item is signed without the hardened runtime (flags (${flags:-none}))"
+        say "verify runtime nested $item flags=($flags)"
+    done
+
+    # The purpose strings the entitlements need (usage_keys): without one, tccd refuses that
+    # service without a prompt although the entitlement is there.
+    missing=()
+    for key in "${USAGE_KEYS[@]}"; do
+        [[ -n $(plist_get "$key" || true) ]] || missing+=("$key")
+    done
+    (( ${#missing[@]} == 0 )) || die "verify: the built Info.plist has no ${missing[*]} (the purpose strings $ENTITLEMENTS needs; project.yml targets.CODD.info.properties)"
+    say "verify usage descriptions: all ${#USAGE_KEYS[@]} in Info.plist (${USAGE_KEYS[*]})"
+
+    # No build-machine path left in any Mach-O of the bundle (strip -S above removed the debug map).
+    scanned=0
+    while IFS= read -r file; do
+        for leak in "${leaks[@]}"; do
+            hits=$(LC_ALL=C grep -a -F -c -- "$leak" "$file") || (( $? == 1 )) || die "verify: grep cannot read $file"
+            [[ $hits == 0 ]] || die "verify: ${file#"$APP"/} still names $leak ($hits lines; strings -a $(quote "$file") | grep -F $(quote "$leak"))"
+        done
+        scanned=$((scanned + 1))
+    done < <(macho_files "$APP")
+    (( scanned > 0 )) || die "verify: no Mach-O file in $APP"
+    say "verify paths: none of ${leaks[*]} in the $scanned Mach-O files"
 fi
 
 step "zip"
 run rm -f "$ZIP"
-run ditto -c -k --keepParent "$APP" "$ZIP"
-(( DRY_RUN )) || say "zip $(du -h "$ZIP" | cut -f1 | tr -d ' ') $ZIP"
+# Without resource forks, extended attributes, quarantine and ACLs ditto writes no ._ AppleDouble
+# entries next to the files (the app needs none of them; its signature does not cover them).
+run ditto -c -k --keepParent --norsrc --noextattr --noqtn --noacl "$APP" "$ZIP"
+if (( DRY_RUN )); then
+    say "would check that $(quote zipinfo -1 "$ZIP") lists no ._ (AppleDouble) or __MACOSX/ entries, then unpack a copy (ditto -x -k) and check its signature (codesign --verify --strict --deep) and CDHash against $APP"
+else
+    entries=$(zipinfo -1 "$ZIP") || die "zipinfo -1 $ZIP failed"
+    doubles=$(printf '%s\n' "$entries" | grep -E '(^|/)\._|^__MACOSX/' || true)
+    [[ -z $doubles ]] || die "verify: $ZIP has AppleDouble entries ($(printf '%s\n' "$doubles" | wc -l | tr -d ' '), the first ${doubles%%$'\n'*})"
+    say "zip $(du -h "$ZIP" | cut -f1 | tr -d ' ') $ZIP ($(printf '%s\n' "$entries" | wc -l | tr -d ' ') entries, no ._ AppleDouble entries)"
+    # What a user unpacks: it must verify and carry the CDHash printed below.
+    unpacked=$(mktemp -d "$OUT/.zip-check.XXXXXX") || die "mktemp in $OUT failed"
+    zip_fail() { rm -rf "$unpacked"; die "$@"; }
+    ditto -x -k "$ZIP" "$unpacked" || zip_fail "ditto -x -k $ZIP failed"
+    codesign --verify --strict --deep "$unpacked/CODD.app" || zip_fail "verify: the zip's copy of CODD.app does not verify (codesign --verify --strict --deep)"
+    for arch in $(lipo -archs "$APP/Contents/MacOS/CODD"); do
+        [[ $(code_cdhash "$unpacked/CODD.app" "$arch") == "$(code_cdhash "$APP" "$arch")" ]] ||
+            zip_fail "verify: the zip's copy of CODD.app has another $arch CDHash than $APP"
+    done
+    rm -rf "$unpacked"
+    say "verify zip copy: signature valid, CDHash equal to $APP"
+fi
+
+# For the release notes: the zip's SHA-256 (shasum -a 256 <zip>) and, for a copy Safari already
+# unpacked, the app's CDHash per architecture (codesign -dvvv /Applications/CODD.app shows the host's).
+step "checksums"
+if (( DRY_RUN )); then
+    run shasum -a 256 "$ZIP"
+    for arch in "${CDHASH_ARCHS[@]}"; do say "would run: $(quote codesign -dvvv --arch "$arch" "$APP") (its CDHash= line)"; done
+    say "would print RELEASE sha256 <hex> ${ZIP##*/} and RELEASE cdhash ${CDHASH_ARCHS[0]}=<hex> ${CDHASH_ARCHS[1]}=<hex>"
+else
+    sha=$(shasum -a 256 "$ZIP") || die "shasum -a 256 $ZIP failed"
+    sha=${sha%% *}
+    [[ $sha =~ ^[0-9a-f]{64}$ ]] || die "unexpected shasum output for $ZIP: $sha"
+    say "sha256 $sha ${ZIP##*/}"
+    app_archs=" $(lipo -archs "$APP/Contents/MacOS/CODD") "
+    hashes=()
+    for arch in "${CDHASH_ARCHS[@]}"; do
+        if [[ $app_archs != *" $arch "* ]]; then
+            warn "CODD.app has no $arch slice (archs:${app_archs% }): no CDHash for it, and Macs of that architecture cannot run this build"
+            continue
+        fi
+        cdhash=$(code_cdhash "$APP" "$arch")
+        [[ $cdhash =~ ^[0-9a-f]{40}$ ]] || die "no CDHash for $arch (codesign -dvvv --arch $arch $APP)"
+        hashes+=("$arch=$cdhash")
+    done
+    (( ${#hashes[@]} > 0 )) || die "no CDHash for ${CDHASH_ARCHS[*]} in $APP"
+    say "cdhash ${hashes[*]}"
+fi
 # LGPL-2.1 §6(d) / MPL-2.0 §3.2: the libintl and z2d sources go wherever the zip goes
 # (THIRD-PARTY-NOTICES.md › Source of the MPL-2.0 and LGPL-2.1 parts).
 say "publish attach to the same release as the zip: gettext-0.24.tar.gz (sha256 c918503d593d70daf4844d175a13d816afacb667c06fba1ec9dcd5002c1518b7, https://deps.files.ghostty.org/gettext-0.24.tar.gz) and z2d-7dbae85c81784dba9988320bf9543ed9a81350c8.tar.gz (sha256 e55c9d0b156edaddfea32fb1c0e3597e1b6306b9a4ec1888e2f8008c598bced8, https://deps.files.ghostty.org/z2d-7dbae85c81784dba9988320bf9543ed9a81350c8.tar.gz)"

@@ -33,7 +33,8 @@ Native Swift macOS app that manages many Claude Code sessions. Local only.
 - Which tests to run for a change (package suites, app unit suite, `ONLY=<ids>` e2e sections): `scripts/TEST-MAP.md`; run everything only at the overall wrap-up.
 - Filter xcodebuild output: `… 2>&1 | grep -E "error:|warning:|BUILD"`.
 - Signing: `scripts/release.sh` signs ad-hoc (`-`) unless asked for an Apple Development or Developer ID identity
-  (`--identity "<name>"` or `RELEASE_IDENTITY=…`), which puts the certificate's name and Team ID into the signature.
+  (`--identity "<name>"` or `RELEASE_IDENTITY=…`), which puts the certificate's name and Team ID into the signature;
+  always with the hardened runtime and `scripts/release.entitlements` (CODD.app and codd-holder).
   It builds with the package graph pinned by `App/Package.resolved` (`-onlyUsePackageVersionsFromResolvedFile`);
   after a dependency change, copy the workspace's `swiftpm/Package.resolved` there.
 - Licenses: `LICENSE` (MIT); every shipped third-party license is in `THIRD-PARTY-NOTICES.md` (a resource,

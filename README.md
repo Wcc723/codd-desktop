@@ -4,7 +4,7 @@ CODD 是個人開發的非官方工具，與 Anthropic 無關；Claude 與 Claud
 
 CODD Desktop 是一個原生的 macOS App，讓你在同一個視窗裡同時開啟、查看與切換很多個 Claude Code session。它只在你的 Mac 上執行：CODD 本身不連任何伺服器、沒有遠端存取，也不呼叫 Anthropic 的 API。每個終端機都由一個獨立的小程式 `codd-holder` 持有，所以結束、更新甚至當掉 CODD，session 都會繼續執行，下次打開 CODD 時自動接回。
 
-版本 1.0.0。沒有預先建置好的下載檔，請依照下面的「安裝」在自己的 Mac 上從原始碼建置。完整的使用說明在 [docs/USER-GUIDE.zh-TW.md](docs/USER-GUIDE.zh-TW.md)。
+版本 1.0.0。建置好的 App 可以從 [Releases](https://github.com/Wcc723/codd-desktop/releases/latest) 下載，安裝步驟在下面的「安裝」；也可以在自己的 Mac 上從原始碼建置。完整的使用說明在 [docs/USER-GUIDE.zh-TW.md](docs/USER-GUIDE.zh-TW.md)。
 
 ![CODD 的主視窗：左側是 session 側欄，右側是等待授權的 claude session](docs/images/main-window.png)
 
@@ -56,18 +56,48 @@ CODD Desktop 是一個原生的 macOS App，讓你在同一個視窗裡同時開
 
 | 項目 | 需求 |
 |---|---|
-| 作業系統 | macOS 26.0 以上 |
-| 建置工具 | Xcode 27（Swift 6.4），以及隨附的 git |
-| xcodegen | Xcode 專案由 `project.yml` 產生，沒有放進儲存庫：`brew install xcodegen`（需要 [Homebrew](https://brew.sh)） |
-| 網路 | 第一次建置時，Swift Package Manager 會從 GitHub 下載相依套件：libghostty-spm（含預先建置好的 `GhosttyKit.xcframework`）、DisplayLink 與 GRDB.swift，版本固定在 `App/Package.resolved` |
+| 作業系統 | macOS 26.0 以上，Apple 晶片或 Intel 的 Mac 都可以 |
 | Claude Code | 要開 claude session 時需要：`claude` 在登入 shell 的 PATH 裡，或在 `~/.local/bin/claude` |
 | cswap（選用） | 要管理多個 Claude 帳號時需要 0.26 以上：`uv tool install claude-swap`（沒有 uv 時先 `brew install uv`）。沒有 cswap 也能用 CODD，session 會用目前登入的帳號 |
 
+從原始碼建置時另外需要：
+
+| 項目 | 需求 |
+|---|---|
+| 建置工具 | Xcode 27（Swift 6.4），以及隨附的 git |
+| xcodegen | Xcode 專案由 `project.yml` 產生，沒有放進儲存庫：`brew install xcodegen`（需要 [Homebrew](https://brew.sh)） |
+| 網路 | 第一次建置時，Swift Package Manager 會從 GitHub 下載相依套件：libghostty-spm（含預先建置好的 `GhosttyKit.xcframework`）、DisplayLink 與 GRDB.swift，版本固定在 `App/Package.resolved` |
+
 ## 安裝
 
-CODD 預設用 ad-hoc 簽章，而且沒有經過 Apple 公證（notarization）；這樣的 App 從網路下載後會被 macOS 的 Gatekeeper 擋下，所以 CODD 不提供建置好的下載檔，而是在你自己的 Mac 上從原始碼建置。整個建置、簽章與安裝的流程由 `scripts/release.sh --install` 一次完成。
+有兩種裝法：下載建置好的 App，或在自己的 Mac 上從原始碼建置。
 
-### 1. 安裝 Xcode
+### 下載建置好的 App
+
+只從 [github.com/Wcc723/codd-desktop/releases](https://github.com/Wcc723/codd-desktop/releases) 下載。其他網站、雲端硬碟或別人轉傳的 CODD 都不是作者發布的。
+
+1. 在 [Releases](https://github.com/Wcc723/codd-desktop/releases/latest) 下載 `CODD-<版本>-<建置編號>.zip`。Safari 會自動解壓縮，並把 zip 移到垃圾桶；其他瀏覽器下載後在 Finder 裡按兩下 zip。
+2. 把 `CODD.app` 拖進「應用程式」資料夾，先不要打開。
+3. （選用）確認檔案沒被改過。要對照的值寫在 Releases 頁面這一版的說明裡，兩種方法選一種，對不上就刪掉重新下載，不要打開：
+   - 還有 zip 時：在「終端機」執行 `shasum -a 256 <zip 檔>`，和說明裡的 SHA-256 對照。
+   - Safari 已經解壓縮、zip 進了垃圾桶時：執行下面這行，把印出的 `CDHash=` 和說明裡你這種 Mac 的值對照（Apple 晶片看 arm64，Intel 看 x86_64）。App 被改過、沒有重新簽章時，前半段的檢查會失敗，只印出錯誤；被改過又重新簽章時檢查會通過，但 CDHash 會和說明裡的不一樣，所以一定要對照 CDHash。
+
+     ```bash
+     codesign --verify --deep --strict /Applications/CODD.app && codesign -dvvv /Applications/CODD.app 2>&1 | grep '^CDHash='
+     ```
+
+4. 從「應用程式」打開 CODD。第一次打開會被 macOS 擋下，因為 CODD 用 ad-hoc 簽章，沒有經過 Apple 公證（notarization）。macOS 會說無法確認 CODD 不含惡意軟體，這時按「完成」，不要按「丟到垃圾桶」。
+5. 打開 系統設定 › 隱私權與安全性，捲到「安全性」，在 CODD 被阻擋的訊息旁按「強制打開」，依指示輸入密碼（或使用 Touch ID），出現確認對話框時再按「強制打開」。這個按鈕只在你嘗試打開後約一小時內出現；找不到時先回到第 4 步再打開一次。同一個版本只需要做一次。
+
+- 如果 macOS 說「CODD」已損毀、無法打開：先做第 3 步的檢查，對不上就刪掉重新下載；對得上的話，在「終端機」執行 `xattr -dr com.apple.quarantine /Applications/CODD.app`，再打開一次。
+- session 裡的程式（例如 `osascript` 或其他命令列工具）要用相機、麥克風或控制其他 App 時，macOS 會以「CODD」的名義詢問你；CODD 本身不使用這些。
+- 下載版沒有 App 內自動更新，更新方式見下面的「更新」。
+
+### 從原始碼建置
+
+整個建置、簽章與安裝的流程由 `scripts/release.sh --install` 一次完成。自己建置的 App 沒有從網路下載的檔案才有的隔離標記（`com.apple.quarantine`），所以不會被 Gatekeeper 擋下。
+
+#### 1. 安裝 Xcode
 
 從 App Store 安裝 Xcode 27，裝好後打開一次，讓它安裝額外的元件並同意授權條款。接著確認命令列工具用的是這個 Xcode：
 
@@ -81,20 +111,20 @@ xcode-select -p
 sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 ```
 
-### 2. 安裝 xcodegen
+#### 2. 安裝 xcodegen
 
 ```bash
 brew install xcodegen
 ```
 
-### 3. 取得原始碼
+#### 3. 取得原始碼
 
 ```bash
 git clone https://github.com/Wcc723/codd-desktop.git
 cd codd-desktop
 ```
 
-### 4. 建置並安裝
+#### 4. 建置並安裝
 
 在一般的「終端機」App 裡（不要在 Claude Code 的 session 裡），於專案資料夾執行：
 
@@ -106,8 +136,8 @@ scripts/release.sh --install
 
 1. 檢查需要的工具（`xcodebuild`、`codesign`、`ditto`、`git`、`security` 等）；Xcode 專案還不存在或比 `project.yml` 舊時，先執行 `xcodegen generate`。
 2. 把 `App/Package.resolved` 放進產生的 Xcode 專案，以 Release 設定建置，而且只用這份檔案固定的相依套件版本（`-onlyUsePackageVersionsFromResolvedFile`）：上游的版本標籤被改指到別的 commit 時建置會失敗，不會連結到另一份程式碼，預先建置好的 libghostty 也一樣。完整紀錄寫在 `build/release/xcodebuild.log`。版本來自 `VERSION`（目前是 1.0.0），建置編號是 git 的 commit 數。
-3. 簽章：預設用 ad-hoc 簽章，鑰匙圈裡的憑證不會自動被拿來用。只有加上 `--identity "<憑證名稱>"`（或設定 `RELEASE_IDENTITY`）時才改用你的 Apple Development 或 Developer ID 憑證；這時憑證上的姓名與 Team ID 會寫進簽章，拿到這個 App 或 zip 的人都讀得到。內建的三個輔助程式（`codd-holder`、`codd-hook`、`codd-statusline`）先簽，App 最後簽，再用 `codesign --verify --strict --deep` 檢查。沒有公證，也沒有 App 內自動更新。
-4. 產生 `build/release/CODD.app` 與 `build/release/CODD-<版本>-<建置編號>.zip`。
+3. 簽章：先用 `strip -S` 拿掉 `Contents/MacOS` 每個執行檔的除錯資訊，裡面記著建置機器上的路徑（例如 `/Users/<名稱>/<專案資料夾>`）。預設用 ad-hoc 簽章，鑰匙圈裡的憑證不會自動被拿來用。只有加上 `--identity "<憑證名稱>"`（或設定 `RELEASE_IDENTITY`）時才改用你的 Apple Development 或 Developer ID 憑證；這時憑證上的姓名與 Team ID 會寫進簽章，拿到這個 App 或 zip 的人都讀得到。內建的三個輔助程式（`codd-holder`、`codd-hook`、`codd-statusline`）先簽，App 最後簽；每個簽章都開啟強化執行階段（hardened runtime，`--options runtime`），也不帶 Xcode 加的 entitlements（沒有 `get-task-allow`）。App 與 `codd-holder` 另外帶 `scripts/release.entitlements` 的七項權限宣告：自動化（Apple Events）、麥克風、相機、聯絡人、行事曆與提醒事項、定位服務與照片。CODD 是終端機：CODD 執行時，session 裡的程式（例如 `osascript`、要用相機或麥克風的 CLI）向 macOS 要權限，macOS 算在 CODD 頭上，以「CODD」的名義詢問你。開啟強化執行階段的 App 要同時帶權限宣告、並在 `Info.plist` 寫上用途說明（`NSCameraUsageDescription` 這類，寫在 `project.yml`），macOS 才會詢問；少了其中一個就直接拒絕、不會詢問你（只有自動化少了用途說明時仍會詢問）。Ghostty 也帶同一組。宣告與用途說明只是讓 macOS 能問你，要你按允許才會生效。`codd-holder` 也帶同一組，只是預防：CODD 執行時，session 裡的程式都算在 CODD 頭上；CODD 結束後，留在背景的 session 裡的程式各自算自己的。最後用 `codesign --verify --strict --deep` 檢查；`Info.plist` 少了某項權限需要的用途說明，或任何執行檔裡還找得到專案資料夾、建置資料夾或家目錄的路徑時，這一步會失敗。沒有公證，也沒有 App 內自動更新。
+4. 產生 `build/release/CODD.app` 與 `build/release/CODD-<版本>-<建置編號>.zip`。zip 用 `ditto -c -k --keepParent --norsrc --noextattr --noqtn --noacl` 壓縮，不帶延伸屬性，也沒有 `._` 開頭的 AppleDouble 檔（壓好後會檢查）。接著印出 `RELEASE sha256 <雜湊值> <zip 檔名>` 與 `RELEASE cdhash arm64=<雜湊值> x86_64=<雜湊值>`：發布時把這些值寫進 Release 說明，下載的人就能對照（上面「下載建置好的 App」的第 3 步）。
 5. 安裝：新版先複製到 `/Applications/.CODD.app.installing`，原本的 `/Applications/CODD.app`（如果有）用 `/usr/bin/trash` 移到垃圾桶（需要時可以「放回原處」），確定舊版移走後才改名放好。移不走舊版時它會停下來，兩個版本都留在原處。
 
 建置花了多久會顯示在輸出裡（`xcodebuild ok in … s`、`done in … s`）；第一次建置要先下載相依套件，請保持網路連線。最後一行 `RELEASE app=… zip=… version=… build=… identity=… bundle=…` 是這次的結果，`identity=adhoc` 表示用了 ad-hoc 簽章。
@@ -163,7 +193,18 @@ mkdir -p "$T/root" "$T/claude/sessions"
 
 ## 更新
 
-1. 在 CODD 按 ⌘Q，選 `結束 · session 繼續執行`。CODD 還開著時安裝會被拒絕，所以請在一般的「終端機」App 裡更新，不要在 CODD 自己的終端機分頁裡執行。
+先在 CODD 按 ⌘Q，選 `結束 · session 繼續執行`（session 不會停）。
+
+和其他使用者帳號共用的 Mac 上，改選 `[全部停止並結束]`：CODD 沒在執行的這段時間，hook 連接埠沒有人看守（見下面的[安全性](#安全性)）。更新後再對停止的 claude session 按 RESUME，接回原本的對話。
+
+下載版：
+
+1. 從 [Releases](https://github.com/Wcc723/codd-desktop/releases/latest) 下載新的 zip，把 `CODD.app` 拖進「應用程式」資料夾，選「取代」。要確認檔案的話，照「下載建置好的 App」的第 3 步。
+2. 從「應用程式」打開 CODD。新版第一次打開同樣會被擋下，照「下載建置好的 App」的第 4、5 步再按一次「強制打開」。
+
+從原始碼建置：
+
+1. 在一般的「終端機」App 裡更新，不要在 CODD 自己的終端機分頁裡執行。CODD 還開著時安裝會被拒絕。
 2. 進入專案資料夾，更新原始碼後重新安裝：
 
    ```bash
@@ -171,10 +212,13 @@ mkdir -p "$T/root" "$T/claude/sessions"
    scripts/release.sh --install
    ```
 
-3. 從「應用程式」資料夾打開 CODD：session 自動接回，設定 › 關於 會顯示新的版本與建置編號。
+3. 從「應用程式」資料夾打開 CODD。
 
-- 舊版會移到垃圾桶。資料檔都有版本號，比較舊的格式會先備份再轉換（使用說明 13.2）。
-- 用 ad-hoc 簽章時，macOS 以每次建置的簽章認 App，所以專案放在「桌面」、「文件」、「下載項目」或網路磁碟上時，每次更新後都可能再問一次是否允許 CODD 存取。
+兩種方式都一樣：session 自動接回（選了 `[全部停止並結束]` 的話，對 claude session 按 RESUME），設定 › 關於 會顯示新的版本與建置編號。
+
+- 從原始碼建置時，舊版會移到垃圾桶。
+- 資料檔都有版本號，比較舊的格式會先備份再轉換（使用說明 13.2）。
+- 用 ad-hoc 簽章時，macOS 以每次建置的簽章認 App，所以每次更新後都可能再問一次是否允許 CODD 存取：專案放在「桌面」、「文件」、「下載項目」或網路磁碟上時的資料夾，以及 session 裡的程式要用的相機、麥克風、自動化等。
 
 ## 解除安裝
 
@@ -197,12 +241,30 @@ CODD 只在你明確按下的動作時才改動自己資料夾以外的檔案（
 
 ## 安全性
 
-claude session 的 hook 事件與 CODD 的 MCP server 都走本機的 `http://127.0.0.1:47821`（預設的連接埠），每個請求都帶著 CODD 執行時產生的 token。只有你一個人用的 Mac 不必另外處理。
+claude session 的 hook 事件、狀態列回報與 CODD 的 MCP server 都走本機的 `http://127.0.0.1:47821`（預設的連接埠，只聽 127.0.0.1），hook 與 MCP 的請求都要帶 token。token 在 CODD 第一次啟動時產生，存在資料夾的 `config.json`（只有你能讀）。Mac 上沒有其他使用者帳號、也沒有執行你不信任的程式時，不必另外處理。
 
-和其他使用者帳號共用的 Mac 上要注意：CODD 沒在監聽這個連接埠時（例如選了 `結束 · session 繼續執行`，或 CODD 正在重新啟動），別的帳號的程式可以先佔住它，收到 session 的 hook 事件（包含 prompt 與工具的輸入），也能回覆這些事件，例如直接允許工具執行。在這種 Mac 上建議：
+**連接埠被別的程式佔住時**：CODD 沒在監聽這個連接埠的時候（例如選了 `結束 · session 繼續執行`、正在更新或重新啟動），同一台 Mac 上任何帳號的程式都可以先佔住它。連接埠不是 CODD 的時候，CODD 新開的 session 不帶 hook、狀態列與 MCP；但之前開的 session 會繼續把資料送給佔住的程式：
+
+- hook 事件：你送出的 prompt、工具的輸入（例如要執行的指令、要寫入的檔案內容）與輸出、Claude 每一輪最後的回覆，每個事件都帶著 hook token。狀態列回報（各帳號的用量）也帶著 hook token。
+- 註冊到 Claude Code 的 MCP（`~/.claude.json` 裡的 `codd`）在 claude 啟動時連線，帶著外部用的 MCP token。裝了全域狀態列時，CODD 以外開的 claude 也會送出 hook token。
+
+佔住的程式也能回覆。CODD 自己對 hook 只回「收到」，從不替你做決定：回答列的授權是在終端機裡替你按鍵，對 prompt 也只在展開 `codd://` 筆記引用時附上筆記內容。佔住連接埠的程式卻能照 Claude Code 的規則回覆：允許或拒絕工具、在工具執行前改掉它的輸入（例如 Bash 要跑的指令）、在 prompt 旁加入文字，或改掉 Claude 看到的工具輸出。也就是說，它能以你的身分在那些 session 裡執行指令。拿到 token 的程式，在 CODD 重新打開後還能冒充 session 送 hook 或連 MCP，透過 MCP 讀取、新增與附加筆記（AI 存取為 OFF 的除外；開了「AI 可寫入」時還能改寫內容）。
+
+**怎麼發現**：CODD 打開時連接埠已經被佔住，視窗底部的狀態列會顯示 `hooks ▲ :47821 被其他程式佔用 · 只用 registry`，表示之前開的 session 還在把 hook 送給那個程式，新開的 session 不帶 hook。顯示 `由另一個 CODD 使用` 的話是你自己的另一個 CODD（CODD 用 token 確認過；如果 token 曾經外洩，這個判斷也不可靠，照下面「懷疑 token 外洩時」換掉 token）。找出是哪個程式與處理方式見使用說明的[疑難排解](docs/USER-GUIDE.zh-TW.md#hook-連接埠被佔用)。佔用的程式在 CODD 打開之前就放掉連接埠的話，畫面上看不出來。
+
+**懷疑 token 外洩時**：
+
+- 只換 MCP token：設定 › 筆記本 & MCP › Port 與 token 的 `[輪替]`（STATUS 的 MCP SERVER 也有），再對同一頁「註冊」的 Claude Code 按一次 `[註冊]`；Codex 重新複製設定。
+- 連 hook token 一起換：App 裡沒有換 hook token 的按鈕。按 ⌘Q 選 `[全部停止並結束]`，刪掉 `~/Library/Application Support/CODD/config.json`（旁邊有 `config.json.invalid-*` 的話也刪掉，裡面是舊的 token），再打開 CODD。CODD 會建立新的 `config.json`：hook token 與 MCP token 都是新的，連接埠是 47821 起第一個沒被佔用的。之後對 claude session 按 RESUME，再照上一項重新註冊 MCP；全域狀態列每次執行都讀 `config.json`，不用重裝。
+
+和其他使用者帳號共用的 Mac 上建議：
 
 - 結束 CODD 時選 `[全部停止並結束]`，不讓 session 留在背景。
 - 不要把 MCP 註冊到 Claude Code（設定 › 筆記本 & MCP），也不要安裝全域狀態列（設定 › Hooks & Status）；這兩項會讓 CODD 以外開的 claude 也連到這個連接埠。
+
+**下載版**：用 ad-hoc 簽章、沒有經過 Apple 公證，macOS 無法替你確認它是誰發布的，所以只從 [Releases](https://github.com/Wcc723/codd-desktop/releases) 下載，需要時照「下載建置好的 App」的第 3 步對照。
+
+**強化執行階段**：`scripts/release.sh` 建置的 App（下載版與從原始碼安裝的都是）與內建的輔助程式都開啟強化執行階段（hardened runtime）：其他程式不能附加到它們讀寫記憶體，也不能用 `DYLD_` 環境變數把程式庫塞進去。開發用的 Debug 建置沒有開。
 
 ## 開發
 

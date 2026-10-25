@@ -32,8 +32,11 @@ Research behind these decisions: `design/research/native-swift/` (synth.md + cri
   Apple Development or Developer ID Application identity only when asked (`--identity "<name>"` or
   `RELEASE_IDENTITY`, matched against `security find-identity -v -p codesigning`), with a warning that
   the certificate's name and Team ID end up in every published copy's signature (a keychain identity is
-  never picked up on its own); hardened runtime off; the helpers re-signed with their own identifiers
-  before the app (never `--deep`). No notarization, no Sparkle. A launchd agent (coddd) would still need
+  never picked up on its own); every Mach-O stripped of its debug map (`strip -S`, no build-machine
+  paths), then signed with the hardened runtime (`--options runtime`), `scripts/release.entitlements` on
+  CODD.app and codd-holder and the matching purpose strings in Info.plist; the helpers re-signed with
+  their own identifiers before the app (never `--deep`). Debug builds keep the runtime off. No
+  notarization, no Sparkle. A launchd agent (coddd) would still need
   a real identity.
 - Dependency pinning: the app's package graph (libghostty-spm with its prebuilt GhosttyKit, DisplayLink,
   GRDB) is pinned by the tracked `App/Package.resolved` (excluded from the app's sources); release.sh

@@ -28,10 +28,19 @@ CODD Desktop 是一個原生的 macOS App，讓你在同一個視窗裡開啟、
 
 ## 1. 安裝
 
-### 1.1 建置並安裝
+### 1.1 下載或從原始碼建置
 
-CODD 從原始碼建置，需要 macOS 26 以上、Xcode 27 與 xcodegen（完整需求見專案根目錄的 README）。
-在一般的「終端機」App 裡（不要在 Claude Code 的 session 裡）進入這個專案的資料夾，執行：
+CODD 需要 macOS 26 以上。可以下載建置好的 App，也可以從原始碼建置（完整需求見專案根目錄的 README）。
+
+**下載建置好的 App**：只從 [Releases](https://github.com/Wcc723/codd-desktop/releases) 下載，其他地方的 CODD 都不是
+作者發布的。下載 `CODD-<版本>-<建置編號>.zip`，解壓縮後把 `CODD.app` 拖進「應用程式」資料夾。打開前可以先對照這一版
+Release 說明裡的 zip SHA-256 或 CDHash（選用，指令在 README 的「下載建置好的 App」）。CODD 用 ad-hoc 簽章、沒有經過
+Apple 公證，所以第一次打開會被 macOS 擋下：按「完成」，到 系統設定 › 隱私權與安全性 的「安全性」按「強制打開」，依指示
+輸入密碼（或使用 Touch ID），出現確認對話框時再按「強制打開」。這個按鈕只在你嘗試打開後約一小時內出現；找不到時先從
+「應用程式」再打開一次 CODD。每個新版本第一次打開時都要做一次。macOS 說「CODD」已損毀時的處理方式也在 README 的
+「下載建置好的 App」。
+
+**從原始碼建置**：需要 Xcode 27 與 xcodegen。在一般的「終端機」App 裡（不要在 Claude Code 的 session 裡）進入這個專案的資料夾，執行：
 
 ```bash
 scripts/release.sh --install
@@ -61,6 +70,9 @@ session 與首次啟動設定的紀錄（`layout.json`、`panes.json`、`session
 主視窗左邊是 rail（SESSIONS、NOTES、STATUS、SETTINGS），接著是側欄，右邊是目前選取的 session。
 關掉主視窗後 CODD 仍留在選單列與 Dock 上（第 10 節），session 照常執行；要完全結束 CODD 請按 ⌘Q。
 
+session 裡的程式（例如 `osascript` 或其他命令列工具）要用相機、麥克風或控制其他 App 時，macOS 會以「CODD」的名義
+詢問你：CODD 執行時，session 裡的程式都算在 CODD 頭上。CODD 本身不使用這些。
+
 ### 1.3 從舊版 CODD 換過來
 
 如果你之前用的是自己 build 的開發版（例如 `build/user-m4` 裡的 CODD），1.0 換了 App 的識別碼
@@ -76,7 +88,7 @@ session 與首次啟動設定的紀錄（`layout.json`、`panes.json`、`session
    第 6 步按 `[允許通知]`），macOS 會問你是否允許 CODD 傳送通知。
 4. **資料夾存取會再問一次。** session 的專案放在「桌面」、「文件」、「下載項目」或網路磁碟上時，macOS 會
    再問一次是否允許 CODD 存取。用 ad-hoc 簽章（預設，沒有用 `--identity` 指定憑證）時，macOS 用每次建置的簽章認 App，
-   所以之後每次更新都可能再問。
+   所以之後每次更新都可能再問；session 裡的程式用過的相機、麥克風、自動化等權限也一樣。
 5. **登入時啟動要重設。** 如果你開過 設定 › 一般 › `登入時啟動`：把它關掉再打開一次，然後到
    系統設定 › 一般 › 登入項目（依 macOS 版本也可能叫「登入項目與延伸功能」）把舊的 CODD 刪掉。不刪的話，舊版可能
    在登入時先啟動並佔住資料夾，新版打開時就只會把舊版叫到前面。遇到這種情況，設定頁會在那一列下方提示
@@ -333,8 +345,9 @@ CODD 內建一個 MCP server（和 hook 用同一個連接埠，只聽 127.0.0.1
 - **輪替 token**：設定 › 筆記本 & MCP › Port 與 token 的 `[輪替]`。輪替後，已註冊的 client 要重新註冊
   （Claude Code 那一列會顯示 `需要重新註冊（token 已輪替）`，再按一次 `[註冊]`；Codex 重新複製設定）。CODD 自己開的
   session 用各自的 token，不受影響。
-- **誰看得到什麼**：AI 存取為 OFF 的筆記，任何 AI 路徑都看不到；綁定某個專案的筆記，只提供給那個專案的 session。
-  這是建議性的：有 Bash 工具的 session 仍然可以直接讀筆記資料夾裡的檔案。
+- **誰看得到什麼**：AI 存取為 OFF 的筆記，任何 AI 路徑都看不到。綁定某個專案的筆記，MCP 工具只提供給那個專案
+  （或連結到這則筆記）的 session，以及你註冊的 client；但在 prompt 裡直接寫它的 `codd://note/<id>` 時，任何專案的
+  session 都會展開它。這些都是建議性的：有 Bash 工具的 session 仍然可以直接讀筆記資料夾裡的檔案。
 - **秘密只放在 AI OFF 的筆記**：在 CODD session 裡執行的任何程式（Claude 的 Bash 工具、專案的測試或安裝腳本、
   MCP server、狀態列指令）都以你的身分執行，讀得到每一則 AI 存取不是 OFF 的筆記，也能不經詢問建立筆記。
   API key、密碼、token 這類內容請放在 AI 存取為 OFF 的筆記裡。
@@ -511,7 +524,7 @@ CODD 讀很多 Claude Code 的檔案，但只在下面這些情況寫入資料�
 | cswap 的狀態（`~/.claude-swap-backup`） | 你切換帳號、加入帳號或改別名時，CODD 執行 `cswap switch` / `add` / `alias`，由 cswap 自己寫入 | cswap 自己的機制 |
 | 你在檔案編輯器打開的檔案 | 只有按 ⌘S | 無（git 管理的專案可以用 git 還原） |
 | macOS 的垃圾桶 | 永久刪除的筆記、封存很久的終端機紀錄、沒用到的筆記圖片 | 可從垃圾桶放回原處 |
-| `/Applications/CODD.app` | 只有你執行 `scripts/release.sh --install` 時 | 舊版移到垃圾桶 |
+| `/Applications/CODD.app` | 只有你執行 `scripts/release.sh --install` 時（下載版由你自己拖進去） | 舊版移到垃圾桶 |
 | macOS 的設定 | 登入項目（改 `登入時啟動` 時）、通知權限（你允許時）、CODD 記住的視窗大小、側欄寬度與選單列圖示位置 | — |
 
 CODD 從不改動 `~/.codex`、鑰匙圈或 cswap 的登入憑證。同一個檔名已經有備份時，新的備份名稱後面加 `-2`、`-3`…。
@@ -529,9 +542,14 @@ CODD 從不改動 `~/.codex`、鑰匙圈或 cswap 的登入憑證。同一個檔
 
 ### 13.1 更新步驟
 
-1. 在 CODD 按 ⌘Q，選 `結束 · session 繼續執行`（session 不會停）。
-2. 在一般的「終端機」App 進入專案資料夾，更新原始碼後執行 `scripts/release.sh --install`。
-3. 打開 `/Applications/CODD.app`：session 自動接回，設定 › 關於 的 App 一列會顯示新的版本與建置編號（例如 `1.0.0 (6)`）。
+1. 在 CODD 按 ⌘Q，選 `結束 · session 繼續執行`（session 不會停）。和其他使用者帳號共用的 Mac 上改選
+   `[全部停止並結束]`：CODD 沒在執行的這段時間，hook 連接埠沒有人看守（README 的「安全性」）；更新後再對 claude session
+   按 RESUME。
+2. 下載版：從 [Releases](https://github.com/Wcc723/codd-desktop/releases/latest) 下載新的 zip，把 `CODD.app` 拖進
+   「應用程式」資料夾並選「取代」（要確認檔案的話照 1.1）；第一次打開新版時照 1.1 再按一次「強制打開」。從原始碼建置：
+   在一般的「終端機」App 進入專案資料夾，更新原始碼後執行 `scripts/release.sh --install`。
+3. 打開 `/Applications/CODD.app`：session 自動接回（選了 `[全部停止並結束]` 的話，對 claude session 按 RESUME），
+   設定 › 關於 的 App 一列會顯示新的版本與建置編號（例如 `1.0.0 (6)`）。
 
 ### 13.2 資料的版本
 
@@ -602,7 +620,12 @@ CODD 只在你明確按下的動作時才改動自己資料夾以外的檔案（
 CODD 每隔幾秒會重試。
 
 - 看看是誰佔用了：`lsof -nP -iTCP:47821 -sTCP:LISTEN`（47821 換成狀態列上的數字），結束那個程式後 CODD 會自動接上。
-- 顯示 `由另一個 CODD 使用`：另一個 CODD（例如舊的開發版）正在用同一個連接埠，先把它結束。
+  `lsof` 只列出你自己的程式；什麼都沒列出、狀態列卻還是 ▲ 時，佔用的是別的使用者帳號的程式，改用
+  `sudo lsof -nP -iTCP:47821 -sTCP:LISTEN`。
+- 佔用的不是你認得的程式時，之前開的 session 可能已經把 prompt、工具的輸入輸出與 token 送給它，它也能回覆這些 hook
+  （例如允許工具執行）：照 README 的「安全性」換掉 token。
+- 顯示 `由另一個 CODD 使用`：另一個 CODD（例如舊的開發版）正在用同一個連接埠，先把它結束。CODD 用 token 確認對方是
+  CODD；如果 token 曾經外洩，這個判斷也不可靠，照 README 的「安全性」換掉 token。
 - 一定要換連接埠時：⌘Q 結束 CODD，把資料夾裡 `config.json` 的 `port` 改成一個沒被用的數字（例如 47822），再打開
   CODD。之後要對正在跑的 claude session 按 RESUME 或重新開始，它們才會改用新的連接埠；註冊過 Claude Code 的話也要
   重新註冊（第 7 節）。這是最後手段：CODD 沒有改連接埠的畫面，改壞了 `config.json` 時 CODD 會修好它（能讀到的連接埠

@@ -26,9 +26,31 @@
 	<string>public.app-category.developer-tools</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>26.0</string>
+	<key>NSAppleEventsUsageDescription</key>
+	<string>在 CODD 的 session 裡執行的程式（例如 osascript）想要控制其他 App。</string>
+	<key>NSCalendarsFullAccessUsageDescription</key>
+	<string>在 CODD 的 session 裡執行的程式想要取用你的行事曆。</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>在 CODD 的 session 裡執行的程式想要取用你的行事曆。</string>
+	<key>NSCameraUsageDescription</key>
+	<string>在 CODD 的 session 裡執行的程式想要使用相機。</string>
+	<key>NSContactsUsageDescription</key>
+	<string>在 CODD 的 session 裡執行的程式想要取用你的聯絡人。</string>
 	<key>NSHighResolutionCapable</key>
 	<true/>
+	<key>NSLocationUsageDescription</key>
+	<string>在 CODD 的 session 裡執行的程式想要取得你的位置。</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>在 CODD 的 session 裡執行的程式想要取得你的位置。</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>在 CODD 的 session 裡執行的程式想要使用麥克風。</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>在 CODD 的 session 裡執行的程式想要取用你的照片圖庫。</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSRemindersFullAccessUsageDescription</key>
+	<string>在 CODD 的 session 裡執行的程式想要取用你的提醒事項。</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>在 CODD 的 session 裡執行的程式想要取用你的提醒事項。</string>
 </dict>
 </plist>
