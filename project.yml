@@ -16,7 +16,7 @@ settings:
     SWIFT_STRICT_CONCURRENCY: complete
     # M5 D18 / §2.1: the marketing version equals the repo's VERSION file; scripts/release.sh
     # passes the commit count as CURRENT_PROJECT_VERSION (Debug builds keep 1).
-    MARKETING_VERSION: "1.0.0"
+    MARKETING_VERSION: "1.0.1"
     CURRENT_PROJECT_VERSION: "1"
 packages:
   CoddHolder:

@@ -4,7 +4,7 @@ CODD 是個人開發的非官方工具，與 Anthropic 無關；Claude 與 Claud
 
 CODD Desktop 是一個原生的 macOS App，讓你在同一個視窗裡同時開啟、查看與切換很多個 Claude Code session。它只在你的 Mac 上執行：CODD 本身不連任何伺服器、沒有遠端存取，也不呼叫 Anthropic 的 API。每個終端機都由一個獨立的小程式 `codd-holder` 持有，所以結束、更新甚至當掉 CODD，session 都會繼續執行，下次打開 CODD 時自動接回。
 
-版本 1.0.0。建置好的 App 可以從 [Releases](https://github.com/Wcc723/codd-desktop/releases/latest) 下載，安裝步驟在下面的「安裝」；也可以在自己的 Mac 上從原始碼建置。完整的使用說明在 [docs/USER-GUIDE.zh-TW.md](docs/USER-GUIDE.zh-TW.md)。
+版本 1.0.1。建置好的 App 可以從 [Releases](https://github.com/Wcc723/codd-desktop/releases/latest) 下載，安裝步驟在下面的「安裝」；也可以在自己的 Mac 上從原始碼建置。完整的使用說明在 [docs/USER-GUIDE.zh-TW.md](docs/USER-GUIDE.zh-TW.md)。
 
 ![CODD 的主視窗：左側是 session 側欄，右側是等待授權的 claude session](docs/images/main-window.png)
 
@@ -135,7 +135,7 @@ scripts/release.sh --install
 它會依序：
 
 1. 檢查需要的工具（`xcodebuild`、`codesign`、`ditto`、`git`、`security` 等）；Xcode 專案還不存在或比 `project.yml` 舊時，先執行 `xcodegen generate`。
-2. 把 `App/Package.resolved` 放進產生的 Xcode 專案，以 Release 設定建置，而且只用這份檔案固定的相依套件版本（`-onlyUsePackageVersionsFromResolvedFile`）：上游的版本標籤被改指到別的 commit 時建置會失敗，不會連結到另一份程式碼，預先建置好的 libghostty 也一樣。完整紀錄寫在 `build/release/xcodebuild.log`。版本來自 `VERSION`（目前是 1.0.0），建置編號是 git 的 commit 數。
+2. 把 `App/Package.resolved` 放進產生的 Xcode 專案，以 Release 設定建置，而且只用這份檔案固定的相依套件版本（`-onlyUsePackageVersionsFromResolvedFile`）：上游的版本標籤被改指到別的 commit 時建置會失敗，不會連結到另一份程式碼，預先建置好的 libghostty 也一樣。完整紀錄寫在 `build/release/xcodebuild.log`。版本來自 `VERSION`（目前是 1.0.1），建置編號是 git 的 commit 數。
 3. 簽章：先用 `strip -S` 拿掉 `Contents/MacOS` 每個執行檔的除錯資訊，裡面記著建置機器上的路徑（例如 `/Users/<名稱>/<專案資料夾>`）。預設用 ad-hoc 簽章，鑰匙圈裡的憑證不會自動被拿來用。只有加上 `--identity "<憑證名稱>"`（或設定 `RELEASE_IDENTITY`）時才改用你的 Apple Development 或 Developer ID 憑證；這時憑證上的姓名與 Team ID 會寫進簽章，拿到這個 App 或 zip 的人都讀得到。內建的三個輔助程式（`codd-holder`、`codd-hook`、`codd-statusline`）先簽，App 最後簽；每個簽章都開啟強化執行階段（hardened runtime，`--options runtime`），也不帶 Xcode 加的 entitlements（沒有 `get-task-allow`）。App 與 `codd-holder` 另外帶 `scripts/release.entitlements` 的七項權限宣告：自動化（Apple Events）、麥克風、相機、聯絡人、行事曆與提醒事項、定位服務與照片。CODD 是終端機：CODD 執行時，session 裡的程式（例如 `osascript`、要用相機或麥克風的 CLI）向 macOS 要權限，macOS 算在 CODD 頭上，以「CODD」的名義詢問你。開啟強化執行階段的 App 要同時帶權限宣告、並在 `Info.plist` 寫上用途說明（`NSCameraUsageDescription` 這類，寫在 `project.yml`），macOS 才會詢問；少了其中一個就直接拒絕、不會詢問你（只有自動化少了用途說明時仍會詢問）。Ghostty 也帶同一組。宣告與用途說明只是讓 macOS 能問你，要你按允許才會生效。`codd-holder` 也帶同一組，只是預防：CODD 執行時，session 裡的程式都算在 CODD 頭上；CODD 結束後，留在背景的 session 裡的程式各自算自己的。最後用 `codesign --verify --strict --deep` 檢查；`Info.plist` 少了某項權限需要的用途說明，或任何執行檔裡還找得到專案資料夾、建置資料夾或家目錄的路徑時，這一步會失敗。沒有公證，也沒有 App 內自動更新。
 4. 產生 `build/release/CODD.app` 與 `build/release/CODD-<版本>-<建置編號>.zip`。zip 用 `ditto -c -k --keepParent --norsrc --noextattr --noqtn --noacl` 壓縮，不帶延伸屬性，也沒有 `._` 開頭的 AppleDouble 檔（壓好後會檢查）。接著印出 `RELEASE sha256 <雜湊值> <zip 檔名>` 與 `RELEASE cdhash arm64=<雜湊值> x86_64=<雜湊值>`：發布時把這些值寫進 Release 說明，下載的人就能對照（上面「下載建置好的 App」的第 3 步）。
 5. 安裝：新版先複製到 `/Applications/.CODD.app.installing`，原本的 `/Applications/CODD.app`（如果有）用 `/usr/bin/trash` 移到垃圾桶（需要時可以「放回原處」），確定舊版移走後才改名放好。移不走舊版時它會停下來，兩個版本都留在原處。

@@ -63,7 +63,7 @@ struct M5IdentityTests {
         // The test host is the built CODD.app (project.yml: app.codd.CODD, MARKETING_VERSION = VERSION).
         #expect(Bundle.main.bundleIdentifier == CoddIdentity.bundleIdentifier)
         #expect(CoddIdentity.runningBundleIdentifier == CoddIdentity.bundleIdentifier)
-        #expect(CoddIdentity.version == "1.0.0")
+        #expect(CoddIdentity.version == "1.0.1")
         #expect(Int(CoddIdentity.build) != nil)
         #expect(CoddIdentity.isCODD(bundleIdentifier: "app.codd.CODD") && CoddIdentity.isCODD(bundleIdentifier: "app.fancycodd.CODD"))
         #expect(!CoddIdentity.isCODD(bundleIdentifier: "com.apple.Terminal") && !CoddIdentity.isCODD(bundleIdentifier: nil))

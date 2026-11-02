@@ -8,7 +8,7 @@ rules below for Claude Code sessions working in this repository.
 
 Every terminal is owned by a small `codd-holder` process, not by the app. Quitting, crashing or updating CODD
 leaves the sessions running; the next launch reattaches to them. After a reboot a stopped Claude session
-resumes with `claude --resume`. Version 1.0.0 (`VERSION`), bundle id `app.codd.CODD`; a Release's build
+resumes with `claude --resume`. Version 1.0.1 (`VERSION`), bundle id `app.codd.CODD`; a Release's build
 number is the commit count.
 
 ## Requirements

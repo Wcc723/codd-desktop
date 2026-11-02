@@ -293,7 +293,7 @@ scripts/m5-fixtures/      make-import-fixture.sh (made-up projects, .claude.json
 scripts/lib/, scripts/tools/   zorder-guard.sh (sourced by every script that launches CODD), zorder.sh +
                           zorder-watch.swift + zorder-selftest.sh (window-stack watcher), copy-audit.py +
                           copy-audit-allow.txt
-README.md, VERSION        developer overview (build, test, release); the marketing version (1.0.0)
+README.md, VERSION        developer overview (build, test, release); the marketing version (1.0.1)
 scripts/m4-fixtures/      make-notes.sh, make-png.py, make-git-project.sh, make-claude-json.sh, age-layout.py,
                           mcp-client.py, mcp-script-session.jsonl, fake-claude-m4.sh (MCP, prompt hooks, tool
                           edits, print mode), mock-codd.py, selftest.sh, README.md
