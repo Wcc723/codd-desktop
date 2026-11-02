@@ -378,7 +378,8 @@ final class NotebookStepView: NSView, StepBodyView {
 // MARK: - Step 5
 
 /// Step 5: `ACCOUNTS · 依每週重置排序 · 越快重置越上面`, the accounts in R7 order (slot + alias, plan,
-/// 5h / 1w bars, `1w 重置 1d12h後`, `✓ ACTIVE` with the amber bar), `[+ 加入帳號]` (the wording of Settings and STATUS); or the cswap note
+/// 5h / 1w bars (a plan without 5h: its per-model weekly window, or 1w alone), `1w 重置 1d12h後`,
+/// `✓ ACTIVE` with the amber bar), `[+ 加入帳號]` (the wording of Settings and STATUS); or the cswap note
 /// and (FB) the install guide.
 final class AccountsStepView: NSView, StepBodyView {
     private(set) var model: AccountsStepModel?
@@ -447,7 +448,8 @@ final class AccountsStepView: NSView, StepBodyView {
             element.setAccessibilityRole(.staticText)
             var label = "帳號 \(row.slot) \(row.alias)"
             if row.active { label += "，使用中" }
-            label += "，5 小時剩 \(Self.percent(row.fiveHourRemaining))，1 週剩 \(Self.percent(row.weeklyRemaining))，\(row.weeklyReset)"
+            if let key = row.fiveHourKey { label += "，\(key == "5h" ? "5 小時" : key + " ")剩 \(Self.percent(row.fiveHourRemaining))" }
+            label += "，1 週剩 \(Self.percent(row.weeklyRemaining))，\(row.weeklyReset)"
             element.setAccessibilityLabel(label)
             element.setAccessibilityParent(self)
             return element
@@ -550,9 +552,16 @@ final class AccountsStepView: NSView, StepBodyView {
         Draw.text(reset, x: right - resetWidth, centerY: mid)
         right -= resetWidth + dz(16)
         let barWidth = max(dz(90), (right - x - dz(16)) / 2)
-        let five = QuotaBarRow(key: "5h", remainingPercent: row.fiveHourRemaining)
-        let week = QuotaBarRow(key: "1w", remainingPercent: row.weeklyRemaining)
+        // `Fable` needs the wider key column (`.sx-acct .qrow .k{width:34px}`); both bars share it.
+        let keyWidth: CGFloat? = (row.fiveHourKey ?? "5h") == "5h" ? nil : 34
+        let week = QuotaBarRow(key: "1w", remainingPercent: row.weeklyRemaining, keyWidth: keyWidth)
         let barHeight = QuotaBarRowRenderer.height
+        guard let key = row.fiveHourKey else {
+            // No 5h place: 1w across both columns.
+            QuotaBarRowRenderer.draw(week, in: CGRect(x: x, y: mid - barHeight / 2, width: barWidth * 2 + dz(16), height: barHeight))
+            return
+        }
+        let five = QuotaBarRow(key: key, remainingPercent: row.fiveHourRemaining, keyWidth: keyWidth)
         QuotaBarRowRenderer.draw(five, in: CGRect(x: x, y: mid - barHeight / 2, width: barWidth, height: barHeight))
         QuotaBarRowRenderer.draw(week, in: CGRect(x: x + barWidth + dz(16), y: mid - barHeight / 2, width: barWidth, height: barHeight))
     }

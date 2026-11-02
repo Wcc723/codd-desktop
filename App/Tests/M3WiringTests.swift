@@ -21,14 +21,14 @@ struct CswapAccountStoreTests {
         #expect(store.sourceLabel == "cswap 0.26.0")
         #expect(store.accounts.map(\.id) == ["2", "3", "1"], "R7: weekly reset, soonest first")
         #expect(store.activeAccountID == "3")
-        #expect(store.accounts.map(\.plan) == ["MAX 20x", "MAX 20x", "MAX 20x"])
+        #expect(store.accounts.map(\.plan) == ["ULTRA", "ULTRA", "ULTRA"])
         #expect(store.accounts.map(\.alias) == ["藍鵲", "工作", "個人"])
         let two = try #require(store.account("2"))
-        #expect(two.fiveHour.remainingPercent == 98 && two.week.remainingPercent == 46)
+        #expect(two.fiveHour?.remainingPercent == 98 && two.week.remainingPercent == 46)
         #expect(two.source == "cswap cache" && two.hasSessionProfile && !two.profileStale)
         #expect(two.scoped.map(\.name) == ["Fable"])
         let one = try #require(store.account("1"))
-        #expect(!one.fiveHour.started, "5h not started yet")
+        #expect(one.fiveHour?.started == false, "5h not started yet")
         #expect(!one.hasSessionProfile)
         #expect(store.account("3")?.week.remainingPercent == 15)
         // D1: nothing but `--version` at launch (no `cswap list`, which fetches usage).
@@ -51,7 +51,7 @@ struct CswapAccountStoreTests {
         #expect(store.accounts.map(\.id) == ["default"])
         let pseudo = try #require(store.accounts.first)
         #expect(pseudo.isPseudo && pseudo.slot == "—" && pseudo.alias == "目前登入")
-        #expect(pseudo.fiveHour.remainingPercent == 80 && pseudo.source == "statusline")
+        #expect(pseudo.fiveHour?.remainingPercent == 80 && pseudo.source == "statusline")
         #expect(store.activeAccountID == "default")
         // M3 review: the pseudo row already has numbers, so the note no longer says they will appear.
         if case .pseudo(let note) = store.availability { #expect(note == AccountAvailability.pseudoNote) } else {
@@ -160,12 +160,12 @@ struct StatusLineAttributionTests {
         store.ingest(f.report(key: "default", five: 9, fiveReset: f.clock.addingTimeInterval(10_000), week: 85,
                               weekReset: f.state.weeklyReset(3)))
         let three = try #require(store.account("3"))
-        #expect(three.source == "statusline" && three.fiveHour.remainingPercent == 91 && three.week.remainingPercent == 15)
+        #expect(three.source == "statusline" && three.fiveHour?.remainingPercent == 91 && three.week.remainingPercent == 15)
         // cswap-2 → #2.
         f.clock = f.clock.addingTimeInterval(1)
         store.ingest(f.report(key: "cswap-2", five: 50, fiveReset: f.clock.addingTimeInterval(5000), week: 60,
                               weekReset: f.state.weeklyReset(2)))
-        #expect(store.account("2")?.fiveHour.remainingPercent == 50)
+        #expect(store.account("2")?.fiveHour?.remainingPercent == 50)
         #expect(store.account("2")?.source == "statusline")
         #expect(store.statusLine.accepted == 2 && store.statusLine.dropped == 0)
         #expect(store.statusLine.lastKey == "cswap-2" && store.statusLine.lastAccount == "2")
@@ -193,7 +193,7 @@ struct StatusLineAttributionTests {
         // After the grace: default → the new active #2.
         f.clock = f.clock.addingTimeInterval(QuotaAttribution.switchGrace + 1)
         store.ingest(f.report(key: "default", five: 40, week: 47, weekReset: f.state.weeklyReset(2)))
-        #expect(store.account("2")?.fiveHour.remainingPercent == 60)
+        #expect(store.account("2")?.fiveHour?.remainingPercent == 60)
     }
 
     @Test func aCfgKeyOfAKnownProfileGoesToItsAccount() async throws {
@@ -204,7 +204,7 @@ struct StatusLineAttributionTests {
         let key = AccountKey.from(claudeConfigDir: f.state.profile(2).path, home: f.folder + "/home").rawValue
         #expect(key.hasPrefix("cfg-"))
         store.ingest(f.report(key: key, five: 30, week: 55, weekReset: f.state.weeklyReset(2)))
-        #expect(store.account("2")?.fiveHour.remainingPercent == 70)
+        #expect(store.account("2")?.fiveHour?.remainingPercent == 70)
         // Any other cfg key: dropped.
         store.ingest(f.report(key: "cfg-0123456789abcdef", five: 30))
         #expect(store.statusLine.dropped == 1)

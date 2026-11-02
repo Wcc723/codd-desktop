@@ -34,8 +34,12 @@ public struct DialogAccount: Equatable, Sendable {
     public var slot: String
     /// `工作`.
     public var alias: String
-    /// `MAX 20x`; nil = no chip.
+    /// `ULTRA`, `MAX`; nil = no chip.
     public var plan: String?
+    /// The key of the row in the 5h place: `5h`; on a plan without a 5-hour limit (Ultra) a
+    /// per-model weekly window's name (`Fable`, whose numbers `fiveHourRemaining` / `fiveHourTone`
+    /// then carry); nil = no such row, the 1w row moves up.
+    public var fiveHourKey: String?
     /// 5h remaining 0–100; nil draws `—`.
     public var fiveHourRemaining: Double?
     public var fiveHourTone: Tone
@@ -53,12 +57,13 @@ public struct DialogAccount: Equatable, Sendable {
     /// Header chips at the right of `FROM · 剩餘` (`ACTIVE`, `1 個 session 固定`).
     public var chips: [DialogChip]
 
-    public init(slot: String, alias: String, plan: String? = nil,
+    public init(slot: String, alias: String, plan: String? = nil, fiveHourKey: String? = "5h",
                 fiveHourRemaining: Double?, fiveHourTone: Tone, weeklyRemaining: Double?, weeklyTone: Tone,
                 reset: String, resetsAt: Date? = nil, source: String, sourceAt: Date? = nil, chips: [DialogChip] = []) {
         self.slot = slot
         self.alias = alias
         self.plan = plan
+        self.fiveHourKey = fiveHourKey
         self.fiveHourRemaining = fiveHourRemaining
         self.fiveHourTone = fiveHourTone
         self.weeklyRemaining = weeklyRemaining
@@ -268,7 +273,7 @@ public struct DetectedLogin: Equatable, Sendable {
     public var isNew: Bool
     /// The emphasized part: `新帳號` or the existing account's `#2 藍鵲`.
     public var text: String
-    /// `MAX 20x` chip; nil = none.
+    /// `ULTRA` chip; nil = none.
     public var plan: String?
 
     public init(isNew: Bool, text: String, plan: String? = nil) {

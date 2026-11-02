@@ -174,9 +174,11 @@ final class AccountsSectionView: SettingsSectionView {
         registerControl("accounts.autoSwitch.checkWeekly", week)
         fiveHourBox = five
         weeklyBox = week
-        let windows = row("accounts.autoSwitch.windows", "檢查", en: "Windows", hint: "任一個 ≤ 門檻就切換", controls: [five, week], tight: true,
+        let windows = row("accounts.autoSwitch.windows", "檢查", en: "Windows",
+                          hint: "任一個 ≤ 門檻就切換 · " + SettingsAutoSwitchPreview.noFiveHourNote, controls: [five, week], tight: true,
                           keywords: ["5 小時", "每週"])
-        let target = row("accounts.autoSwitch.target", "切換到", en: "Target", hint: "5h 與每週都高於門檻才算足夠",
+        let target = row("accounts.autoSwitch.target", "切換到", en: "Target",
+                         hint: "5h 與每週都高於門檻才算足夠 · " + SettingsAutoSwitchPreview.noFiveHourNote,
                          controls: [chip("依排序第一個額度足夠的帳號")], tight: true)
         let cooldown = SxTextInput(value: "\(model.preferences.accounts.autoSwitch.cooldownSeconds)", width: 72, alignment: .right,
                                    accessibilityLabel: "自動切換冷卻秒數")
@@ -393,17 +395,29 @@ final class TwoColumnView: FlippedView {
 /// A `.qrow` drawn with a value text override (`未開始`) and the R8 threshold tick.
 @MainActor
 enum SxQuota {
+    /// `sharedKey`: the key column of the rows drawn with this one (``keyWidth(_:fontSize:)``), so
+    /// a `Fable` bar starts where the 5h bars do. The bar takes what the key and the value leave
+    /// (never the value's room) and is left out below 10 pt.
     static func draw(key: String, quota: SettingsQuota, threshold: Double?, in rect: CGRect, fontSize: CGFloat = 11,
-                     keyWidth designKey: CGFloat = 22, valueWidth designValue: CGFloat = 34, gap designGap: CGFloat = 8) {
-        // Design widths, laid out at the interface zoom.
-        let keyWidth = xz(designKey), valueWidth = xz(designValue), gap = xz(designGap)
-        Draw.text(TextStyle.mono(fontSize, Palette.dim).string(key), x: rect.minX, centerY: rect.midY, maxWidth: keyWidth)
+                     keyWidth designKey: CGFloat = 22, valueWidth designValue: CGFloat = 34, gap designGap: CGFloat = 8,
+                     sharedKey: CGFloat? = nil) {
+        // Design widths, laid out at the interface zoom; a per-model window's name (`Fable`) widens the key.
+        let keyText = TextStyle.mono(fontSize, Palette.dim).string(key)
+        let keyWidth = max(xz(designKey), ceil(Draw.width(keyText)), sharedKey ?? 0), valueWidth = xz(designValue), gap = xz(designGap)
+        Draw.text(keyText, x: rect.minX, centerY: rect.midY, maxWidth: keyWidth)
         let muted = quota.text != nil && quota.tone == .muted
         let value = TextStyle.mono(fontSize, muted ? Palette.dimmer : quota.tone.color).string(quota.valueText)
         Draw.text(value, x: rect.maxX - Draw.width(value), centerY: rect.midY)
         let barX = rect.minX + keyWidth + gap
-        let bar = CGRect(x: barX, y: round(rect.midY - xz(3.5)), width: max(xz(20), rect.maxX - valueWidth - gap - barX), height: xz(7))
+        let barWidth = rect.maxX - valueWidth - gap - barX
+        guard barWidth >= xz(10) else { return }
+        let bar = CGRect(x: barX, y: round(rect.midY - xz(3.5)), width: barWidth, height: xz(7))
         QuotaBarRowRenderer.drawBar(in: bar, remaining: quota.remaining, color: quota.tone.color, threshold: threshold)
+    }
+
+    /// The key column for `keys` drawn together (at least the design 22).
+    static func keyWidth(_ keys: [String], fontSize: CGFloat = 11) -> CGFloat {
+        keys.map { ceil(Draw.width(TextStyle.mono(fontSize, Palette.dim).string($0))) }.reduce(xz(22), max)
     }
 }
 
@@ -503,7 +517,9 @@ final class AccountAliasesView: FlippedView {
     /// Column origins for `width` and whether the sessions text needs its own line.
     func columns(width: CGFloat) -> AccountAliasRowView.Columns {
         let sessions = rowViews.map(\.sessionsWidth).max() ?? 0
-        return AccountAliasRowView.Columns.make(width: width, sessions: sessions)
+        var columns = AccountAliasRowView.Columns.make(width: width, sessions: sessions)
+        columns.fiveKeyWidth = SxQuota.keyWidth(rows.compactMap { SettingsScopedQuota.fiveHourColumn($0.fiveHour, $0.scoped)?.key })
+        return columns
     }
 
     override var intrinsicContentSize: NSSize {
@@ -557,7 +573,8 @@ final class AccountAliasesView: FlippedView {
 }
 
 /// One `.sx-arow`: slot, alias input, plan chip, 5h and 1w quota rows (threshold ticks while
-/// auto-switch is ON), the 1w reset (the sort key) and the sessions text (`✓ ACTIVE` chip).
+/// auto-switch is ON; a plan without 5h shows its per-model weekly window there, or 1w across both
+/// columns), the 1w reset (the sort key) and the sessions text (`✓ ACTIVE` chip).
 final class AccountAliasRowView: FlippedView, SxSearchable, SxSeparated, SxTitled {
     struct Columns: Equatable {
         var quotaWidth: CGFloat
@@ -566,6 +583,8 @@ final class AccountAliasRowView: FlippedView, SxSearchable, SxSeparated, SxTitle
         /// A narrow card (a small window at zoom 20): the quota rows and the reset go to a second
         /// line under the alias, the sessions text stays on the first line after the plan.
         var quotasOnSecondLine = false
+        /// The 5h column's key, shared by every row (`Fable` in one widens all; nil: the design 22).
+        var fiveKeyWidth: CGFloat?
 
         /// The columns for a card `width` wide whose widest sessions text is `sessions` (at the
         /// interface zoom): one line (quotas 96…120), the sessions text on a second line (quotas
@@ -720,10 +739,16 @@ final class AccountAliasRowView: FlippedView, SxSearchable, SxSeparated, SxTitle
         var slot = TextStyle(font: Typeface.display(14), color: row.isActive ? Palette.amber : Palette.cyan)
         if row.isActive { slot.shadow = Draw.glow(Palette.amberGlow, radius: 8) }
         Draw.text(slot.string(row.slot), x: x.slot, centerY: line, maxWidth: xz(34))
-        SxQuota.draw(key: "5h", quota: row.fiveHour, threshold: tickFiveHour ? threshold : nil,
-                     in: CGRect(x: x.five, y: quotas - xz(8), width: columns.quotaWidth, height: xz(16)))
-        SxQuota.draw(key: "1w", quota: row.weekly, threshold: tickWeekly ? threshold : nil,
-                     in: CGRect(x: x.week, y: quotas - xz(8), width: columns.quotaWidth, height: xz(16)))
+        if let first = SettingsScopedQuota.fiveHourColumn(row.fiveHour, row.scoped) {
+            SxQuota.draw(key: first.key, quota: first.quota, threshold: tickFiveHour && first.isFiveHour ? threshold : nil,
+                         in: CGRect(x: x.five, y: quotas - xz(8), width: columns.quotaWidth, height: xz(16)), sharedKey: columns.fiveKeyWidth)
+            SxQuota.draw(key: "1w", quota: row.weekly, threshold: tickWeekly ? threshold : nil,
+                         in: CGRect(x: x.week, y: quotas - xz(8), width: columns.quotaWidth, height: xz(16)))
+        } else {
+            SxQuota.draw(key: "1w", quota: row.weekly, threshold: tickWeekly ? threshold : nil,
+                         in: CGRect(x: x.five, y: quotas - xz(8), width: x.week + columns.quotaWidth - x.five, height: xz(16)),
+                         sharedKey: columns.fiveKeyWidth)
+        }
         let reset = NSMutableAttributedString(attributedString: TextStyle.mono(11, Palette.dim).string("1w 重置 "))
         reset.append(TextStyle.mono(11, Palette.cream).string(row.resetIn))
         Draw.text(reset, x: x.reset, centerY: quotas - xz(7), maxWidth: xz(112))
@@ -834,8 +859,18 @@ final class AutoSwitchPreviewView: FlippedView {
                   maxWidth: max(0, right - xz(8) - resetStart))
         let q = rect.minY + xz(6) + xz(16) + xz(4) + xz(8)
         let width = (rect.width - xz(14) - xz(12) - xz(12)) / 2
-        SxQuota.draw(key: "5h", quota: row.fiveHour, threshold: row.tickFiveHour ? threshold : nil,
-                     in: CGRect(x: rect.minX + xz(14), y: q - xz(8), width: width, height: xz(16)), fontSize: 10.5)
+        // The first column's key, shared by every row so the bars line up.
+        let sharedKey = SxQuota.keyWidth(preview.rows.compactMap { SettingsScopedQuota.fiveHourColumn($0.fiveHour, $0.scoped)?.key },
+                                         fontSize: 10.5)
+        guard let first = SettingsScopedQuota.fiveHourColumn(row.fiveHour, row.scoped) else {
+            // A plan without 5h and no per-model window: 1w across both columns.
+            SxQuota.draw(key: "1w", quota: row.weekly, threshold: row.tickWeekly ? threshold : nil,
+                         in: CGRect(x: rect.minX + xz(14), y: q - xz(8), width: width * 2 + xz(12), height: xz(16)), fontSize: 10.5,
+                         sharedKey: sharedKey)
+            return
+        }
+        SxQuota.draw(key: first.key, quota: first.quota, threshold: row.tickFiveHour && first.isFiveHour ? threshold : nil,
+                     in: CGRect(x: rect.minX + xz(14), y: q - xz(8), width: width, height: xz(16)), fontSize: 10.5, sharedKey: sharedKey)
         SxQuota.draw(key: "1w", quota: row.weekly, threshold: row.tickWeekly ? threshold : nil,
                      in: CGRect(x: rect.minX + xz(14) + width + xz(12), y: q - xz(8), width: width, height: xz(16)), fontSize: 10.5)
     }

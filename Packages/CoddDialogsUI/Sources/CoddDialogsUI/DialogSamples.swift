@@ -8,12 +8,13 @@ public enum DialogSamples {
     // MARK: A
 
     public static func switchAccount(now: Date) -> SwitchAccountModel {
-        let from = DialogAccount(slot: "#3", alias: "工作", plan: "MAX 20x",
+        let from = DialogAccount(slot: "#3", alias: "工作", plan: "MAX",
                                  fiveHourRemaining: 91, fiveHourTone: .ok, weeklyRemaining: 15, weeklyTone: .crit,
                                  reset: "1w 重置 10/18 12:00", resetsAt: now.addingTimeInterval(3 * 86_400 + 3_600 + 30),
                                  source: "statusline", sourceAt: now.addingTimeInterval(-12), chips: [.active])
-        let to = DialogAccount(slot: "#2", alias: "藍鵲", plan: "MAX 20x",
-                               fiveHourRemaining: 98, fiveHourTone: .ok, weeklyRemaining: 46, weeklyTone: .warn,
+        // An Ultra account has no 5h window: its per-model weekly window takes the 5h place.
+        let to = DialogAccount(slot: "#2", alias: "藍鵲", plan: "ULTRA", fiveHourKey: "Fable",
+                               fiveHourRemaining: 72, fiveHourTone: .ok, weeklyRemaining: 46, weeklyTone: .warn,
                                reset: "1w 重置 10/16 22:59", source: "cswap cache", sourceAt: now.addingTimeInterval(-180),
                                chips: [.pinned(1)])
         return SwitchAccountModel(from: from, to: to, followingCount: 12, pinnedTitles: ["現場示範：連線 MCP"],
@@ -84,14 +85,14 @@ public enum DialogSamples {
 
     public static func addAccountStep3(now: Date, alias: String = "") -> AddAccountModel {
         var model = addAccountStep2(now: now)
-        model.detected = .newAccount(plan: "MAX 20x")
+        model.detected = .newAccount(plan: "ULTRA")
         model.alias = alias
         return model
     }
 
     public static func addAccountExisting(now: Date) -> AddAccountModel {
         var model = addAccountStep2(now: now)
-        model.detected = DetectedLogin(isNew: false, text: "#2 藍鵲", plan: "MAX 20x")
+        model.detected = DetectedLogin(isNew: false, text: "#2 藍鵲", plan: "ULTRA")
         model.alias = "north"
         return model
     }

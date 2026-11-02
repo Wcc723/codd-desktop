@@ -86,7 +86,7 @@ public final class CardView: FlippedView, ZoomRefreshing {
     @available(*, unavailable)
     public required init?(coder: NSCoder) { fatalError("init(coder:) is not supported") }
 
-    /// Header views: `leading` right after the title (`MAX 20x` chip), `trailing` pushed to the right
+    /// Header views: `leading` right after the title (`ULTRA` chip), `trailing` pushed to the right
     /// edge (`[SWITCH]`, `◆ 1 項需要更新`).
     public func setHeader(leading: [NSView] = [], trailing: [NSView] = []) {
         headerLeading = leading

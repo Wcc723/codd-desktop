@@ -131,8 +131,12 @@ public struct AccountsStepModel: Sendable, Equatable {
         /// `#2`.
         public let slot: String
         public let alias: String
-        /// `MAX 20x`.
+        /// `ULTRA`, `MAX`.
         public let plan: String?
+        /// The key of the bar in the 5h place: `5h`; on a plan without a 5-hour limit (Ultra) a
+        /// per-model weekly window's name (`Fable`, whose number ``fiveHourRemaining`` then is);
+        /// nil = no such bar, 1w stands alone.
+        public let fiveHourKey: String?
         /// Remaining percent 0...100.
         public let fiveHourRemaining: Double?
         public let weeklyRemaining: Double?
@@ -140,11 +144,12 @@ public struct AccountsStepModel: Sendable, Equatable {
         public let weeklyReset: String
         public let active: Bool
 
-        public init(slot: String, alias: String, plan: String?, fiveHourRemaining: Double?, weeklyRemaining: Double?,
-                    weeklyReset: String, active: Bool) {
+        public init(slot: String, alias: String, plan: String?, fiveHourKey: String? = "5h", fiveHourRemaining: Double?,
+                    weeklyRemaining: Double?, weeklyReset: String, active: Bool) {
             self.slot = slot
             self.alias = alias
             self.plan = plan
+            self.fiveHourKey = fiveHourKey
             self.fiveHourRemaining = fiveHourRemaining
             self.weeklyRemaining = weeklyRemaining
             self.weeklyReset = weeklyReset

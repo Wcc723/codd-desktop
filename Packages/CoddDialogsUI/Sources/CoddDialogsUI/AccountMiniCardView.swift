@@ -2,7 +2,8 @@ import AppKit
 import CoddUI
 
 /// `.sd-acct` (dialog A): `FROM · 剩餘` + chips, `#3 工作` + plan chip, the 5h / 1w `.qrow`s and
-/// the reset / source lines. The `to` card has the amber-dim border and inner glow. The two
+/// the reset / source lines (on a plan without 5h: the per-model weekly window over 1w, or 1w
+/// alone with the lines moved up). The `to` card has the amber-dim border and inner glow. The two
 /// bottom lines tick (`3d01h後`, `12s 前`) in their own small view, so a tick never redraws the
 /// card or its bars.
 final class AccountMiniCardView: FlippedView {
@@ -48,10 +49,16 @@ final class AccountMiniCardView: FlippedView {
         if force || old.slot != next.slot || old.alias != next.alias || old.plan != next.plan || old.chips != next.chips {
             needsDisplay = true
         }
-        fiveHour.row = QuotaBarRow(key: "5h", remainingPercent: next.fiveHourRemaining, tone: next.fiveHourTone)
-        weekly.row = QuotaBarRow(key: "1w", remainingPercent: next.weeklyRemaining, tone: next.weeklyTone)
+        // `Fable` needs the wider key column (`.sx-acct .qrow .k{width:34px}`); both rows share it.
+        let keyWidth: CGFloat? = (next.fiveHourKey ?? "5h") == "5h" ? nil : 34
+        fiveHour.row = QuotaBarRow(key: next.fiveHourKey ?? "5h", remainingPercent: next.fiveHourRemaining, tone: next.fiveHourTone,
+                                   keyWidth: keyWidth)
+        fiveHour.isHidden = next.fiveHourKey == nil
+        weekly.row = QuotaBarRow(key: "1w", remainingPercent: next.weeklyRemaining, tone: next.weeklyTone, keyWidth: keyWidth)
+        if old.fiveHourKey != next.fiveHourKey { needsLayout = true }
         tick(now: now)
-        setAccessibilityLabel("\(headerLabel) \(next.name) 5h \(fiveHour.row.valueText) 1w \(weekly.row.valueText)")
+        let first = next.fiveHourKey.map { "\($0) \(fiveHour.row.valueText) " } ?? ""
+        setAccessibilityLabel("\(headerLabel) \(next.name) \(first)1w \(weekly.row.valueText)")
     }
 
     /// The two bottom lines for `now` (only redrawn when the text changed).
@@ -72,9 +79,11 @@ final class AccountMiniCardView: FlippedView {
     override func layout() {
         super.layout()
         let width = bounds.width - Self.padX * 2
+        // Without the 5h place's row, 1w and the lines move up a row (no gap under the name).
+        let up = account.fiveHourKey == nil ? dz(22) : 0
         fiveHour.frame = CGRect(x: Self.padX, y: dz(63), width: width, height: dz(16))
-        weekly.frame = CGRect(x: Self.padX, y: dz(85), width: width, height: dz(16))
-        lines.frame = CGRect(x: Self.padX, y: dz(107), width: width, height: dz(32))
+        weekly.frame = CGRect(x: Self.padX, y: dz(85) - up, width: width, height: dz(16))
+        lines.frame = CGRect(x: Self.padX, y: dz(107) - up, width: width, height: dz(32))
     }
 
     override func draw(_ dirtyRect: NSRect) {

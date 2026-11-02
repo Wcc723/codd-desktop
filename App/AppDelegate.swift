@@ -778,7 +778,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, CoddCommands, NSMenuIt
                                   log: { HolderSessionStore.printLog($0) })
         wireRetention()
         // D36: the host one-liner while the window or the popover shows.
-        let hostLine = HostLineService { [weak holders] line in holders?.hostLine = line }
+        let hostLine = HostLineService { [weak holders] meters in holders?.hostMeters = meters }
         self.hostLine = hostLine
         hostLine.setVisible(isMainWindowVisible, for: "window")
         #if DEBUG

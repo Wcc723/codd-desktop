@@ -474,7 +474,11 @@ Logs: `data preflight files=<n> current=<n> migrated=<n> newer=<n> corrupt=<n> r
                                 restored on relaunch)
   quota.json                    DERIVED (not moved yet). M3, D7: {"v":1,"accounts":{"<n>"|"default":
                                 {fiveHour,weekly:{usedPercent,resetsAt,source statusline|cswap,capturedAt},
-                                scoped,scopedCapturedAt,pace,identity}},"autoSwitch":{"lastAt"}} (D37);
+                                fiveHourAbsentAt,statusLineWeeklyHigh,scoped,scopedCapturedAt,pace,identity}},
+                                "autoSwitch":{"lastAt"}} (D37); fiveHourAbsentAt and statusLineWeeklyHigh
+                                ({usedPercent,resetsAt}) are optional (still v1, 1.0.0 ignores them): when a plan
+                                without a 5h limit (Ultra) was last seen, and the highest weekly used % of the
+                                status-line reports this week (the rule below compares with it);
                                 identity = 16 hex of a domain-separated FNV-1a 64 of the slot's e-mail +
                                 organization (tells logins apart, never the e-mail); 0600, atomic, written 2 s
                                 after a change (at most 15 s while changes keep coming), at once for
@@ -948,8 +952,17 @@ Session directory: `<dataRoot>/sessions/<session-uuid>/`
   n; `cfg-<hash>` of a known profile → that account; a `default` report matching another account's
   reset outside the grace re-reads the state, at most every 15 s and logged at most once a minute per
   key; the reset fingerprint only counts entries of slots cswap has now, held by the same login) and
-  ingests the observation (newer capture per window wins, a missing window never erases one, an
-  observation of another login starts the entry over). Dropped reports are counted and logged once a
+  ingests the observation (newer capture per window wins, a missing window never erases one, except
+  for a newer observation that says the plan has no 5h limit (Ultra): a cswap row with 1w and no 5h
+  (cswap keeps a 5h window that has not started as `pct 0`), or a status-line report without 5h whose
+  weekly used % is above every earlier report's this week (`statusLineWeeklyHigh`; each claude keeps
+  its last API response's rate limits and drops a window at its own reset, so an idle one reports 1w
+  alone after its 5h reset, while a later response on a plan with a 5h limit carries one); a 5h window
+  that was sent but could not be read is not missing. The 5h window is then dropped,
+  `fiveHourAbsentAt` keeps older observations from bringing it back, a newer 5h one does; an
+  observation of another login starts the entry over). Such an account shows no 5h anywhere (its first
+  per-model weekly window, `Fable`, takes the 5h place, or 1w stands alone) and auto-switch judges it
+  on 1w only. Dropped reports are counted and logged once a
   minute per key. A card's health follows the numbers it shows: status-line numbers are fresh for
   15 min after their capture whatever cswap's cache age.
 - **Pinned sessions (D12).** The ⌘N 帳號 select lists `跟隨全域登入（#3 工作）`, the active account
@@ -976,7 +989,14 @@ Session directory: `<dataRoot>/sessions/<session-uuid>/`
   order with the active one always among them, `▸ 全部帳號 n`), status item (`◆2 ▲1` title in counts
   mode, `暫停通知 1 小時` / `恢復通知`, the 45 % paused icon, `切換帳號 ▸`), ⌘K `切換帳號到 #n`.
   Host one-liner (D36): `HostLineService` samples CoddHost every 30 s while the main window or the
-  popover is visible.
+  popover is visible and publishes `HostMeters` (no CPU before the second sample, no battery without
+  one); the sidebar footer and the menu bar footer draw them as `HostMetersView` (CPU / MEM / BAT
+  meters in the quota tones by `HostLoad`: CPU warns from 60 %, crit from 85 %; memory's bar is the
+  used share and its tone the memory pressure, as STATUS's MEM card; the battery, labelled `BAT` on AC
+  too, warns at ≤ 40 %, crit at ≤ 20 %, ok on AC; the value column always holds `100%`, so the layout
+  never moves with the numbers), `HostMeters.line` stays the text form (the dump's
+  `hostLine`). The footer's expanded account list scrolls in a clip view whose full height is wanted
+  at priority 470, below the session list's 3-row minimum (480) and the window's own size (500).
 - **Notifications (D29).** `SessionNotifier` owns the one `UNUserNotificationCenter` delegate and
   routes `codd.session` and `codd.account` responses (`AppNotifier` posts through it: 復原 / 好).
   `NotificationRules.decide` applies the WAITING / ERROR / DONE / EXITED matrix (condition, notify,

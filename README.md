@@ -26,7 +26,7 @@ CODD Desktop 是一個原生的 macOS App，讓你在同一個視窗裡同時開
     <td><img src="docs/images/files.png" width="400" alt="檔案編輯器"><br>檔案編輯器有檔案樹、git 狀態、Claude 改過的檔案的 <code>AI</code> 標記，以及和 git HEAD 比較的 SHOW AI CHANGES。</td>
   </tr>
   <tr>
-    <td><img src="docs/images/status.png" width="400" alt="STATUS 頁"><br>STATUS 頁彙整主機狀態、各帳號的 5 小時與每週用量、自動切換設定，以及 hooks 與 MCP server 的狀況。</td>
+    <td><img src="docs/images/status.png" width="400" alt="STATUS 頁"><br>STATUS 頁彙整主機狀態、各帳號的每週用量（還有 5 小時限制的方案也列 5 小時）、自動切換設定，以及 hooks 與 MCP server 的狀況。</td>
     <td><img src="docs/images/new-session.png" width="400" alt="新增 session 視窗"><br>⌘N 新增 session：選專案、開始方式、帳號、權限與顏色，下方即時預覽將執行的 claude 指令。</td>
   </tr>
   <tr>
@@ -47,7 +47,7 @@ CODD Desktop 是一個原生的 macOS App，讓你在同一個視窗裡同時開
 - **筆記本**：筆記是一般的 Markdown 檔，有即時預覽編輯、圖片標註（編號的框、點、箭頭與文字）、修改歷史與比較。每則筆記可以設定 AI 存取（OFF、READ、APPEND）；在 prompt 裡寫 `codd://note/<id>`，CODD 會在 Claude 讀到 prompt 之前自動附上筆記內容。
 - **MCP server**：內建、只聽 127.0.0.1，提供 `notes_search`、`notes_list`、`notes_read`、`notes_append`、`notes_create`（打開 `AI 可寫入` 時另有 `notes_write`）。CODD 開的 claude session 會自動掛上；也可以註冊到 Claude Code，讓 CODD 以外開的 claude 也能讀筆記。
 - **檔案編輯器**：在 CODD 裡打開專案的檔案，有檔案樹、git 狀態、Claude 改過的檔案的 `AI` 標記，以及和 git HEAD 比較的 SHOW AI CHANGES。只有按 ⌘S 才會寫入，原本的編碼與換行都保留。
-- **多個帳號（cswap）**：透過 cswap 管理多個 Claude 帳號，只顯示別名、不顯示 email。列出每個帳號 5 小時與每週的剩餘用量（來自 Claude Code 自己回報的狀態列與 cswap 的快取，CODD 不呼叫用量 API），點一下就切換；也可以開啟「剩餘不足時自動切換」（預設關閉）。
+- **多個帳號（cswap）**：透過 cswap 管理多個 Claude 帳號，只顯示別名與方案（`MAX`、`ULTRA`、`PRO`…），不顯示 email。列出每個帳號每週的剩餘用量；5 小時那一列只出現在還有 5 小時限制的方案（Max、Pro，以及還沒完成驗證的 Ultra），沒有的帳號改列它的模型週額度（例如 `Fable`）。數字來自 Claude Code 自己回報的狀態列與 cswap 的快取，CODD 不呼叫用量 API。點一下就切換；也可以開啟「剩餘不足時自動切換」（預設關閉）。
 - **選單列與 Dock**：選單列面板列出帳號、需要你處理的 session 與主機狀態，Dock 徽章顯示等待中的數量。session 需要你回覆或出錯、而你不在畫面前時發通知，可以設定勿擾時段或暫停通知 1 小時。
 - **清理與保留**：很久沒動的筆記會標成 STALE、再自動封存，停止很久的 session 也會自動封存，每一步都能復原；清理頁可以批次封存，或把幾則筆記交給 Claude 濃縮成一則摘要（用你的帳號執行一次 `claude -p`）。
 - **首次啟動設定**：六個步驟偵測環境、從 `~/.claude.json` 匯入專案、整理 hooks、設定筆記本與 MCP、讀取 cswap 帳號、允許通知。

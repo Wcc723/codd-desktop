@@ -92,6 +92,15 @@ public struct SourcedWindow: Sendable, Equatable, Codable {
 /// Everything known about one login's quota.
 public struct QuotaEntry: Sendable, Equatable, Codable {
     public var fiveHour: SourcedWindow?
+    /// When an observation last said the login's plan has no 5-hour limit (a verified Ultra
+    /// account; ``QuotaBook/ingest(_:)`` has the rule), and ``fiveHour`` is nil. A newer
+    /// observation with a 5-hour window clears it. quota.json `fiveHourAbsentAt`, an optional key
+    /// that 1.0.0 ignores (it reads such an entry as an unknown 5h window).
+    public var fiveHourAbsentAt: Date?
+    /// The highest weekly used % among this login's status-line reports of the current weekly
+    /// window, with that window's reset: a report above it comes from a later API response than
+    /// every report before it. quota.json `statusLineWeeklyHigh`, optional (1.0.0 ignores it).
+    public var statusLineWeeklyHigh: QuotaWindow?
     public var weekly: SourcedWindow?
     /// Per-model weekly windows (`Fable`); cswap only (the status line has none).
     public var scoped: [NamedQuotaWindow]
@@ -104,9 +113,12 @@ public struct QuotaEntry: Sendable, Equatable, Codable {
     public var identity: String?
 
     public init(fiveHour: SourcedWindow? = nil, weekly: SourcedWindow? = nil, scoped: [NamedQuotaWindow] = [],
-                scopedCapturedAt: Date? = nil, pace: WeeklyPaceInfo? = nil, identity: String? = nil) {
+                scopedCapturedAt: Date? = nil, pace: WeeklyPaceInfo? = nil, identity: String? = nil, fiveHourAbsentAt: Date? = nil,
+                statusLineWeeklyHigh: QuotaWindow? = nil) {
         self.identity = identity
         self.fiveHour = fiveHour
+        self.fiveHourAbsentAt = fiveHourAbsentAt
+        self.statusLineWeeklyHigh = statusLineWeeklyHigh
         self.weekly = weekly
         self.scoped = scoped
         self.scopedCapturedAt = scopedCapturedAt
@@ -125,6 +137,20 @@ public struct QuotaEntry: Sendable, Equatable, Codable {
 
     public var isEmpty: Bool { fiveHour == nil && weekly == nil && scoped.isEmpty }
 
+    /// The plan has no 5-hour window (``fiveHourAbsentAt``); a nil ``fiveHour`` without it is unknown.
+    public var fiveHourAbsent: Bool { fiveHour == nil && fiveHourAbsentAt != nil }
+
+    /// ``statusLineWeeklyHigh`` while it belongs to the weekly window `week` reported at `at`; nil
+    /// once that window's reset has passed or `week` resets at another time (a new week).
+    func statusLineWeeklyHigh(sameWeekAs week: QuotaWindow, at: Date) -> QuotaWindow? {
+        guard let high = statusLineWeeklyHigh else { return nil }
+        if let reset = high.resetsAt {
+            if reset <= at { return nil }
+            if let other = week.resetsAt, abs(other.timeIntervalSince(reset)) > QuotaAttribution.resetTolerance { return nil }
+        }
+        return high
+    }
+
     public init(from decoder: any Decoder) throws {
         self.init(json: try JSONValue(from: decoder))
     }
@@ -133,10 +159,16 @@ public struct QuotaEntry: Sendable, Equatable, Codable {
         try json.encode(to: encoder)
     }
 
-    /// Tolerant: a broken window or scoped row is skipped.
+    /// Tolerant: a broken window or scoped row is skipped; of a 5h window and `fiveHourAbsentAt`
+    /// (never both in a file CODD wrote) the newer one is kept.
     init(json v: JSONValue) {
+        var fiveHour = v["fiveHour"].flatMap(SourcedWindow.init(json:))
+        var absentAt = QuotaJSON.date(v["fiveHourAbsentAt"])
+        if let window = fiveHour, let absent = absentAt {
+            if window.capturedAt > absent { absentAt = nil } else { fiveHour = nil }
+        }
         self.init(
-            fiveHour: v["fiveHour"].flatMap(SourcedWindow.init(json:)),
+            fiveHour: fiveHour,
             weekly: v["weekly"].flatMap(SourcedWindow.init(json:)),
             scoped: (v["scoped"]?.arrayValue ?? []).compactMap { row in
                 guard let name = JSText.nonBlankTrimmed(row["name"]), let used = QuotaJSON.finite(row["usedPercent"]) else { return nil }
@@ -144,12 +176,22 @@ public struct QuotaEntry: Sendable, Equatable, Codable {
             },
             scopedCapturedAt: QuotaJSON.date(v["scopedCapturedAt"]),
             pace: v["pace"].flatMap(WeeklyPaceInfo.init(json:)),
-            identity: JSText.nonBlankTrimmed(v["identity"]))
+            identity: JSText.nonBlankTrimmed(v["identity"]),
+            fiveHourAbsentAt: absentAt,
+            statusLineWeeklyHigh: v["statusLineWeeklyHigh"].flatMap { high in
+                QuotaJSON.finite(high["usedPercent"]).map { QuotaWindow(usedPercent: $0, resetsAt: QuotaJSON.date(high["resetsAt"])) }
+            })
     }
 
     var json: JSONValue {
         var o: [String: JSONValue] = [:]
         if let fiveHour { o["fiveHour"] = fiveHour.json }
+        if let fiveHourAbsentAt { o["fiveHourAbsentAt"] = QuotaJSON.json(fiveHourAbsentAt) }
+        if let statusLineWeeklyHigh {
+            var high: [String: JSONValue] = ["usedPercent": .number(statusLineWeeklyHigh.usedPercent)]
+            if let r = statusLineWeeklyHigh.resetsAt { high["resetsAt"] = QuotaJSON.json(r) }
+            o["statusLineWeeklyHigh"] = .object(high)
+        }
         if let weekly { o["weekly"] = weekly.json }
         if !scoped.isEmpty {
             o["scoped"] = .array(scoped.map { s in
@@ -169,6 +211,8 @@ public struct QuotaEntry: Sendable, Equatable, Codable {
 public struct QuotaObservation: Sendable, Equatable {
     public var account: QuotaAccountRef
     public var fiveHour: QuotaWindow?
+    /// The source sent a 5-hour window CODD could not read: not a missing one.
+    public var fiveHourUnreadable: Bool
     public var weekly: QuotaWindow?
     public var scoped: [NamedQuotaWindow]
     /// cswap's pace fields of the weekly window, when present.
@@ -179,10 +223,12 @@ public struct QuotaObservation: Sendable, Equatable {
     public var identity: String?
 
     public init(account: QuotaAccountRef, fiveHour: QuotaWindow?, weekly: QuotaWindow?, scoped: [NamedQuotaWindow] = [],
-                pace: WeeklyPaceInfo? = nil, source: QuotaSource, capturedAt: Date, identity: String? = nil) {
+                pace: WeeklyPaceInfo? = nil, source: QuotaSource, capturedAt: Date, identity: String? = nil,
+                fiveHourUnreadable: Bool = false) {
         self.identity = identity
         self.account = account
         self.fiveHour = fiveHour
+        self.fiveHourUnreadable = fiveHour == nil && fiveHourUnreadable
         self.weekly = weekly
         self.scoped = scoped
         self.pace = pace
@@ -198,15 +244,15 @@ public struct QuotaObservation: Sendable, Equatable {
             account: .number(a.number), fiveHour: usage.fiveHour.map(QuotaWindow.init), weekly: usage.sevenDay.map(QuotaWindow.init),
             scoped: usage.scoped.map { NamedQuotaWindow(name: $0.name, window: QuotaWindow($0.window)) },
             pace: usage.sevenDay.flatMap(WeeklyPaceInfo.init(cswap:)), source: .cswap, capturedAt: fetchedAt,
-            identity: a.identity)
+            identity: a.identity, fiveHourUnreadable: usage.fiveHourUnreadable)
     }
 
     /// A status-line report already attributed to `account` (``QuotaAttribution``), whose slot
     /// holds the login `identity` now.
     public static func fromStatusLine(account: QuotaAccountRef, fiveHour: QuotaWindow?, weekly: QuotaWindow?,
-                                      capturedAt: Date, identity: String? = nil) -> QuotaObservation {
+                                      capturedAt: Date, identity: String? = nil, fiveHourUnreadable: Bool = false) -> QuotaObservation {
         QuotaObservation(account: account, fiveHour: fiveHour, weekly: weekly, source: .statusline, capturedAt: capturedAt,
-                         identity: identity)
+                         identity: identity, fiveHourUnreadable: fiveHourUnreadable)
     }
 }
 
@@ -215,8 +261,17 @@ public struct QuotaObservation: Sendable, Equatable {
 /// Merge rules, per window: a window is replaced only by a strictly newer capture, whatever its
 /// source; a window missing from an observation never erases a known one (Claude drops a window
 /// after its reset, and `QuotaWindow.status(at:)` already shows a passed reset as 100 %); scoped
-/// windows come from cswap only. An observation of another login than the entry's starts the
-/// entry over, and ``reconcile(slots:)`` keeps entries on the slot that holds their login.
+/// windows come from cswap only. One exception: an observation newer than the 5h window that
+/// says the plan has none (Ultra) drops it, and ``QuotaEntry/fiveHourAbsentAt`` records when, so
+/// an older observation cannot bring it back (a newer one with a 5h window does). A cswap row with
+/// a weekly window and no 5h one says so (cswap keeps a 5h window that has not started as `pct 0`).
+/// A status-line report without 5h says so only when its weekly used % is above every earlier
+/// report's this week (``QuotaEntry/statusLineWeeklyHigh``): each claude keeps the rate limits of
+/// its own last API response and drops a window once its reset passes, so an idle one reports 1w
+/// alone after its 5h reset, but a later response on a plan with a 5h limit carries a 5h window.
+/// A window that was sent but could not be read is not a missing one. An observation of another
+/// login than the entry's starts the entry over, and ``reconcile(slots:)`` keeps entries on the
+/// slot that holds their login.
 public struct QuotaBook: Sendable, Equatable, Codable {
     public static let currentVersion = 1
 
@@ -242,8 +297,23 @@ public struct QuotaBook: Sendable, Equatable, Codable {
             if let known = e.identity, known != identity { e = QuotaEntry() }
             e.identity = identity
         }
-        if let w = o.fiveHour, e.fiveHour.map({ o.capturedAt > $0.capturedAt }) ?? true {
-            e.fiveHour = SourcedWindow(window: w, source: o.source, capturedAt: o.capturedAt)
+        let newerThanFive = (e.fiveHour.map { o.capturedAt > $0.capturedAt } ?? true)
+            && (e.fiveHourAbsentAt.map { o.capturedAt > $0 } ?? true)
+        // The status line's weekly high before this report (a report without 5h is judged by it).
+        let high = o.source == .statusline ? o.weekly.flatMap { e.statusLineWeeklyHigh(sameWeekAs: $0, at: o.capturedAt) } : nil
+        if let w = o.fiveHour {
+            if newerThanFive {
+                e.fiveHour = SourcedWindow(window: w, source: o.source, capturedAt: o.capturedAt)
+                e.fiveHourAbsentAt = nil
+            }
+        } else if let week = o.weekly, newerThanFive, !o.fiveHourUnreadable,
+                  o.source == .cswap || high.map({ week.usedPercent > $0.usedPercent }) == true {
+            // This plan has no 5h window (Ultra).
+            e.fiveHour = nil
+            e.fiveHourAbsentAt = o.capturedAt
+        }
+        if o.source == .statusline, let week = o.weekly, high.map({ week.usedPercent > $0.usedPercent }) ?? true {
+            e.statusLineWeeklyHigh = QuotaWindow(usedPercent: week.usedPercent, resetsAt: week.resetsAt ?? high?.resetsAt)
         }
         if let w = o.weekly, e.weekly.map({ o.capturedAt > $0.capturedAt }) ?? true {
             e.weekly = SourcedWindow(window: w, source: o.source, capturedAt: o.capturedAt)

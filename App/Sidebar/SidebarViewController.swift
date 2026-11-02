@@ -150,8 +150,16 @@ final class SidebarViewController: NSViewController {
             footer.trailingAnchor.constraint(equalTo: root.trailingAnchor),
             footer.bottomAnchor.constraint(equalTo: root.bottomAnchor),
         ])
+        // Three session rows stay in view when the footer's account list opens in a short window:
+        // above the list's wish for its full height, below the window's own size (it never grows).
+        let listMinimum = scrollView.heightAnchor.constraint(greaterThanOrEqualToConstant: 0).zoomed(Metrics.Design.sessionRowHeight * 3)
+        listMinimum.priority = Self.listMinimumPriority
+        listMinimum.isActive = true
         view = root
     }
+
+    /// Between `SidebarFooterView.accountListHeightPriority` and `windowSizeStayPut` (500).
+    static let listMinimumPriority = NSLayoutConstraint.Priority(480)
 
     private func configureOutline() {
         let column = NSTableColumn(identifier: NSUserInterfaceItemIdentifier("main"))

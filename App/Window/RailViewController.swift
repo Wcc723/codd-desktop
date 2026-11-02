@@ -94,12 +94,14 @@ final class RailItemButton: KeyFocusControl {
     }
 }
 
-/// Rail account chip (`.rail .acct`): `#3 MAX` + two 3 px bars (5h / 1w remaining). Opens
+/// Rail account chip (`.rail .acct`): `#3 MAX` + two 3 px bars (5h over 1w remaining; the bars
+/// have no labels, so a plan without 5h leaves the top one out and 1w keeps its place). Opens
 /// Settings › 帳號 (also reachable from the keyboard, M5 D21).
 final class RailAccountChip: KeyFocusControl {
     private var slot = ""
     private var plan = ""
-    private var five = QuotaWindow.unknown
+    /// The 5h window (nil: the plan has none, no top bar).
+    private var five: QuotaWindow? = .unknown
     private var week = QuotaWindow.unknown
 
     override var isFlipped: Bool { true }
@@ -118,16 +120,16 @@ final class RailAccountChip: KeyFocusControl {
     /// The active account (nil: none known yet, the chip shows `—`).
     func update(_ account: AccountVM?) {
         let nextSlot = account?.slot ?? "—"
-        // `MAX 20x` → `MAX` (the chip is 56 px wide).
+        // The first word only (`TEAM`, `ULTRA`; the chip is 56 px wide).
         let nextPlan = account?.plan.map { $0.split(separator: " ").first.map(String.init) ?? $0 } ?? ""
-        let nextFive = account?.fiveHour ?? .unknown
+        let nextFive: QuotaWindow? = account == nil ? .unknown : account?.fiveHour
         let nextWeek = account?.week ?? .unknown
         guard nextSlot != slot || nextPlan != plan || nextFive != five || nextWeek != week else { return }
         slot = nextSlot
         plan = nextPlan
         five = nextFive
         week = nextWeek
-        setAccessibilityLabel(account.map { "目前帳號 \($0.displayName)，5 小時剩 \(five.valueText)，本週剩 \(week.valueText)" } ?? "目前沒有帳號資料")
+        setAccessibilityLabel(account.map { "目前帳號 \($0.displayName)，\($0.spokenQuota)" } ?? "目前沒有帳號資料")
         needsDisplay = true
     }
 
@@ -137,10 +139,13 @@ final class RailAccountChip: KeyFocusControl {
         Draw.fill(bounds, Palette.bgSoft)
         Draw.strokeRect(bounds, color: Palette.lineBright)
         let z = UIZoom.pt
-        Draw.text(TextStyle.mono(10, Palette.amber, .bold).string(slot), x: z(5), centerY: z(10))
+        let slotEnd = z(5) + Draw.text(TextStyle.mono(10, Palette.amber, .bold).string(slot), x: z(5), centerY: z(10))
+        // The plan gets what the slot leaves (`#12` and `ULTRA` do not fit 56 pt side by side).
         let planText = TextStyle.mono(10, Palette.dimmer).string(plan)
-        Draw.text(planText, x: bounds.width - z(5) - Draw.width(planText), centerY: z(10))
-        for (i, q) in [five, week].enumerated() {
+        let room = max(0, bounds.width - z(5) - slotEnd - z(4))
+        Draw.text(planText, x: bounds.width - z(5) - min(room, Draw.width(planText)), centerY: z(10), maxWidth: room)
+        for (i, window) in [five, week].enumerated() {
+            guard let q = window else { continue }
             let bar = CGRect(x: z(5), y: z(19) + CGFloat(i) * z(6), width: bounds.width - z(10), height: z(3))
             Draw.fill(bar, Palette.lineBright)
             let fraction = q.known ? CGFloat(max(0, min(100, q.remainingPercent))) / 100 : 0

@@ -29,6 +29,9 @@ public struct StatusLineReport: Sendable, Equatable {
     /// The account key (D6) when it has one of the three shapes, else ``invalidConfigKey``.
     public var configKey: String
     public var fiveHour: StatusLineWindow?
+    /// `five_hour` was there and not `null` but could not be read (a string, no `used_percentage`):
+    /// a window CODD cannot show, not a missing one (a missing 5h can mean a plan without one).
+    public var fiveHourUnreadable: Bool
     public var sevenDay: StatusLineWindow?
     /// `rate_limits` was an object. Claude omits it entirely until a window is known, so `false`
     /// means "no quota information in this run", not "quota unknown for good".
@@ -39,11 +42,12 @@ public struct StatusLineReport: Sendable, Equatable {
     public static let invalidConfigKey = "invalid"
 
     public init(sessionID: UUID?, claudeSessionId: String?, configKey: String, fiveHour: StatusLineWindow?,
-                sevenDay: StatusLineWindow?, hadRateLimits: Bool, receivedAt: Date) {
+                sevenDay: StatusLineWindow?, hadRateLimits: Bool, receivedAt: Date, fiveHourUnreadable: Bool = false) {
         self.sessionID = sessionID
         self.claudeSessionId = claudeSessionId
         self.configKey = configKey
         self.fiveHour = fiveHour
+        self.fiveHourUnreadable = fiveHour == nil && fiveHourUnreadable
         self.sevenDay = sevenDay
         self.hadRateLimits = hadRateLimits
         self.receivedAt = receivedAt
@@ -51,7 +55,8 @@ public struct StatusLineReport: Sendable, Equatable {
 
     /// Decodes a report body; `nil` when it is not one valid JSON object (nested at most 64 deep)
     /// or its `v` is present and not `1`. Everything else degrades per field: an invalid key
-    /// becomes ``invalidConfigKey``, a window without a usable `used_percentage` is `nil`, an
+    /// becomes ``invalidConfigKey``, a window without a usable `used_percentage` is `nil` (a
+    /// `five_hour` that is not `null` then sets ``fiveHourUnreadable``), an
     /// unreadable `resets_at` is `nil`, a `rate_limits` that is not an object (or `null`) means
     /// ``hadRateLimits`` `false`.
     public static func decode(body: [UInt8], sessionID: UUID?, receivedAt: Date) -> StatusLineReport? {
@@ -62,15 +67,20 @@ public struct StatusLineReport: Sendable, Equatable {
         let configKey = m["config_key"].flatMap { JSONScan.string(body, $0) }.flatMap { isValidConfigKey($0) ? $0 : nil }
             ?? invalidConfigKey
         var fiveHour: StatusLineWindow?
+        var fiveHourUnreadable = false
         var sevenDay: StatusLineWindow?
         var hadRateLimits = false
         if let span = m["rate_limits"], let limits = JSONScan.members(body, in: span) {
             hadRateLimits = true
-            fiveHour = limits["five_hour"].flatMap { window(body, $0) }
+            if let five = limits["five_hour"] {
+                fiveHour = window(body, five)
+                fiveHourUnreadable = fiveHour == nil && !JSONScan.isNull(body, five)
+            }
             sevenDay = limits["seven_day"].flatMap { window(body, $0) }
         }
         return StatusLineReport(sessionID: sessionID, claudeSessionId: claudeSessionId, configKey: configKey,
-                                fiveHour: fiveHour, sevenDay: sevenDay, hadRateLimits: hadRateLimits, receivedAt: receivedAt)
+                                fiveHour: fiveHour, sevenDay: sevenDay, hadRateLimits: hadRateLimits, receivedAt: receivedAt,
+                                fiveHourUnreadable: fiveHourUnreadable)
     }
 
     /// `^(default|cswap-[0-9]{1,4}|cfg-[0-9a-f]{16})$`.

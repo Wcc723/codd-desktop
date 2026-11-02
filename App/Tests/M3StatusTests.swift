@@ -58,17 +58,19 @@ struct StatusPageDataTests {
         #expect(three.who.text == "12 個 session 跟隨全域登入")
         #expect(two.who.text == "1 個 session 固定（cswap run）")
         #expect(one.who == .none)
-        #expect(three.plan == "MAX 20x")
-        // 5h, 1w and the per-model window (only #3 reported it: the others say so).
+        // #3 is a Max account: 5h, 1w and the per-model window (only #2 reported it: the others say so).
+        #expect(three.plan == "MAX" && two.plan == "ULTRA" && one.plan == "ULTRA")
         #expect(three.rows.map(\.key) == ["5h", "1w", "Fable"])
         #expect(three.rows[0].remaining == 91 && three.rows[0].reset == "重置 13:39")
         #expect(three.rows[1].remaining == 15 && three.rows[1].tone == .crit && three.rows[1].isSortKey)
         #expect(three.rows[1].reset == "重置 10/18 週日 12:00")
         #expect(three.rows[1].countdown.text(now: now).hasPrefix("3d01h"))
-        #expect(three.rows[2].reset == "週額度 · 同 1w 重置" && three.rows[2].countdown.text(now: now) == "未使用")
-        #expect(two.rows[2].remaining == nil && two.rows[2].reset == "快取未提供" && two.rows[2].countdown.text(now: now) == "等待回報")
-        #expect(one.rows[0].reset == "未開始" && one.rows[0].countdown.text(now: now) == "第一則訊息後起算")
-        #expect(two.rows[1].reset == "重置 10/16 週五 22:59")
+        #expect(three.rows[2].remaining == nil && three.rows[2].reset == "快取未提供" && three.rows[2].countdown.text(now: now) == "等待回報")
+        // The Ultra accounts #2 and #1 have no 5h row.
+        #expect(two.rows.map(\.key) == ["1w", "Fable"] && one.rows.map(\.key) == ["1w", "Fable"])
+        #expect(two.rows[0].reset == "重置 10/16 週五 22:59")
+        #expect(two.rows[1].remaining == 72 && two.rows[1].reset == "週額度 · 同 1w 重置" && two.rows[1].countdown.text(now: now).hasPrefix("1d12h"))
+        #expect(one.rows[1].remaining == nil && one.rows[1].reset == "快取未提供")
         // AUTO-SWITCH OFF: the rule as dim chips.
         #expect(!accounts.autoSwitch.on)
         #expect(accounts.autoSwitch.chips == ["剩餘 ≤ 2%", "5h / 1w", "依排序第一個額度足夠的", "冷卻 300s"])
@@ -182,13 +184,14 @@ struct StatusSmallPartsTests {
     }
 
     @Test func hostLineSamplesOnlyWhileVisible() async {
-        let lines = Recorder<String>()
-        let service = HostLineService(interval: .seconds(3600)) { lines.append($0) }
+        let samples = Recorder<HostMeters>()
+        let service = HostLineService(interval: .seconds(3600)) { samples.append($0) }
         #expect(!service.isSampling)
         service.setVisible(true, for: "window")
         #expect(service.isSampling)
-        await m3Eventually("first sample") { !lines.values.isEmpty }
-        #expect(lines.values.first?.contains("mem ") == true)
+        await m3Eventually("first sample") { !samples.values.isEmpty }
+        #expect(samples.values.first?.line.contains("mem ") == true)
+        #expect(samples.values.first?.cpuPercent == nil, "no CPU before the second sample")
         service.setVisible(true, for: "popover")
         service.setVisible(false, for: "window")
         #expect(service.isSampling, "the popover still shows it")
@@ -203,11 +206,12 @@ struct StatusSmallPartsTests {
         let input = QuickSwitchModel.Input.make(store: store, shell: shell, recent: [], accounts: accounts)
         // Every switchable account in R7 order, never the active one.
         #expect(input.accounts.map(\.id) == ["2", "1"])
-        #expect(input.accounts.first?.quota == "5h 剩 98% · 1w 剩 46%")
+        // #2 is an Ultra account: its Fable window in the 5h place; #1 has 1w only.
+        #expect(input.accounts.map(\.quota) == ["Fable 剩 72% · 1w 剩 46%", "1w 剩 100%"])
         let empty = QuickSwitchModel.build(query: "", input: input)
         let row = empty.rows.first { if case .action(.switchAccount) = $0.item { true } else { false } }
         #expect(row?.title == "切換帳號到 #2 藍鵲")
-        #expect(row?.shortcut == "5h 剩 98% · 1w 剩 46%")
+        #expect(row?.shortcut == "Fable 剩 72% · 1w 剩 46%")
         // QuickSwitch artboard: `打卡` still offers the R7-first account after the contextual actions.
         let typed = QuickSwitchModel.build(query: "打卡", input: input)
         let titles = typed.groups.first { $0.section == .actions }?.rows.map(\.title) ?? []

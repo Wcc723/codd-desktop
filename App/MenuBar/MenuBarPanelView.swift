@@ -29,7 +29,8 @@ final class MenuBarPanelView: FlippedView {
     private let body = vStack([], spacing: 3, alignment: .width, edgeInsets: NSEdgeInsets(top: 6, left: 6, bottom: 6, right: 6))
     private let liveChip = ChipView("", style: ChipStyle(text: TextStyle.mono(10.5, Palette.bone), border: Palette.lineBright, fill: nil,
                                                          height: 18, padding: 6))
-    private let hostLine = Label.make(style: TextStyle.mono(11, Palette.dim))
+    /// D36: the same CPU / MEM / BAT meters as the sidebar footer.
+    private let hostMeters = HostMetersView()
     private let cleanupLink = CoddButton("清理建議 →", style: .link)
     private let autoSwitchLabel = Label.make(style: TextStyle.mono(10.5, Palette.dim))
     private lazy var autoSwitchLink = CoddButton("開啟 →", style: .link, target: self, action: #selector(openAccounts))
@@ -109,8 +110,7 @@ final class MenuBarPanelView: FlippedView {
     private func makeFooter() -> NSView {
         cleanupLink.target = self
         cleanupLink.action = #selector(openCleanup)
-        let hostTitle = Label.make("Host", style: TextStyle.caps(9.5, Palette.dim, tracking: 0.18))
-        let line1 = hStack([hostTitle, hostLine, spacer(), cleanupLink], spacing: 8)
+        let line1 = hStack([hostMeters, cleanupLink], spacing: 14)
         let note = CoddButton("Quick note ⌘⇧N", style: .bracket(.normal, small: true), target: self, action: #selector(quickNote))
         let open = CoddButton("Open CODD", style: .bracket(.primary, small: true), target: self, action: #selector(openMain))
         let line2 = hStack([note, spacer(), open], spacing: 8)
@@ -127,7 +127,8 @@ final class MenuBarPanelView: FlippedView {
     /// same, the body is rebuilt only when sections, rows or accounts change.
     private func apply(_ content: MenuBarPanelContent) {
         liveChip.set("\(content.live) live")
-        Label.set(hostLine, content.hostLine, style: TextStyle.mono(11, Palette.dim))
+        hostMeters.meters = content.hostMeters
+        hostMeters.fallback = content.hostLine
         cleanupLink.label = "清理建議 \(content.cleanupSuggestions) →"
         if let shown, shown.layout == content.layout {
             updateInPlace(content)

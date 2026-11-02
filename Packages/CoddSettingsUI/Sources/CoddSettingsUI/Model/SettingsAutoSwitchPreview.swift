@@ -12,7 +12,8 @@ public struct SettingsAutoSwitchPreview: Equatable, Sendable {
     public var current: String
     /// `#2 藍鵲` (`—` when nobody qualifies).
     public var next: String
-    /// `· 已達門檻，會立即切換`, `· 所有帳號都低於 2%，不切換`, `· 未勾選檢查視窗，不會切換`, or empty.
+    /// `· 已達門檻，會立即切換`, `· 所有帳號都低於 2%，不切換`, `· 未勾選檢查視窗，不會切換`, or empty
+    /// (a plan without 5h is explained by the 檢查 and 切換到 hints, and its row says what is checked).
     public var note: String
 
     public init(rows: [SettingsPreviewRow], current: String, next: String, note: String) {
@@ -23,9 +24,10 @@ public struct SettingsAutoSwitchPreview: Equatable, Sendable {
     }
 
     /// The artboard rule: the target is the first non-active, eligible account whose 5h AND 1w
-    /// remaining are both above the threshold (an unknown window never qualifies); each row's
-    /// distance uses the lower of the checked windows; `已達門檻` at or under the threshold
-    /// (danger), amber within 15 points.
+    /// remaining are both above the threshold (an unknown window never qualifies; a plan without 5h
+    /// needs 1w only, as CoddCore's `AutoSwitchPolicy`); each row's distance uses the lower of the
+    /// checked windows the account has; `已達門檻` at or under the threshold (danger), amber within
+    /// 15 points.
     public static func compute(accounts: [SettingsAccountRow], autoSwitch: CoddPreferences.AutoSwitch) -> SettingsAutoSwitchPreview {
         let threshold = Double(min(CoddPreferences.AutoSwitch.thresholdRange.upperBound,
                                    max(CoddPreferences.AutoSwitch.thresholdRange.lowerBound, autoSwitch.thresholdPercent)))
@@ -36,13 +38,13 @@ public struct SettingsAutoSwitchPreview: Equatable, Sendable {
             return remaining > threshold
         }
         let target = (checkFive || checkWeek)
-            ? accounts.first { !$0.isActive && $0.isEligibleTarget && above($0.fiveHour) && above($0.weekly) }
+            ? accounts.first { !$0.isActive && $0.isEligibleTarget && ($0.fiveHour.map(above) ?? true) && above($0.weekly) }
             : nil
         var activeLow = false
         let rows = accounts.map { account -> SettingsPreviewRow in
             var windows: [(value: Double, label: String)] = []
-            if checkFive, let value = account.fiveHour.remaining, value.isFinite {
-                windows.append((value, account.fiveHour.text.map { "5h \($0)" } ?? "5h \(percent(value))"))
+            if checkFive, let five = account.fiveHour, let value = five.remaining, value.isFinite {
+                windows.append((value, five.text.map { "5h \($0)" } ?? "5h \(percent(value))"))
             }
             if checkWeek, let value = account.weekly.remaining, value.isFinite {
                 windows.append((value, account.weekly.text.map { "1w \($0)" } ?? "1w \(percent(value))"))
@@ -64,7 +66,7 @@ public struct SettingsAutoSwitchPreview: Equatable, Sendable {
             return SettingsPreviewRow(id: account.id, slot: account.slot, alias: account.alias, resetIn: account.resetIn,
                                       distance: distance, distanceTone: tone, isActive: account.isActive,
                                       isNext: target?.id == account.id, fiveHour: account.fiveHour, weekly: account.weekly,
-                                      tickFiveHour: checkFive, tickWeekly: checkWeek)
+                                      scoped: account.scoped, tickFiveHour: checkFive, tickWeekly: checkWeek)
         }
         let note: String
         if !checkFive && !checkWeek {
@@ -80,6 +82,9 @@ public struct SettingsAutoSwitchPreview: Equatable, Sendable {
         return SettingsAutoSwitchPreview(rows: rows, current: active.map { "\($0.slot) \($0.alias)" } ?? "—",
                                          next: target.map { "\($0.slot) \($0.alias)" } ?? "—", note: note)
     }
+
+    /// The one phrase for plans without a 5-hour limit (Ultra): the 檢查 and 切換到 rows' hints.
+    public static let noFiveHourNote = "沒有 5h 的方案只看每週"
 
     private static func percent(_ value: Double) -> String { "\(Int(min(100, max(0, value)).rounded()))%" }
 }

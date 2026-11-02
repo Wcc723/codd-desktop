@@ -387,13 +387,13 @@ public struct AccountCardModel: Sendable, Equatable, Identifiable {
     /// `#2`.
     public var slot: String
     public var alias: String
-    /// `MAX 20x`; nil = no chip.
+    /// `ULTRA`, `MAX`; nil = no chip.
     public var plan: String?
     public var isActive: Bool
     public var health: AccountHealth
     /// `cswap cache · 3m 前`, `statusline · 12s 前`.
     public var source: StatusText
-    /// 5h, 1w, scoped windows, in that order.
+    /// 5h, 1w, scoped windows, in that order (no 5h row on a plan without one, Ultra).
     public var rows: [AccountQuotaRow]
     /// Amber pace warning (`↗ 1w 用量超前預期 · 預估 10/17 18:00 用完`).
     public var pace: String?

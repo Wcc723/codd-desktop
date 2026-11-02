@@ -82,7 +82,8 @@ final class AutoSwitchRunner {
             var keys = ["\(rule.enabled) \(rule.thresholdPercent) \(rule.checkFiveHour) \(rule.checkWeekly) \(rule.cooldownSeconds)",
                         self.accounts.activeAccountID ?? "-", "\(self.accounts.availability.key)"]
             for account in self.accounts.accounts {
-                keys.append("\(account.id) \(account.fiveHour.remainingPercent) \(account.week.remainingPercent) \(account.health.key)")
+                let five = account.fiveHour.map { "\($0.remainingPercent)" } ?? "none"
+                keys.append("\(account.id) \(five) \(account.week.remainingPercent) \(account.health.key)")
             }
             return keys
         }, apply: { [weak self] _ in

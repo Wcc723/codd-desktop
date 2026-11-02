@@ -112,10 +112,13 @@ import Testing
         var auto = CoddPreferences.AutoSwitch()
         auto.enabled = true
         let preview = SettingsAutoSwitchPreview.compute(accounts: SettingsSamples.accounts, autoSwitch: auto)
-        #expect(preview.rows.map(\.distance) == ["1w 46% · 距切換 44%", "1w 15% · 距切換 13%", "5h 未開始 · 距切換 98%"])
+        // The Ultra accounts #2 and #1 have no 5h window: judged on 1w only (the hints say so; the
+        // footer has no room for it).
+        #expect(preview.rows.map(\.distance) == ["1w 46% · 距切換 44%", "1w 15% · 距切換 13%", "1w 100% · 距切換 98%"])
         #expect(preview.rows.map(\.distanceTone) == [nil, .warn, nil])
         #expect(preview.rows.map(\.isNext) == [true, false, false])
         #expect(preview.current == "#3 工作" && preview.next == "#2 藍鵲" && preview.note == "")
+        #expect(preview.rows.map { $0.fiveHour == nil } == [true, false, true] && preview.rows[0].scoped.map(\.name) == ["Fable"])
         auto.thresholdPercent = 15
         let reached = SettingsAutoSwitchPreview.compute(accounts: SettingsSamples.accounts, autoSwitch: auto)
         #expect(reached.rows[1].distance == "1w 15% · 已達門檻" && reached.rows[1].distanceTone == .crit)
@@ -123,8 +126,16 @@ import Testing
         auto.thresholdPercent = 20
         auto.checkWeekly = false
         let fiveOnly = SettingsAutoSwitchPreview.compute(accounts: SettingsSamples.accounts, autoSwitch: auto)
-        #expect(fiveOnly.rows.map(\.distance) == ["5h 98% · 距切換 78%", "5h 91% · 距切換 71%", "5h 未開始 · 距切換 80%"])
+        #expect(fiveOnly.rows.map(\.distance) == ["未檢查任何視窗", "5h 91% · 距切換 71%", "未檢查任何視窗"])
         #expect(fiveOnly.rows.allSatisfy { $0.tickFiveHour && !$0.tickWeekly })
+        // A target still needs 1w above the threshold, and a 5h window only where it has one.
+        #expect(fiveOnly.next == "#2 藍鵲")
+        var maxOnly = SettingsSamples.accounts
+        maxOnly[0].fiveHour = SettingsQuota(remaining: 10)
+        maxOnly[2].fiveHour = SettingsQuota(remaining: 100, tone: .muted, text: "未開始")
+        let both = SettingsAutoSwitchPreview.compute(accounts: maxOnly, autoSwitch: auto)
+        #expect(both.rows.map(\.distance) == ["5h 10% · 已達門檻", "5h 91% · 距切換 71%", "5h 未開始 · 距切換 80%"])
+        #expect(both.next == "#1 個人" && both.note == "")
         auto.checkFiveHour = false
         let none = SettingsAutoSwitchPreview.compute(accounts: SettingsSamples.accounts, autoSwitch: auto)
         #expect(none.note == "· 未勾選檢查視窗，不會切換" && none.next == "—")
@@ -139,6 +150,16 @@ import Testing
         accounts[0].isEligibleTarget = false
         accounts[2].weekly = SettingsQuota(remaining: nil)
         #expect(SettingsAutoSwitchPreview.compute(accounts: accounts, autoSwitch: auto).next == "—")
+    }
+
+    /// The 5h column: 5h, else the first per-model weekly window (never ticked), else none (1w spans).
+    @Test func theFiveHourColumnOfAPlanWithoutFiveHour() throws {
+        let rows = SettingsSamples.accounts
+        let ultra = try #require(SettingsScopedQuota.fiveHourColumn(rows[0].fiveHour, rows[0].scoped))
+        #expect(ultra.key == "Fable" && ultra.quota.valueText == "72%" && !ultra.isFiveHour)
+        let max = try #require(SettingsScopedQuota.fiveHourColumn(rows[1].fiveHour, rows[1].scoped))
+        #expect(max.key == "5h" && max.quota.valueText == "91%" && max.isFiveHour)
+        #expect(SettingsScopedQuota.fiveHourColumn(rows[2].fiveHour, rows[2].scoped) == nil)
     }
 
     @Test func modelPreviewPrefersTheAppsRows() {

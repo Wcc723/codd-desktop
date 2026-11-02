@@ -549,6 +549,8 @@ final class StoppedListView: FlippedView, HomeTicking {
 
 /// The `.panel` of USAGE 剩餘 rows (`.hm-acct`, R7 order): `#2 藍鵲`, `1w 重置 1d12h後`, the
 /// source age, the 5h / 1w quota rows with their reset times, the ACTIVE marker and the pace line.
+/// On a plan without 5h the first row is the per-model weekly window (`Fable`, its reset only when
+/// it differs from 1w's), or 1w stands alone.
 final class UsageListView: FlippedView, HomeTicking {
     let rows: [HomeModel.UsageRow]
     /// Each row's capture time, read at the tick (not part of the model, see `UsageRow`).
@@ -569,16 +571,25 @@ final class UsageListView: FlippedView, HomeTicking {
 
     static func rowHeight(_ row: HomeModel.UsageRow) -> CGFloat { hz(row.weekExhaustsAt == nil ? 70 : 76) }
 
+    /// One key column for every quota row of the card (`Fable` widens them all), so the bars line up.
+    var keyWidth: CGFloat { QuotaRowRenderer.keyWidth(rows.flatMap { [$0.fiveHour?.key, "1w"].compactMap { $0 } }, compact: false) }
+
     var height: CGFloat { rows.map(Self.rowHeight).reduce(0, +) + 2 }
 
-    /// `[1w countdown, source age, 5h reset, 1w reset, pace]` for one row.
+    /// `[1w countdown, source age, 5h (or per-model window) reset, 1w reset, pace]` for one row.
     static func texts(_ row: HomeModel.UsageRow, sourceAt: Date? = nil, now: Date) -> [String] {
         let weekCountdown = row.week.resetsAt.map { "1w 重置 " + DurationFormat.countdown(to: $0, now: now) } ?? "1w 未知"
         let source = row.sourceLine(sourceAt: sourceAt, now: now)
-        var five = "未開始"
-        if row.fiveHour.started, let reset = row.fiveHour.resetsAt {
+        var five = ""
+        if let first = row.fiveHour, first.isFiveHour {
+            five = "未開始"
+            if first.quota.started, let reset = first.quota.resetsAt {
+                five = ClockFormat.resetLabel(reset, now: now)
+                if row.active { five += " · " + DurationFormat.countdown(to: reset, now: now) }
+            }
+        } else if let reset = row.fiveHour?.quota.resetsAt, abs(reset.timeIntervalSince(row.week.resetsAt ?? .distantPast)) > 120 {
+            // A per-model window shows its own reset only when it does not reset with 1w (the rows' rule).
             five = ClockFormat.resetLabel(reset, now: now)
-            if row.active { five += " · " + DurationFormat.countdown(to: reset, now: now) }
         }
         let week = row.week.resetsAt.map { ClockFormat.resetLabel($0, now: now) } ?? ""
         var pace = ""
@@ -634,21 +645,24 @@ final class UsageListView: FlippedView, HomeTicking {
         // Quotas: `5h ▮▮▮▮▮▮▮▮▮▯ 98% 13:19` and `1w … 10/16 週五 22:59`.
         let qx = left + idWidth + hz(12)
         let qWidth = rect.maxX - hz(12) - qx
-        let lines = t[4].isEmpty ? 2 : 3
+        // The quota rows: the 5h place (if any) and 1w, then the pace line.
+        var quotas: [(key: String, quota: QuotaWindow, threshold: Int?, reset: String)] = []
+        if let first = row.fiveHour { quotas.append((first.key, first.quota, first.isFiveHour ? row.threshold : nil, t[2])) }
+        quotas.append(("1w", row.week, row.threshold, t[3]))
+        let lines = quotas.count + (t[4].isEmpty ? 0 : 1)
         let line = hz(16.5)
         let qTop = rect.minY + (rect.height - (CGFloat(lines) * line + CGFloat(lines - 1) * hz(4))) / 2
         let resetWidth = hz(118)
-        QuotaRowRenderer.draw(key: "5h", quota: row.fiveHour, trailing: nil, compact: false, threshold: row.threshold,
-                              in: CGRect(x: qx, y: qTop, width: qWidth - resetWidth - hz(8), height: line))
-        QuotaRowRenderer.draw(key: "1w", quota: row.week, trailing: nil, compact: false, threshold: row.threshold,
-                              in: CGRect(x: qx, y: qTop + hz(20.5), width: qWidth - resetWidth - hz(8), height: line))
-        for (offset, text) in [(hz(0), t[2]), (hz(20.5), t[3])] {
-            let reset = TextStyle.mono(10.5, Palette.dim).string(text)
-            Draw.text(reset, x: rect.maxX - hz(12) - min(resetWidth, Draw.width(reset)), centerY: qTop + offset + line / 2,
-                      maxWidth: resetWidth)
+        for (index, q) in quotas.enumerated() {
+            let y = qTop + CGFloat(index) * hz(20.5)
+            QuotaRowRenderer.draw(key: q.key, quota: q.quota, trailing: nil, compact: false, threshold: q.threshold, keyWidth: keyWidth,
+                                  in: CGRect(x: qx, y: y, width: qWidth - resetWidth - hz(8), height: line))
+            let reset = TextStyle.mono(10.5, Palette.dim).string(q.reset)
+            Draw.text(reset, x: rect.maxX - hz(12) - min(resetWidth, Draw.width(reset)), centerY: y + line / 2, maxWidth: resetWidth)
         }
         if !t[4].isEmpty {
-            Draw.text(TextStyle.mono(10.5, Palette.amber).string(t[4]), x: qx, centerY: qTop + hz(41) + line / 2, maxWidth: qWidth)
+            Draw.text(TextStyle.mono(10.5, Palette.amber).string(t[4]), x: qx, centerY: qTop + CGFloat(quotas.count) * hz(20.5) + line / 2,
+                      maxWidth: qWidth)
         }
     }
 }

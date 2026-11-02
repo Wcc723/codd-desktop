@@ -80,7 +80,11 @@ public struct Account: Sendable, Equatable, Identifiable {
     public var isActive: Bool
     public var isDisabled: Bool
     public var usageStatus: CswapUsageStatus
+    /// nil: unknown, or none at all on a plan without a 5-hour limit (``fiveHourAbsent``).
     public var fiveHour: QuotaWindow?
+    /// The plan has no 5-hour window (Ultra): the newest numbers with a weekly window carried
+    /// none (``QuotaEntry/fiveHourAbsentAt``). Auto-switch then judges the weekly window only.
+    public var fiveHourAbsent: Bool
     public var weekly: QuotaWindow?
     public var scoped: [NamedQuotaWindow]
     /// When the numbers were measured.
@@ -88,7 +92,7 @@ public struct Account: Sendable, Equatable, Identifiable {
     /// The numbers are cswap's last-good fallback (the latest fetch failed).
     public var usageIsLastGood: Bool
     // M3 (D2, D7, D12, D25), filled by ``AccountAssembler``.
-    /// D25 plan chip (`MAX 20x`), `nil` when unknown.
+    /// D25 plan chip (`ULTRA`, `MAX`), `nil` when unknown.
     public var plan: String?
     /// The cswap session profile for pinned sessions (D12). Its name carries the e-mail slug:
     /// never log, dump or show it (D31); ``description`` prints `profile: yes|no` only.
@@ -103,8 +107,8 @@ public struct Account: Sendable, Equatable, Identifiable {
     public var id: Int { number }
 
     public init(number: Int, alias: String? = nil, isActive: Bool = false, isDisabled: Bool = false,
-                usageStatus: CswapUsageStatus = .ok, fiveHour: QuotaWindow? = nil, weekly: QuotaWindow? = nil,
-                scoped: [NamedQuotaWindow] = [], usageAsOf: Date? = nil, usageIsLastGood: Bool = false,
+                usageStatus: CswapUsageStatus = .ok, fiveHour: QuotaWindow? = nil, fiveHourAbsent: Bool = false,
+                weekly: QuotaWindow? = nil, scoped: [NamedQuotaWindow] = [], usageAsOf: Date? = nil, usageIsLastGood: Bool = false,
                 plan: String? = nil, sessionProfile: URL? = nil, sessionProfileStale: Bool = false,
                 sessionProfileSharesSettings: Bool? = nil, usageHealth: CswapUsageHealth = .none,
                 source: QuotaSource? = nil, sourceAt: Date? = nil) {
@@ -114,6 +118,7 @@ public struct Account: Sendable, Equatable, Identifiable {
         self.isDisabled = isDisabled
         self.usageStatus = usageStatus
         self.fiveHour = fiveHour
+        self.fiveHourAbsent = fiveHour == nil && fiveHourAbsent
         self.weekly = weekly
         self.scoped = scoped
         self.usageAsOf = usageAsOf
@@ -137,6 +142,7 @@ public struct Account: Sendable, Equatable, Identifiable {
             isDisabled: row.disabled,
             usageStatus: row.usageStatus,
             fiveHour: usage?.fiveHour.map(QuotaWindow.init),
+            fiveHourAbsent: usage?.lacksFiveHour ?? false,
             weekly: usage?.sevenDay.map(QuotaWindow.init),
             scoped: usage?.scoped.map { NamedQuotaWindow(name: $0.name, window: QuotaWindow($0.window)) } ?? [],
             usageAsOf: row.effectiveUsageFetchedAt,
@@ -170,6 +176,7 @@ extension Account: CustomStringConvertible, CustomDebugStringConvertible, Custom
         if isDisabled { parts.append("disabled") }
         parts.append("status: \(usageStatus)")
         if let fiveHour { parts.append("5h used \(fiveHour.usedPercent)") }
+        if fiveHourAbsent { parts.append("no 5h") }
         if let weekly { parts.append("1w used \(weekly.usedPercent)") }
         if let plan { parts.append("plan: \(plan)") }
         if let source { parts.append("source: \(source.rawValue)") }
@@ -183,7 +190,8 @@ extension Account: CustomStringConvertible, CustomDebugStringConvertible, Custom
     public var customMirror: Mirror {
         Mirror(self, children: [
             "number": number, "alias": alias.map(EmailRedaction.redact) as Any, "isActive": isActive, "isDisabled": isDisabled,
-            "usageStatus": usageStatus, "fiveHour": fiveHour as Any, "weekly": weekly as Any, "scoped": scoped,
+            "usageStatus": usageStatus, "fiveHour": fiveHour as Any, "fiveHourAbsent": fiveHourAbsent,
+            "weekly": weekly as Any, "scoped": scoped,
             "usageAsOf": usageAsOf as Any, "usageIsLastGood": usageIsLastGood, "plan": plan as Any,
             "profile": sessionProfile == nil ? "no" : "yes", "sessionProfileStale": sessionProfileStale,
             "sessionProfileSharesSettings": sessionProfileSharesSettings as Any, "usageHealth": usageHealth,

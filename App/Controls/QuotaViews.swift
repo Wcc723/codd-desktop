@@ -23,32 +23,61 @@ enum QuotaBar {
 
 /// One quota row (`.qrow`): `5h ▮▮▮▮▮▮▮▮▮▯ 91%` plus an optional trailing note (`2h57m後`).
 /// `threshold` draws the R8 tick (auto-switch ON); an unknown window shows `—` and an empty bar.
+/// A per-model window's name (`Fable`) widens the key column; `5h` / `1w` keep the design width,
+/// and rows drawn together pass the widest key as `keyWidth` so their bars line up. The bar takes
+/// what the key and the value leave (never the value's room) and is left out below `minBar`.
 @MainActor
 enum QuotaRowRenderer {
-    static func draw(key: String, quota: QuotaWindow, trailing: String?, trailingIsKey: Bool = false,
-                     compact: Bool, threshold: Int? = nil, in rect: CGRect) {
+    /// Where a row's parts go: the key column's width, the bar (nil without room) and the value's
+    /// left edge.
+    struct Layout: Equatable {
+        var keyWidth: CGFloat
+        var bar: CGRect?
+        var valueX: CGFloat
+    }
+
+    static let minBar: CGFloat = 10
+
+    static func keyStyle(compact: Bool) -> TextStyle { TextStyle.mono(compact ? 10.5 : 11, Palette.dim) }
+
+    /// The key column for `keys` drawn together (at least the design width).
+    static func keyWidth(_ keys: [String], compact: Bool) -> CGFloat {
+        let style = keyStyle(compact: compact)
+        return keys.map { ceil(Draw.width(style.string($0))) }.reduce(UIZoom.pt(compact ? 16 : 22), max)
+    }
+
+    static func layout(key: String, quota: QuotaWindow, trailing: String?, compact: Bool, keyWidth minKey: CGFloat? = nil,
+                       in rect: CGRect) -> Layout {
         // Widths are design points at the interface zoom (the key and the value grow with their text).
-        let size: CGFloat = compact ? 10.5 : 11
-        let keyWidth = UIZoom.pt(compact ? 16 : 22)
+        let keyWidth = max(Self.keyWidth([key], compact: compact), minKey ?? 0)
         let valueWidth = UIZoom.pt(compact ? 30 : 34)
         let gap = UIZoom.pt(compact ? 5 : 8)
-        let tone = quota.tone.color
-        Draw.text(TextStyle.mono(size, Palette.dim).string(key), x: rect.minX, centerY: rect.midY, maxWidth: keyWidth)
-
         var right = rect.maxX
-        if let trailing {
-            let t = TextStyle.mono(10.5, trailingIsKey ? Palette.bone : Palette.dim).string(trailing)
-            let w = Draw.width(t)
-            Draw.text(t, x: right - w, centerY: rect.midY)
-            right -= w + gap
-        }
-        let value = TextStyle.mono(size, quota.known ? tone : Palette.dimmer).string(quota.valueText)
-        Draw.text(value, x: right - Draw.width(value), centerY: rect.midY)
+        if let trailing { right -= Draw.width(TextStyle.mono(10.5, Palette.dim).string(trailing)) + gap }
+        let value = TextStyle.mono(compact ? 10.5 : 11, Palette.dim).string(quota.valueText)
+        let valueX = right - Draw.width(value)
         right -= valueWidth + gap
         let barX = rect.minX + keyWidth + gap
         let barHeight = UIZoom.pt(7)
-        let barRect = CGRect(x: barX, y: round(rect.midY - barHeight / 2), width: max(UIZoom.pt(30), right - barX), height: barHeight)
-        QuotaBar.draw(in: barRect, percent: quota.known ? quota.remainingPercent : 0, tone: tone, threshold: threshold)
+        let bar = right - barX >= UIZoom.pt(minBar)
+            ? CGRect(x: barX, y: round(rect.midY - barHeight / 2), width: right - barX, height: barHeight) : nil
+        return Layout(keyWidth: keyWidth, bar: bar, valueX: valueX)
+    }
+
+    static func draw(key: String, quota: QuotaWindow, trailing: String?, trailingIsKey: Bool = false,
+                     compact: Bool, threshold: Int? = nil, keyWidth minKey: CGFloat? = nil, in rect: CGRect) {
+        let parts = layout(key: key, quota: quota, trailing: trailing, compact: compact, keyWidth: minKey, in: rect)
+        let size: CGFloat = compact ? 10.5 : 11
+        let tone = quota.tone.color
+        Draw.text(keyStyle(compact: compact).string(key), x: rect.minX, centerY: rect.midY, maxWidth: parts.keyWidth)
+        if let trailing {
+            let t = TextStyle.mono(10.5, trailingIsKey ? Palette.bone : Palette.dim).string(trailing)
+            Draw.text(t, x: rect.maxX - Draw.width(t), centerY: rect.midY)
+        }
+        Draw.text(TextStyle.mono(size, quota.known ? tone : Palette.dimmer).string(quota.valueText), x: parts.valueX, centerY: rect.midY)
+        if let bar = parts.bar {
+            QuotaBar.draw(in: bar, percent: quota.known ? quota.remainingPercent : 0, tone: tone, threshold: threshold)
+        }
     }
 }
 
@@ -60,6 +89,8 @@ final class QuotaRowView: FlippedView {
     var compact = false { didSet { if compact != oldValue { needsDisplay = true } } }
     /// R8: the threshold tick while auto-switch is ON.
     var threshold: Int? { didSet { if threshold != oldValue { needsDisplay = true } } }
+    /// The key column shared with the rows drawn with this one (nil: this key's own).
+    var keyWidth: CGFloat? { didSet { if keyWidth != oldValue { needsDisplay = true } } }
 
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
@@ -73,7 +104,8 @@ final class QuotaRowView: FlippedView {
     override var intrinsicContentSize: NSSize { NSSize(width: NSView.noIntrinsicMetric, height: UIZoom.pt(16)) }
 
     override func draw(_ dirtyRect: NSRect) {
-        QuotaRowRenderer.draw(key: key, quota: quota, trailing: trailing, compact: compact, threshold: threshold, in: bounds)
+        QuotaRowRenderer.draw(key: key, quota: quota, trailing: trailing, compact: compact, threshold: threshold, keyWidth: keyWidth,
+                              in: bounds)
     }
 
     // MARK: Accessibility (M5 D21)

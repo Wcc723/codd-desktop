@@ -124,7 +124,7 @@ struct StateTests {
         harness.apply(StatusSamples.model(.autoSwitchOn))
         // M3 review: the tick goes on the 5h / 1w bars the rule checks, never on a scoped window.
         let windows = { harness.page.accounts.orderedCards.flatMap { $0.model?.rows.map(\.window) ?? [] } }
-        #expect(bars().count == 9)
+        #expect(bars().count == 7, "the Ultra accounts #2 and #1 have no 5h bar")
         #expect(zip(windows(), bars()).allSatisfy { window, tick in tick == (window == .scoped ? nil : 2) })
         #expect(windows().filter { $0 == .scoped }.count == 3)
         var weeklyOnly = StatusSamples.model(.autoSwitchOn)

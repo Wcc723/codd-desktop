@@ -526,7 +526,7 @@ final class CswapAccountStore: AccountStore {
         set(vm, \.slot, "#\(account.number)")
         set(vm, \.alias, account.alias.map(EmailRedaction.redact) ?? "")
         set(vm, \.plan, account.plan)
-        set(vm, \.fiveHour, Self.window(account.fiveHour, at: at))
+        set(vm, \.fiveHour, account.fiveHourAbsent ? nil : Self.window(account.fiveHour, at: at))
         set(vm, \.week, Self.window(account.weekly, at: at))
         set(vm, \.scoped, account.scoped.map { scoped in
             let status = scoped.window.status(at: at)
@@ -548,7 +548,7 @@ final class CswapAccountStore: AccountStore {
         set(vm, \.slot, "—")
         set(vm, \.alias, "目前登入")
         set(vm, \.plan, nil)
-        set(vm, \.fiveHour, Self.window(entry.fiveHour?.window, at: at))
+        set(vm, \.fiveHour, entry.fiveHourAbsent ? nil : Self.window(entry.fiveHour?.window, at: at))
         set(vm, \.week, Self.window(entry.weekly?.window, at: at))
         set(vm, \.scoped, [])
         let newest = entry.newest
@@ -786,7 +786,7 @@ final class CswapAccountStore: AccountStore {
         let observation = QuotaObservation.fromStatusLine(
             account: ref, fiveHour: report.fiveHour.map { CoddCore.QuotaWindow(usedPercent: $0.usedPercent, resetsAt: $0.resetsAt) },
             weekly: report.sevenDay.map { CoddCore.QuotaWindow(usedPercent: $0.usedPercent, resetsAt: $0.resetsAt) },
-            capturedAt: report.receivedAt, identity: identity)
+            capturedAt: report.receivedAt, identity: identity, fiveHourUnreadable: report.fiveHourUnreadable)
         statusLine.lastAccount = ref.key
         if seenKeys.insert(report.configKey).inserted {
             log("statusline first report key=\(report.configKey) account=\(ref.key)")
@@ -1018,11 +1018,14 @@ final class CswapAccountStore: AccountStore {
             ["remaining": vm.known ? vm.remainingPercent as Any : NSNull(), "resetsAt": iso(vm.resetsAt), "started": vm.started,
              "source": sourced.map { $0.source.rawValue as Any } ?? NSNull(), "capturedAt": iso(sourced?.capturedAt)]
         }
+        // A plan without a 5h window (Ultra): `"five": null`, `"fiveAbsentAt"` says since when.
         let order = accounts.map { vm -> [String: Any] in
             let entry = book.entry(vm.number.map(QuotaAccountRef.number) ?? .defaultLogin)
             return [
                 "id": vm.id, "slot": vm.slot, "alias": vm.alias, "plan": vm.plan as Any? ?? NSNull(), "active": vm.id == activeAccountID,
-                "five": window(vm.fiveHour, sourced: entry?.fiveHour), "weekly": window(vm.week, sourced: entry?.weekly),
+                "five": vm.fiveHour.map { window($0, sourced: entry?.fiveHour) as Any } ?? NSNull(),
+                "fiveAbsentAt": iso(vm.fiveHour == nil ? entry?.fiveHourAbsentAt : nil),
+                "weekly": window(vm.week, sourced: entry?.weekly),
                 "pace": vm.weekExhaustsAt.map { ["aheadOfPace": true, "projectedExhaustionAt": JSDate.isoString($0)] as Any } ?? NSNull(),
                 "source": vm.source, "sourceAt": iso(vm.sourceAt), "sessionCount": vm.sessionCount, "pinnedCount": pinnedCount(for: vm.id),
                 "health": vm.health.key, "disabled": vm.isDisabled, "hasSessionProfile": vm.hasSessionProfile,

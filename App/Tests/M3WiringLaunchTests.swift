@@ -353,7 +353,7 @@ struct MenuBarAccountsTests {
         let sessions = MockSessionStore(shiftClock: false)
         let content = MenuBarPanelContent.build(store: sessions, accounts: f.store, expanded: false)
         #expect(content.accountIDs == ["2", "3", "4"] && content.accountTotal == 4)
-        #expect(f.store.account("4")?.plan == "MAX 5x" && f.store.account("4")?.alias == "")
+        #expect(f.store.account("4")?.plan == "MAX" && f.store.account("4")?.alias == "")
         let shell = ShellState()
         let actions = MenuBarPanelActions(openSession: { _ in }, allow: { _ in }, openMain: {}, openSettings: { _ in },
                                           newSession: {}, quickNote: {})
@@ -469,7 +469,7 @@ struct StatusLineReportEndToEndTests {
         try stdin(12, 85, reset: reset3).write(toFile: stdinFile, atomically: true, encoding: .utf8)
         let first = try await runWithStdin(base, stdinFile)
         #expect(first.status == 0 && first.stdout == "SL-ok", "the chain's output reaches Claude unchanged")
-        await m3Eventually("#3 from the default key") { store.account("3")?.fiveHour.remainingPercent == 88 }
+        await m3Eventually("#3 from the default key") { store.account("3")?.fiveHour?.remainingPercent == 88 }
         #expect(store.account("3")?.source == "statusline")
         // A pinned session's report (CLAUDE_CONFIG_DIR = the cswap profile) goes to #2.
         var pinned = base
@@ -477,7 +477,7 @@ struct StatusLineReportEndToEndTests {
         try stdin(30, 54, reset: reset2).write(toFile: stdinFile, atomically: true, encoding: .utf8)
         let second = try await runWithStdin(pinned, stdinFile)
         #expect(second.status == 0)
-        await m3Eventually("#2 from cswap-2") { store.account("2")?.fiveHour.remainingPercent == 70 }
+        await m3Eventually("#2 from cswap-2") { store.account("2")?.fiveHour?.remainingPercent == 70 }
         #expect(store.statusLine.lastKey == "cswap-2")
         await pipeline.refreshStatistics()
         #expect(pipeline.statistics?.statusLinesAccepted == 2)

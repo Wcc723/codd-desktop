@@ -64,7 +64,21 @@ struct StatusLineReportTests {
         #expect(r.fiveHour?.usedPercent == 2)
         #expect(r.sevenDay == nil)
         let s = try #require(report(rateLimits: #"{"seven_day":{"used_percentage":54,"resets_at":1792296000},"five_hour":null}"#))
-        #expect(s.fiveHour == nil && s.sevenDay?.usedPercent == 54)
+        #expect(s.fiveHour == nil && s.sevenDay?.usedPercent == 54 && !s.fiveHourUnreadable)
+    }
+
+    /// A `five_hour` that is there but unusable is not a missing one (a missing 5h window can mean
+    /// a plan without a 5-hour limit); absent or `null` is.
+    @Test func anUnreadableFiveHourIsToldFromAMissingOne() throws {
+        let seven = #""seven_day":{"used_percentage":54,"resets_at":1792296000}"#
+        for broken in [#""50""#, "{}", #"{"used_percentage":"50"}"#, "[1]", "true"] {
+            let r = try #require(report(rateLimits: #"{"five_hour":\#(broken),\#(seven)}"#), "\(broken)")
+            #expect(r.fiveHour == nil && r.fiveHourUnreadable && r.sevenDay?.usedPercent == 54, "\(broken)")
+        }
+        for missing in [#"{\#(seven)}"#, #"{"five_hour":null,\#(seven)}"#] {
+            #expect(report(rateLimits: missing)?.fiveHourUnreadable == false, "\(missing)")
+        }
+        #expect(report(rateLimits: #"{"five_hour":{"used_percentage":2},\#(seven)}"#)?.fiveHourUnreadable == false)
     }
 
     @Test func usedPercentMustBeAFiniteNumber() throws {

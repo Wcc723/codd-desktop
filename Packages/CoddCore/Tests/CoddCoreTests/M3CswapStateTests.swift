@@ -113,7 +113,7 @@ struct CswapStateReaderTests {
         #expect(s.activeAccountNumber == 3)
         #expect(s.activeSource == .claudeJSON)
         #expect(s.accounts.map(\.isActive) == [false, false, true])
-        #expect(s.accounts.map(\.plan) == ["MAX 20x", "MAX 20x", "MAX 20x"])
+        #expect(s.accounts.map(\.plan) == ["ULTRA", "ULTRA", "ULTRA"])
         #expect(s.accounts.map(\.usageHealth) == [.fresh, .fresh, .fresh])
         #expect(s.accounts.map(\.isDisabled) == [false, false, false])
         #expect(s.warnings.isEmpty)
@@ -195,7 +195,7 @@ struct CswapStateReaderTests {
         #expect(s.warnings.count == 1)
         #expect(s.warnings.first?.contains(".claude.json") == true)
         // Without the live identity the plan comes from the config backup.
-        #expect(s.account(3)?.plan == "MAX 20x")
+        #expect(s.account(3)?.plan == "ULTRA")
     }
 
     @Test func loggedOutClaudeJSONUsesTheSequenceFileSilently() throws {
@@ -311,7 +311,7 @@ struct CswapStateReaderTests {
         #expect(a3.usageHealth == .failing("http-500 for •••@•••"))
         #expect(a3.usage?.sevenDay?.pct == 99) // last-good numbers are kept
         #expect(a3.isActive)
-        #expect(a3.plan == "MAX 5x") // from .claude.json
+        #expect(a3.plan == "MAX") // from .claude.json
         #expect(a1.plan == nil)      // no config backup in this fixture
         expectNoAccountLeak(s)
     }
@@ -444,7 +444,7 @@ struct CswapStateReaderTests {
         defer { f.temp.remove() }
         let login = f.reader().currentLogin()
         #expect(login.existingAccount == 3)
-        #expect(login.plan == "MAX 20x")
+        #expect(login.plan == "ULTRA")
         #expect(login.loggedIn)
         try Data(#"{"oauthAccount": {"emailAddress": "new@example.com", "organizationType": "claude_pro"}}"#.utf8).write(to: f.claudeJSON)
         #expect(loginText(f.reader()) == "-|PRO|true")
@@ -477,7 +477,7 @@ struct CswapStateReaderTests {
         #expect(try reader.read(now: referenceNow).account(1)?.plan == nil)
         try f.write("configs/.claude-config-1-personal@example.com.json",
                     #"{"oauthAccount": {"organizationRateLimitTier": "default_claude_max_5x"}}"#)
-        #expect(try reader.read(now: referenceNow).account(1)?.plan == "MAX 5x")
+        #expect(try reader.read(now: referenceNow).account(1)?.plan == "MAX")
         try f.write("configs/.claude-config-1-personal@example.com.json",
                     #"{"oauthAccount": {"organizationType": "claude_enterprise", "x": "longer file"}}"#)
         #expect(try reader.read(now: referenceNow).account(1)?.plan == "ENT")
@@ -544,11 +544,17 @@ struct CswapStateReaderTests {
         }
     }
 
+    /// 2026-11 plan names: Max 20x is now Ultra, Max 5x is Max (the tiers may keep the old names).
     @Test func planLabels() {
         let rows: [(String?, String?, String?)] = [
-            ("default_claude_max_20x", "claude_max", "MAX 20x"),
-            ("DEFAULT_CLAUDE_MAX_20X", nil, "MAX 20x"),
-            ("default_claude_max_5x", nil, "MAX 5x"),
+            ("default_claude_max_20x", "claude_max", "ULTRA"),
+            ("DEFAULT_CLAUDE_MAX_20X", nil, "ULTRA"),
+            ("default_claude_max_5x", nil, "MAX"),
+            ("default_claude_max_5x", "claude_max", "MAX"),
+            ("default_claude_ultra", nil, "ULTRA"),
+            (nil, "claude_ultra", "ULTRA"),
+            ("default_claude_ai", "claude_ultra", "ULTRA"),
+            ("default_claude_ultramarine", nil, nil),
             (nil, "claude_max", "MAX"),
             ("default_claude_ai", "claude_max", "MAX"),
             ("default_claude_pro", nil, "PRO"),

@@ -91,8 +91,9 @@ enum OnboardingFacts {
     static func accountRows(_ accounts: [AccountVM], activeID: AccountID?, now: Date) -> [AccountsStepModel.Row] {
         AccountOrdering.byWeeklyReset(accounts).filter { !$0.isPseudo }.map { vm in
             let reset = vm.week.known ? vm.week.resetsAt.map { DurationFormat.countdown(to: $0, now: now) } : nil
-            return AccountsStepModel.Row(slot: vm.slot, alias: vm.alias, plan: vm.plan,
-                                         fiveHourRemaining: vm.fiveHour.known ? Double(vm.fiveHour.remainingPercent) : nil,
+            let first = vm.fiveHourSlot
+            return AccountsStepModel.Row(slot: vm.slot, alias: vm.alias, plan: vm.plan, fiveHourKey: first?.key,
+                                         fiveHourRemaining: first.flatMap { $0.quota.known ? Double($0.quota.remainingPercent) : nil },
                                          weeklyRemaining: vm.week.known ? Double(vm.week.remainingPercent) : nil,
                                          weeklyReset: "1w 重置 " + (reset ?? "—"), active: vm.id == activeID)
         }

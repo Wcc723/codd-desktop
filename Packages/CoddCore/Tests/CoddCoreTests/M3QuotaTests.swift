@@ -467,17 +467,43 @@ struct AccountAssemblerTests {
         let accounts = AccountAssembler.accounts(state: state, book: book, now: referenceNow)
         let a3 = try #require(accounts.first { $0.number == 3 })
         #expect(a3.weekly?.usedPercent == 88)
-        #expect(a3.fiveHour?.usedPercent == 9) // cswap's, still the newest 5h
+        #expect(a3.fiveHour?.usedPercent == 9 && !a3.fiveHourAbsent) // cswap's, still the newest 5h
         #expect(a3.source == .statusline)
         #expect(a3.sourceAt == at(0))
         #expect(a3.usageAsOf == at(0))
-        #expect(a3.plan == "MAX 20x")
+        #expect(a3.plan == "ULTRA")
         #expect(a3.usageHealth == .fresh)
         #expect(a3.scoped.map(\.name) == ["Fable"])
         let a2 = try #require(accounts.first { $0.number == 2 })
         #expect(a2.source == .cswap)
         #expect(a2.weekly?.status(at: referenceNow).remainingPercent == 46)
+        #expect(a2.fiveHour?.usedPercent == 2 && !a2.fiveHourAbsent)
         #expect(accounts.map(\.number) == [1, 2, 3])
+        // A later report whose weekly used % rose and still has no 5h: this plan has none, cswap's
+        // older 5h is not shown; a newer report with 5h again brings it back.
+        book.ingest(.fromStatusLine(account: .number(3), fiveHour: nil, weekly: QuotaWindow(usedPercent: 89, resetsAt: JSDate.date(fromISO: "2026-10-18T04:00:00Z")),
+                                    capturedAt: at(10)))
+        let gone = try #require(AccountAssembler.accounts(state: state, book: book, now: referenceNow).first { $0.number == 3 })
+        #expect(gone.fiveHour == nil && gone.fiveHourAbsent)
+        book.ingest(.fromStatusLine(account: .number(3), fiveHour: QuotaWindow(usedPercent: 12, resetsAt: at(3600)), weekly: nil,
+                                    capturedAt: at(30)))
+        let back = try #require(AccountAssembler.accounts(state: state, book: book, now: referenceNow).first { $0.number == 3 })
+        #expect(back.fiveHour?.usedPercent == 12 && !back.fiveHourAbsent)
+    }
+
+    /// No book entry (a cswap row without `fetchedAt`): the row's own 1w without 5h says so.
+    @Test func aCswapRowWithoutFiveHourNeedsNoBookEntry() {
+        let week = CswapWindow(pct: 40, resetsAt: at(2 * day))
+        let rows = [CswapStateAccount(number: 1, isActive: true, usage: CswapUsage(sevenDay: week)),
+                    CswapStateAccount(number: 2, usage: CswapUsage(fiveHour: CswapWindow(pct: 10, resetsAt: at(3600)), sevenDay: week)),
+                    CswapStateAccount(number: 3, usage: CswapUsage(scoped: [CswapScopedWindow(name: "Fable", window: week)]))]
+        let state = CswapStateSnapshot(root: URL(fileURLWithPath: "/tmp/x"), accounts: rows, activeAccountNumber: 1,
+                                       activeSource: .sequenceFile, readAt: referenceNow)
+        let accounts = AccountAssembler.accounts(state: state, book: QuotaBook(), now: referenceNow)
+        #expect(accounts.map(\.fiveHourAbsent) == [true, false, false], "#3 has no 1w either: unknown")
+        #expect(accounts.map { $0.fiveHour?.usedPercent } == [nil, 10, nil])
+        #expect(CswapUsage(sevenDay: week).lacksFiveHour && !CswapUsage().lacksFiveHour)
+        #expect(Account(cswap: CswapAccount(number: 7, usage: CswapUsage(sevenDay: week))).fiveHourAbsent)
     }
 
     @Test func snapshotUsageFillsWhatTheBookLacks() throws {
@@ -647,5 +673,228 @@ struct QuotaIdentityTests {
                                                   lastSwitch: nil, book: book, profileKeys: [:], now: referenceNow,
                                                   slots: [5: "new", 6: "six"])
         #expect(otherLogin == QuotaAttributionResult(account: .number(6)))
+    }
+}
+
+/// Anthropic's Ultra plan (2026-11): a verified account has no 5-hour limit, so Claude Code's
+/// status line and cswap send `seven_day` without `five_hour` (the owner's quota.json kept a
+/// 10/31 5h window that showed as `5h 100%` once its reset passed). Claude also drops a 5h window
+/// once its own reset passes, so a status-line report without one says so only when its weekly
+/// used % is above every earlier report's this week; a cswap row without one always does.
+@Suite("Quota book without a 5h window (Ultra)")
+struct QuotaBookFiveHourAbsentTests {
+    let five = QuotaWindow(usedPercent: 40, resetsAt: referenceNow.addingTimeInterval(3600))
+
+    /// The weekly window at `used` % (one week for every report here).
+    func week(_ used: Double) -> QuotaWindow { QuotaWindow(usedPercent: used, resetsAt: referenceNow.addingTimeInterval(3 * 86_400)) }
+
+    func cswap(_ n: Int, five: QuotaWindow?, week: QuotaWindow?, capturedAt: Date, identity: String? = nil) -> QuotaObservation {
+        QuotaObservation(account: .number(n), fiveHour: five, weekly: week, source: .cswap, capturedAt: capturedAt, identity: identity)
+    }
+
+    @Test func aCswapRowWithoutFiveHourDropsTheOldOne() {
+        var book = QuotaBook()
+        book.ingest(cswap(2, five: five, week: week(30), capturedAt: at(-60)))
+        #expect(book.entry(.number(2))?.fiveHourAbsent == false)
+        let changed = book.ingest(cswap(2, five: nil, week: week(30), capturedAt: at(0)))
+        #expect(changed)
+        let e = book.entry(.number(2))
+        #expect(e?.fiveHour == nil)
+        #expect(e?.fiveHourAbsentAt == at(0) && e?.fiveHourAbsent == true)
+        #expect(e?.weekly?.capturedAt == at(0))
+    }
+
+    /// The 5h window still runs, but another claude whose own window ended (its rate limits are
+    /// those of its last API response) reports 1w alone: that says nothing, until a report's
+    /// weekly used % rises above every earlier one's (a later response, still without 5h).
+    @Test func aStatusLineReportWithoutFiveHourNeedsARisingWeek() {
+        var book = QuotaBook()
+        book.ingest(statusLine(.number(3), five: five, week: week(30), capturedAt: at(-60)))
+        for (offset, used) in [(0.0, 30.0), (1, 29.4), (2, 30)] {
+            book.ingest(statusLine(.number(3), five: nil, week: week(used), capturedAt: at(offset)))
+            #expect(book.entry(.number(3))?.fiveHour?.window == five, "\(used)")
+        }
+        #expect(book.entry(.number(3))?.statusLineWeeklyHigh?.usedPercent == 30)
+        book.ingest(statusLine(.number(3), five: nil, week: week(30.2), capturedAt: at(10)))
+        let e = book.entry(.number(3))
+        #expect(e?.fiveHourAbsent == true && e?.fiveHourAbsentAt == at(10))
+        #expect(e?.statusLineWeeklyHigh?.usedPercent == 30.2)
+    }
+
+    /// A Max account after its 5h reset: idle claudes keep reporting 1w alone with the same weekly
+    /// used %, which keeps the expired window (it reads as reset, 100 %); a report whose weekly used
+    /// % rose and still has no 5h is a plan without one.
+    @Test func aMaxAccountPastItsResetKeepsTheWindowUntilTheWeekRises() {
+        var book = QuotaBook()
+        book.ingest(statusLine(.number(3), five: five, week: week(30), capturedAt: at(0)))
+        for offset in stride(from: 4000.0, through: 4010, by: 1) {
+            book.ingest(statusLine(.number(3), five: nil, week: week(30), capturedAt: at(offset)))
+        }
+        let expired = book.entry(.number(3))
+        #expect(expired?.fiveHourAbsent == false && expired?.fiveHour?.window == five)
+        #expect(expired?.fiveHour?.window.status(at: at(4010)).remainingPercent == 100)
+        #expect(expired?.weekly?.capturedAt == at(4010))
+        // Usage after the reset with a 5h limit would have started a new 5h window.
+        book.ingest(statusLine(.number(3), five: nil, week: week(30.1), capturedAt: at(4020)))
+        #expect(book.entry(.number(3))?.fiveHourAbsent == true)
+    }
+
+    /// cswap's cache keeps a 5h window that has not started as `pct 0` without a reset; idle
+    /// claudes then report 1w alone. Neither undoes the other: the window stays, never hidden.
+    @Test func cswapNotStartedRowsAndStatusLineReportsDoNotFlipFlop() {
+        var book = QuotaBook()
+        book.ingest(statusLine(.number(3), five: five, week: week(30), capturedAt: at(0)))
+        let notStarted = QuotaWindow(usedPercent: 0, resetsAt: nil)
+        var shown: [QuotaWindow?] = []
+        for round in 0..<4 {
+            let t = 4000 + Double(round) * 60
+            book.ingest(cswap(3, five: notStarted, week: week(30), capturedAt: at(t)))
+            shown.append(book.entry(.number(3))?.fiveHour?.window)
+            for second in 1...3 {
+                book.ingest(statusLine(.number(3), five: nil, week: week(second == 2 ? 29.5 : 30), capturedAt: at(t + Double(second))))
+                shown.append(book.entry(.number(3))?.fiveHour?.window)
+            }
+        }
+        #expect(shown.allSatisfy { $0 == notStarted }, "\(shown)")
+        #expect(book.entry(.number(3))?.fiveHourAbsentAt == nil)
+    }
+
+    @Test func aNewerFiveHourWindowComesBack() {
+        var book = QuotaBook()
+        book.ingest(cswap(3, five: nil, week: week(30), capturedAt: at(0)))
+        #expect(book.entry(.number(3))?.fiveHourAbsent == true)
+        // An Ultra account not verified yet gets a temporary 5h limit again.
+        book.ingest(statusLine(.number(3), five: five, week: nil, capturedAt: at(30)))
+        let e = book.entry(.number(3))
+        #expect(e?.fiveHour?.window == five && e?.fiveHour?.capturedAt == at(30))
+        #expect(e?.fiveHourAbsentAt == nil && e?.fiveHourAbsent == false)
+    }
+
+    @Test func anOlderObservationNeverResurrectsIt() {
+        var book = QuotaBook()
+        book.ingest(statusLine(.number(3), five: nil, week: week(30), capturedAt: at(-10)))
+        book.ingest(statusLine(.number(3), five: nil, week: week(31), capturedAt: at(0)))
+        #expect(book.entry(.number(3))?.fiveHourAbsent == true)
+        // cswap's cache row fetched before that report still has the old 5h window.
+        let changed = book.ingest(cswap(3, five: five, week: week(30), capturedAt: at(-120)))
+        #expect(!changed)
+        #expect(book.entry(.number(3))?.fiveHourAbsent == true)
+        // Nor does an older row without 5h drop a newer 5h window.
+        var kept = QuotaBook()
+        kept.ingest(statusLine(.number(2), five: five, week: week(30), capturedAt: at(0)))
+        kept.ingest(cswap(2, five: nil, week: week(30), capturedAt: at(-120)))
+        #expect(kept.entry(.number(2))?.fiveHour?.window == five && kept.entry(.number(2))?.fiveHourAbsentAt == nil)
+    }
+
+    /// A report without `rate_limits` (`hadRateLimits` false: nothing known yet), with 5h only, or
+    /// with a 5h window that was sent but could not be read says nothing about it being gone.
+    @Test func reportsWithoutAWeeklyWindowOrWithABrokenFiveHourSayNothing() throws {
+        var book = QuotaBook()
+        book.ingest(statusLine(.number(3), five: five, week: week(30), capturedAt: at(-60)))
+        let empty = book.ingest(statusLine(.number(3), five: nil, week: nil, capturedAt: at(0)))
+        #expect(!empty)
+        #expect(book.entry(.number(3))?.fiveHour?.window == five)
+        // An observation with scoped windows only (cswap) neither.
+        book.ingest(QuotaObservation(account: .number(3), fiveHour: nil, weekly: nil,
+                                     scoped: [NamedQuotaWindow(name: "Fable", window: week(30))], source: .cswap, capturedAt: at(10)))
+        #expect(book.entry(.number(3))?.fiveHourAbsent == false)
+        // An unreadable 5h window (a string, no used %), from either source, even with a rising week.
+        book.ingest(.fromStatusLine(account: .number(3), fiveHour: nil, weekly: week(35), capturedAt: at(20), fiveHourUnreadable: true))
+        book.ingest(QuotaObservation(account: .number(3), fiveHour: nil, weekly: week(36), source: .cswap, capturedAt: at(30),
+                                     fiveHourUnreadable: true))
+        #expect(book.entry(.number(3))?.fiveHour?.window == five && book.entry(.number(3))?.fiveHourAbsent == false)
+        // cswap's decoding tells an unreadable `fiveHour` from an absent or `null` one.
+        func usage(_ json: String) throws -> CswapUsage { try JSONDecoder().decode(CswapUsage.self, from: Data(json.utf8)) }
+        let seven = #""sevenDay":{"pct":30,"resetsAt":"2026-10-18T04:00:00Z"}"#
+        let broken = try usage(#"{"fiveHour":{"pct":"50"},\#(seven)}"#)
+        #expect(broken.fiveHour == nil && broken.fiveHourUnreadable && !broken.lacksFiveHour)
+        #expect(QuotaObservation.fromCswap(CswapStateAccount(number: 3, usage: broken, usageFetchedAt: at(40)))?.fiveHourUnreadable == true)
+        for json in [#"{\#(seven)}"#, #"{"fiveHour":null,\#(seven)}"#] {
+            let none = try usage(json)
+            #expect(!none.fiveHourUnreadable && none.lacksFiveHour, "\(json)")
+        }
+        let notStarted = try usage(#"{"fiveHour":{"pct":0},\#(seven)}"#)
+        #expect(!notStarted.lacksFiveHour && !notStarted.fiveHourUnreadable)
+        // Unknown until anything is known: no entry, no absence.
+        #expect(QuotaEntry().fiveHourAbsent == false)
+    }
+
+    /// The weekly high only rises within a weekly window and starts over with the next one.
+    @Test func theWeeklyHighFollowsTheWeek() {
+        var book = QuotaBook()
+        book.ingest(statusLine(.number(3), five: five, week: week(30), capturedAt: at(0)))
+        book.ingest(statusLine(.number(3), five: five, week: week(28), capturedAt: at(1)))
+        #expect(book.entry(.number(3))?.statusLineWeeklyHigh == week(30))
+        // cswap's numbers do not move it (they are compared with the status line's own).
+        book.ingest(cswap(3, five: five, week: week(45), capturedAt: at(2)))
+        #expect(book.entry(.number(3))?.statusLineWeeklyHigh == week(30))
+        // The next week: its first report starts over, and says nothing about 5h.
+        let next = QuotaWindow(usedPercent: 2, resetsAt: referenceNow.addingTimeInterval(10 * 86_400))
+        book.ingest(statusLine(.number(3), five: nil, week: next, capturedAt: at(3 * 86_400 + 60)))
+        #expect(book.entry(.number(3))?.statusLineWeeklyHigh == next && book.entry(.number(3))?.fiveHourAbsent == false)
+        // A report without a reset keeps the week's.
+        book.ingest(statusLine(.number(3), five: nil, week: QuotaWindow(usedPercent: 3, resetsAt: nil), capturedAt: at(3 * 86_400 + 70)))
+        #expect(book.entry(.number(3))?.statusLineWeeklyHigh == QuotaWindow(usedPercent: 3, resetsAt: next.resetsAt))
+        #expect(book.entry(.number(3))?.fiveHourAbsent == true)
+    }
+
+    @Test func anotherLoginStartsOverWithoutTheMark() {
+        var book = QuotaBook()
+        book.ingest(.fromStatusLine(account: .number(2), fiveHour: nil, weekly: week(30), capturedAt: at(-5), identity: "x"))
+        book.ingest(cswap(2, five: nil, week: week(30), capturedAt: at(0), identity: "x"))
+        #expect(book.entry(.number(2))?.fiveHourAbsent == true && book.entry(.number(2))?.statusLineWeeklyHigh != nil)
+        book.ingest(cswap(2, five: five, week: nil, capturedAt: at(-30), identity: "y"))
+        let e = book.entry(.number(2))
+        #expect(e?.fiveHour?.window == five && e?.fiveHourAbsentAt == nil && e?.statusLineWeeklyHigh == nil)
+    }
+
+    @Test func theMarksRoundTripThroughQuotaJSON() throws {
+        let temp = try TempDir("codd-ultra-quota")
+        defer { temp.remove() }
+        let store = QuotaStore(dataRoot: temp.url)
+        var book = QuotaBook()
+        book.ingest(cswap(3, five: nil, week: week(30), capturedAt: at(0)))
+        book.ingest(statusLine(.number(3), five: nil, week: week(30.5), capturedAt: at(1)))
+        book.ingest(statusLine(.number(2), five: five, week: week(20), capturedAt: at(0)))
+        try store.save(book)
+        #expect(store.load() == book)
+        let json = try #require(JSONValue.parse(try Data(contentsOf: store.url)))
+        // Still v1: optional keys that 1.0.0's reader skips (it reads #3 as an unknown 5h window).
+        #expect(json["v"] == .number(1))
+        let three = try json.require("accounts").require("3")
+        // cswap's row said so; the report after it has no earlier one to rise above.
+        #expect(three["fiveHourAbsentAt"] == .string(JSDate.isoString(at(0))))
+        #expect(three["fiveHour"] == nil && three["weekly"] != nil)
+        #expect(three["statusLineWeeklyHigh"]?["usedPercent"] == .number(30.5))
+        #expect(three["statusLineWeeklyHigh"]?["resetsAt"] == .string(JSDate.isoString(referenceNow.addingTimeInterval(3 * 86_400))))
+        #expect(json["accounts"]?["2"]?["fiveHourAbsentAt"] == nil)
+        let entry = try #require(book.entry(.number(3)))
+        #expect(try JSONDecoder().decode(QuotaEntry.self, from: try JSONEncoder().encode(entry)) == entry)
+    }
+
+    /// A 1.0.0 quota.json: the stale 10/31 5h window stays (the reset passed: it reads as 100 %)
+    /// while reports keep the weekly used %, and goes with the first one whose weekly used % rose.
+    @Test func aFileWrittenByOneZeroZeroReadsAsBefore() throws {
+        let old = #"{"v":1,"accounts":{"3":{"fiveHour":{"usedPercent":12,"resetsAt":"2026-10-31T09:00:00.000Z","source":"statusline","capturedAt":"2026-10-31T05:00:00.000Z"},"weekly":{"usedPercent":30,"resetsAt":"2026-11-05T04:00:00.000Z","source":"statusline","capturedAt":"2026-11-02T03:00:00.000Z"},"identity":"0123456789abcdef"}}}"#
+        let temp = try TempDir("codd-ultra-quota")
+        defer { temp.remove() }
+        let store = QuotaStore(dataRoot: temp.url)
+        try Data(old.utf8).write(to: store.url)
+        var book = store.load()
+        let e = try #require(book.entry(.number(3)))
+        #expect(e.fiveHour?.window.usedPercent == 12 && e.fiveHourAbsentAt == nil && !e.fiveHourAbsent && e.statusLineWeeklyHigh == nil)
+        let weekReset = try #require(JSDate.date(fromISO: "2026-11-05T04:00:00Z"))
+        func report(_ iso: String, _ used: Double) throws {
+            book.ingest(.fromStatusLine(account: .number(3), fiveHour: nil, weekly: QuotaWindow(usedPercent: used, resetsAt: weekReset),
+                                        capturedAt: try #require(JSDate.date(fromISO: iso)), identity: "0123456789abcdef"))
+        }
+        try report("2026-11-02T03:00:30Z", 30)
+        try report("2026-11-02T03:00:31Z", 30)
+        #expect(book.entry(.number(3))?.fiveHour?.window.usedPercent == 12)
+        try report("2026-11-02T03:05:00Z", 30.4)
+        #expect(book.entry(.number(3))?.fiveHourAbsent == true)
+        // A hand-edited file with both keeps the newer one.
+        let both = QuotaEntry(json: JSONValue.parse(Data(#"{"fiveHour":{"usedPercent":1,"source":"cswap","capturedAt":"2026-11-02T03:00:00.000Z"},"fiveHourAbsentAt":"2026-11-01T00:00:00.000Z"}"#.utf8)) ?? .null)
+        #expect(both.fiveHour != nil && both.fiveHourAbsentAt == nil)
     }
 }

@@ -105,7 +105,8 @@ struct HomeModel: Equatable {
         var slot: String
         var alias: String
         var active: Bool
-        var fiveHour: QuotaWindow
+        /// The 5h place: the 5h window, a per-model weekly window on a plan without 5h, or nil.
+        var fiveHour: QuotaSlot?
         var week: QuotaWindow
         var source: String
         /// `1w 用量超前預期 · 預估 10/17 18:00 用完`.
@@ -209,7 +210,7 @@ struct HomeModel: Equatable {
         let threshold = accounts.autoSwitch.enabled ? accounts.autoSwitch.thresholdPercent : nil
         usage = AccountOrdering.byWeeklyReset(accounts.accounts).map { account in
             UsageRow(id: account.id, slot: account.slot, alias: account.alias, active: account.id == accounts.activeAccountID,
-                     fiveHour: account.fiveHour, week: account.week, source: account.source,
+                     fiveHour: account.fiveHourSlot, week: account.week, source: account.source,
                      weekExhaustsAt: account.weekExhaustsAt, threshold: threshold)
         }
         autoSwitchOn = accounts.autoSwitch.enabled

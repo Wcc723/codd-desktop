@@ -260,6 +260,50 @@ struct AutoSwitchPolicyTests {
         let r1 = try #require(rows.first { $0.accountNumber == 1 })
         #expect(r1.marginPercent == 98)
     }
+
+    // MARK: Plans without a 5h window (Ultra)
+
+    /// An Ultra account: 1w only (`fiveHourAbsent`).
+    func ultra(_ n: Int, active: Bool = false, week: Double, weekReset: Date?) -> Account {
+        Account(number: n, alias: "u\(n)", isActive: active, fiveHourAbsent: true,
+                weekly: QuotaWindow(usedPercent: week, resetsAt: weekReset))
+    }
+
+    @Test func activeWithoutFiveHourIsJudgedOnTheWeeklyWindow() {
+        let target = account(2, five: 0, week: 0, weekReset: hours(60))
+        #expect(eval([ultra(1, active: true, week: 50, weekReset: hours(50)), target]) == .activeAboveThreshold)
+        #expect(eval([ultra(1, active: true, week: 98, weekReset: hours(50)), target])
+            == .switchTo(accountNumber: 2, trigger: AutoSwitchTrigger(accountNumber: 1, window: .weekly, remainingPercent: 2)))
+        // The 5h checkbox alone does not apply to it: nothing to check, not unknown.
+        var fiveOnly = on
+        fiveOnly.checkWeekly = false
+        #expect(eval([ultra(1, active: true, week: 99, weekReset: hours(50)), target], fiveOnly) == .activeAboveThreshold)
+        // 1w unknown too: unknown (the weekly checkbox is on).
+        let blind = Account(number: 1, isActive: true, fiveHourAbsent: true)
+        #expect(eval([blind, target]) == .activeUsageUnknown(accountNumber: 1))
+    }
+
+    @Test func aTargetWithoutFiveHourNeedsOnlyTheWeeklyWindow() {
+        let active = account(1, active: true, five: 99, week: 50, weekReset: hours(50))
+        let trigger = AutoSwitchTrigger(accountNumber: 1, window: .fiveHour, remainingPercent: 1)
+        #expect(eval([active, ultra(2, week: 60, weekReset: hours(30))]) == .switchTo(accountNumber: 2, trigger: trigger))
+        #expect(eval([active, ultra(2, week: 98, weekReset: hours(30))]) == .noEligibleTarget(trigger: trigger))
+        // Without the absence mark a missing 5h is unknown: never a target.
+        let unknown = Account(number: 2, weekly: QuotaWindow(usedPercent: 0, resetsAt: hours(30)))
+        #expect(!AutoSwitchPolicy.isEligibleTarget(unknown, threshold: 2, now: referenceNow))
+        #expect(AutoSwitchPolicy.isEligibleTarget(ultra(2, week: 0, weekReset: hours(30)), threshold: 2, now: referenceNow))
+        // R7 order still decides between an Ultra and a Max account.
+        let a = [active, account(3, five: 0, week: 0, weekReset: hours(40)), ultra(2, week: 10, weekReset: hours(20))]
+        #expect(eval(a) == .switchTo(accountNumber: 2, trigger: trigger))
+    }
+
+    @Test func previewOfAnAccountWithoutFiveHourUsesTheWeeklyWindow() throws {
+        let rows = AutoSwitchPolicy.preview(accounts: [ultra(1, active: true, week: 85, weekReset: hours(20)),
+                                                       ultra(2, week: 40, weekReset: hours(30))], settings: on, now: referenceNow)
+        let r1 = try #require(rows.first)
+        #expect(r1.lowerWindow == .weekly && r1.lowerRemainingPercent == 15 && r1.marginPercent == 13)
+        #expect(rows.last?.isNextTarget == true)
+    }
 }
 
 @Suite("Auto-switch controller")

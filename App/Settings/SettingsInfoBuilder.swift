@@ -140,7 +140,8 @@ enum SettingsInfoBuilder {
 
     /// 帳號別名 rows in R7 order (cswap's accounts; the D4 pseudo account has no alias to edit).
     /// A target is eligible as `AutoSwitchPolicy` decides (not disabled, a usage status that
-    /// allows it, both windows known); the page then applies the threshold being edited.
+    /// allows it, both windows known, 1w only on a plan without 5h); the page then applies the
+    /// threshold being edited.
     static func accountRows(_ accounts: any AccountStore, now: Date, calendar: Calendar, core: [Account] = []) -> [SettingsAccountRow] {
         let engine = Dictionary(core.map { (String($0.number), $0) }, uniquingKeysWith: { first, _ in first })
         return accounts.accounts.filter { !$0.isPseudo }.map { vm in
@@ -154,7 +155,8 @@ enum SettingsInfoBuilder {
             }
             let reset = vm.week.resetsAt
             return SettingsAccountRow(
-                id: vm.id, slot: vm.slot, alias: vm.alias, plan: vm.plan, fiveHour: quota(vm.fiveHour), weekly: quota(vm.week),
+                id: vm.id, slot: vm.slot, alias: vm.alias, plan: vm.plan, fiveHour: vm.fiveHour.map(quota), weekly: quota(vm.week),
+                scoped: vm.scoped.map { SettingsScopedQuota(name: $0.name, quota: quota($0.window)) },
                 resetIn: reset.map { DurationFormat.countdown(to: $0, now: now) } ?? "—",
                 resetAt: reset.map { ClockFormat.resetLabel($0, now: now, calendar: calendar) } ?? "",
                 sessions: sessions, isActive: active, canEditAlias: true,

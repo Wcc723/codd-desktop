@@ -27,7 +27,7 @@
 #                                # the runs that happened.
 #
 # Scenarios (each run is a separate app launch with -codd-quit-after and -codd-dump-state):
-#   A1   accounts from the fake state: R7 order #2 #3 #1, active #3, plans MAX 20x;
+#   A1   accounts from the fake state: R7 order #2 #3 #1, active #3, plans ULTRA (tier max_20x);
 #   A2   status line: --settings carries statusLine = '<dataRoot>/bin/codd-statusline-<hex12>'
 #        (single-quoted: Claude runs it through /bin/sh -c) with the user's padding, the chain env
 #        decodes to the user's command, the fake claude's status line prints USER-SL-ok and exits
@@ -324,7 +324,7 @@ check "A1 accounts ready, cswap 0.26.0, R7 order #2 #3 #1" jtrue "$D" \
     "acc()['availability'] == 'ready' and acc()['cswapVersion'] == '0.26.0' and [x['id'] for x in order()] == ['2', '3', '1']"
 check "A1 active #3 (the .claude.json identity), aliases as cswap stores them" jtrue "$D" \
     "acc()['active'] == '3' and [x['active'] for x in order()] == [False, True, False] and [x['alias'] for x in order()] == ['藍鵲', '工作', '個人']"
-check "A1 plans MAX 20x from the config backups" jtrue "$D" "[x['plan'] for x in order()] == ['MAX 20x'] * 3"
+check "A1 plans ULTRA from the config backups" jtrue "$D" "[x['plan'] for x in order()] == ['ULTRA'] * 3"
 check "A1 #2 from the cswap cache (5h 98 %, 1w 46 %, source cswap cache)" jtrue "$D" \
     "A(2)['five']['remaining'] == 98 and A(2)['weekly']['remaining'] == 46 and A(2)['source'] == 'cswap cache' and A(2)['hasSessionProfile'] is True"
 wait_app
@@ -766,8 +766,8 @@ start_app i1 i 6
 wait_app
 check "A10 run quit by itself" test $? == 0
 D="$ROOT/i1.json"
-check "A10 four accounts in R7 order, #4 MAX 5x" jtrue "$D" \
-    "[x['id'] for x in order()] == ['2', '3', '1', '4'] and A(4)['plan'] == 'MAX 5x'"
+check "A10 four accounts in R7 order, #4 MAX" jtrue "$D" \
+    "[x['id'] for x in order()] == ['2', '3', '1', '4'] and A(4)['plan'] == 'MAX'"
 check "A10 menu bar: 3 rows (the active #3 among them) + ▸ 全部帳號 4" jtrue "$D" \
     "d['menuBar']['accounts'] == ['2', '3', '1'] and d['menuBar']['total'] == 4 and d['menuBar']['expanded'] is False"
 

@@ -29,6 +29,8 @@ struct MenuBarPanelContent: Equatable {
 
     var live: Int
     var hostLine: String
+    /// The footer's CPU / MEM / BAT meters (nil: `hostLine` as text).
+    var hostMeters: HostMeters?
     var cleanupSuggestions: Int
     /// The ACCOUNTS rows shown (D23: at most 3 in R7 order, the active one always among them,
     /// unless expanded).
@@ -147,7 +149,8 @@ struct MenuBarPanelContent: Equatable {
                                                idle: hidden.filter { $0.state == .idle }.count)
 
         let ids = accounts.accounts.map(\.id)
-        return MenuBarPanelContent(live: counts.live, hostLine: host.line, cleanupSuggestions: host.cleanupSuggestions,
+        return MenuBarPanelContent(live: counts.live, hostLine: host.line, hostMeters: host.meters,
+                                   cleanupSuggestions: host.cleanupSuggestions,
                                    accountIDs: visibleAccounts(ids, active: accounts.activeAccountID, expanded: expanded),
                                    accountTotal: ids.count, accountsExpanded: expanded,
                                    accountsNote: accounts.isPlaceholder ? nil : accounts.availability.note,

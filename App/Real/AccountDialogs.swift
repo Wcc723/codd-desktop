@@ -34,9 +34,11 @@ enum SwitchDialogData {
         var chips: [DialogChip] = []
         if active { chips.append(.active) }
         if pinned > 0 { chips.append(.pinned(pinned)) }
-        return DialogAccount(slot: vm.slot, alias: vm.alias, plan: vm.plan,
-                             fiveHourRemaining: vm.fiveHour.known ? Double(vm.fiveHour.remainingPercent) : nil,
-                             fiveHourTone: tone(vm.fiveHour.tone),
+        // The 5h place: 5h, a per-model weekly window on a plan without 5h, or none.
+        let first = vm.fiveHourSlot
+        return DialogAccount(slot: vm.slot, alias: vm.alias, plan: vm.plan, fiveHourKey: first?.key,
+                             fiveHourRemaining: first.flatMap { $0.quota.known ? Double($0.quota.remainingPercent) : nil },
+                             fiveHourTone: tone(first?.quota.tone ?? .muted),
                              weeklyRemaining: vm.week.known ? Double(vm.week.remainingPercent) : nil, weeklyTone: tone(vm.week.tone),
                              reset: weeklyReset(vm, calendar: calendar), resetsAt: isFrom ? vm.week.resetsAt : nil,
                              source: vm.source.isEmpty ? "尚無用量" : vm.source, sourceAt: vm.source.isEmpty ? nil : vm.sourceAt,

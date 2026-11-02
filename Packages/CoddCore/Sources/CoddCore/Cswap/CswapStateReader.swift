@@ -193,16 +193,19 @@ public enum CswapStateError: Error, Equatable, CustomStringConvertible {
     }
 }
 
-/// D25 plan chip from `oauthAccount.organizationRateLimitTier` / `organizationType`.
+/// D25 plan chip from `oauthAccount.organizationRateLimitTier` / `organizationType`. Anthropic
+/// renamed the plans (2026-11): Max 20x is Ultra, Max 5x is Max; the tier strings may keep the
+/// old `max_20x` / `max_5x` names or say `ultra`.
 public enum PlanLabel {
     public static func from(rateLimitTier: String?, organizationType: String?) -> String? {
         let fields = [rateLimitTier, organizationType].compactMap { $0?.lowercased() }.filter { !$0.isEmpty }
         guard !fields.isEmpty else { return nil }
-        if fields.contains(where: { $0.contains("max_20x") }) { return "MAX 20x" }
-        if fields.contains(where: { $0.contains("max_5x") }) { return "MAX 5x" }
+        if fields.contains(where: { $0.contains("max_20x") }) { return "ULTRA" }
+        if fields.contains(where: { $0.contains("max_5x") }) { return "MAX" }
         let tokens = Set(fields.flatMap { field in
             field.split { c in !c.isLetter && !c.isNumber }.map(String.init)
         })
+        if tokens.contains("ultra") { return "ULTRA" }
         if tokens.contains("enterprise") { return "ENT" }
         if tokens.contains("team") { return "TEAM" }
         if tokens.contains("max") { return "MAX" }

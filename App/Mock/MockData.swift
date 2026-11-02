@@ -155,25 +155,24 @@ enum MockData {
         return list
     }
 
-    // MARK: Accounts (cswap 0.26.0; aliases only, plan MAX 20x)
+    // MARK: Accounts (cswap 0.26.0; aliases only)
 
+    /// The 2026-11 plans: #3 is a Max account (5h + 1w), #2 and #1 are Ultra accounts without a 5h
+    /// window; cswap's cache has #2's per-model weekly window (Fable), which takes the 5h place.
     static func accounts() -> [AccountVM] {
         let list = [
-            AccountVM(id: "3", slot: "#3", alias: "工作", plan: "MAX 20x",
+            AccountVM(id: "3", slot: "#3", alias: "工作", plan: "MAX",
                       fiveHour: QuotaWindow(remainingPercent: 91, resetsAt: later(2 * h + 57 * m)),
                       week: QuotaWindow(remainingPercent: 15, resetsAt: later(3 * d + 1 * h + 18 * m)),
                       source: "statusline", sourceAt: ago(12), sessionCount: 12, weekExhaustsAt: later(2 * d + 7 * h + 18 * m)),
-            AccountVM(id: "2", slot: "#2", alias: "藍鵲", plan: "MAX 20x",
-                      fiveHour: QuotaWindow(remainingPercent: 98, resetsAt: later(2 * h + 37 * m)),
+            AccountVM(id: "2", slot: "#2", alias: "藍鵲", plan: "ULTRA", fiveHour: nil,
                       week: QuotaWindow(remainingPercent: 46, resetsAt: later(1 * d + 12 * h + 17 * m)),
                       source: "cswap cache", sourceAt: ago(3 * m), sessionCount: 1),
-            AccountVM(id: "1", slot: "#1", alias: "個人", plan: "MAX 20x",
-                      fiveHour: QuotaWindow(remainingPercent: 100, resetsAt: nil, started: false),
+            AccountVM(id: "1", slot: "#1", alias: "個人", plan: "ULTRA", fiveHour: nil,
                       week: QuotaWindow(remainingPercent: 100, resetsAt: later(4 * d + 9 * h + 18 * m)),
                       source: "cswap cache", sourceAt: ago(3 * m), sessionCount: 0),
         ]
-        // The Status artboard: only #3's status line reported the per-model weekly window.
-        list[0].scoped = [ScopedQuota(name: "Fable", remainingPercent: 100, resetsAt: list[0].week.resetsAt)]
+        list[1].scoped = [ScopedQuota(name: "Fable", remainingPercent: 72, resetsAt: list[1].week.resetsAt)]
         return list
     }
 
@@ -219,7 +218,8 @@ enum MockData {
     /// Claude's own settings in mock mode (D30 `預設 (opus-5.5)`).
     static let claudeSettings = ClaudeUserSettingsSummary(cleanupPeriodDays: 30, model: "opus-5.5")
 
-    static let host = HostSummary(line: "cpu 23% · mem 21/36G · bat 86%", mcpEndpoint: "127.0.0.1:47821",
+    static let host = HostSummary(line: "cpu 23% · mem 21/36G · bat 86%", meters: HostMeters(sample: hostSample()),
+                                  mcpEndpoint: "127.0.0.1:47821",
                                   mcpClients: 3, mcpRunning: true, hooksInstalled: true, hooksHealthy: true,
                                   cleanupSuggestions: 15)
 }
@@ -239,13 +239,14 @@ extension MockData {
 
     /// SPEC §5 / Status artboard: studio-mbp, 23 % CPU (load 3.12, 12 cores), 21.4 / 36G, 412G free
     /// of 1T, swap 1.2 / 2G, battery 86 % on AC, booted 10/12 06:42.
-    static func hostSample(at: Date = referenceDate, cpu: Double = 23, memoryFraction: Double? = nil) -> HostSample {
+    static func hostSample(at: Date = referenceDate, cpu: Double = 23, memoryFraction: Double? = nil,
+                           pressure: HostSample.Memory.Pressure = .normal) -> HostSample {
         let total = bytes(36)
         let used = memoryFraction.map { UInt64(Double(total) * $0) } ?? bytes(21.4)
         return HostSample(at: at, cpu: HostSample.CPU(user: cpu * 0.65, system: cpu * 0.35, total: cpu, load1: 3.12, load5: 2.8,
                                                        load15: 2.5, cores: 12),
                           memory: HostSample.Memory(total: total, used: used, app: bytes(13.8), wired: bytes(4.3), compressed: bytes(3.3),
-                                                    pressure: .normal),
+                                                    pressure: pressure),
                           disk: HostSample.Disk(volumeName: "Macintosh HD", total: bytes(1024), available: bytes(412)),
                           swap: HostSample.Swap(total: bytes(2), used: bytes(1.2)),
                           battery: HostSample.Battery(percent: 86, charging: false, onAC: true),

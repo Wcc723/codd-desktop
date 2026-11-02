@@ -34,6 +34,18 @@ struct ScopedQuota: Equatable, Sendable {
     var name: String
     var remainingPercent: Int
     var resetsAt: Date?
+
+    /// As a quota window (a weekly window has always started).
+    var window: QuotaWindow { QuotaWindow(remainingPercent: remainingPercent, resetsAt: resetsAt) }
+}
+
+/// One line of a two-window layout: the `5h` window, or on a plan without one a per-model weekly
+/// window by its name (`Fable`).
+struct QuotaSlot: Equatable, Sendable {
+    var key: String
+    var quota: QuotaWindow
+    /// The 5h window (its `未開始` wording, the auto-switch tick), not a weekly one.
+    var isFiveHour: Bool
 }
 
 /// How trustworthy an account's numbers are (cswap's cache health, D2).
@@ -65,9 +77,12 @@ final class AccountVM: Identifiable {
     /// Slot label, e.g. `#3` (`—` for the D4 pseudo account).
     var slot: String
     var alias: String
-    /// D25 plan chip (`MAX 20x`); nil when unknown.
+    /// D25 plan chip (`ULTRA`, `MAX`); nil when unknown.
     var plan: String?
-    var fiveHour: QuotaWindow
+    /// The 5-hour window; nil when the plan has none (a verified Ultra account: the newest numbers
+    /// with a weekly window carried no 5h, CoddCore `QuotaEntry.fiveHourAbsentAt`). `.unknown`
+    /// before anything was measured.
+    var fiveHour: QuotaWindow?
     var week: QuotaWindow
     var scoped: [ScopedQuota] = []
     /// Where the newest number came from, e.g. `statusline`, `cswap cache` (empty: nothing yet).
@@ -90,7 +105,7 @@ final class AccountVM: Identifiable {
     /// D4: `#— 目前登入`, the global login when cswap is not available (never a switch target).
     var isPseudo = false
 
-    init(id: AccountID, slot: String, alias: String, plan: String?, fiveHour: QuotaWindow, week: QuotaWindow,
+    init(id: AccountID, slot: String, alias: String, plan: String?, fiveHour: QuotaWindow?, week: QuotaWindow,
          source: String, sourceAt: Date?, sessionCount: Int, weekExhaustsAt: Date? = nil) {
         self.id = id
         self.slot = slot
@@ -113,8 +128,27 @@ final class AccountVM: Identifiable {
     /// Worst tone of the two windows (rail account chip).
     var worstTone: QuotaTone {
         let order: [QuotaTone] = [.crit, .warn, .ok, .muted]
-        let tones = [fiveHour.tone, week.tone]
+        let tones = [fiveHourSlot?.quota.tone, week.tone].compactMap { $0 }
         return order.first(where: tones.contains) ?? .ok
+    }
+
+    /// The window in the 5h place of a two-window layout (sidebar and menu bar rows, rail chip,
+    /// Home, ⌘N, dialogs, Settings): the 5h window (also while unknown); on a plan without one the
+    /// first per-model weekly window (`Fable`); nil when there is neither, and 1w stands alone.
+    var fiveHourSlot: QuotaSlot? {
+        if let fiveHour { return QuotaSlot(key: "5h", quota: fiveHour, isFiveHour: true) }
+        return scoped.first.map { QuotaSlot(key: $0.name, quota: $0.window, isFiveHour: false) }
+    }
+
+    /// `5h 剩 91% · 1w 剩 15%`; on a plan without 5h `Fable 剩 100% · 1w 剩 15%` or `1w 剩 15%`.
+    var quotaSummary: String {
+        [fiveHourSlot.map { "\($0.key) 剩 \($0.quota.valueText)" }, "1w 剩 \(week.valueText)"].compactMap { $0 }.joined(separator: " · ")
+    }
+
+    /// VoiceOver: `5 小時剩 91%，本週剩 15%`, `Fable 剩 100%，本週剩 15%`, `本週剩 15%`.
+    var spokenQuota: String {
+        let first = fiveHourSlot.map { ($0.isFiveHour ? "5 小時" : $0.key + " ") + "剩 \($0.quota.valueText)" }
+        return [first, "本週剩 \(week.valueText)"].compactMap { $0 }.joined(separator: "，")
     }
 
     /// `statusline · 12s 前` (D7), `尚無用量` before the first number.

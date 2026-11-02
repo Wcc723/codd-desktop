@@ -138,23 +138,33 @@ public struct CswapSpend: Sendable, Equatable, Decodable {
 /// `usage` / `lastGoodUsage`. Every window may be absent (the API does not always send them).
 public struct CswapUsage: Sendable, Equatable, Decodable {
     public var fiveHour: CswapWindow?
+    /// `fiveHour` was there and not `null` but could not be read (no `pct`, a string): a window
+    /// CODD cannot show, not a missing one.
+    public var fiveHourUnreadable: Bool
     public var sevenDay: CswapWindow?
     public var scoped: [CswapScopedWindow]
     public var spend: CswapSpend?
 
     public init(fiveHour: CswapWindow? = nil, sevenDay: CswapWindow? = nil,
-                scoped: [CswapScopedWindow] = [], spend: CswapSpend? = nil) {
+                scoped: [CswapScopedWindow] = [], spend: CswapSpend? = nil, fiveHourUnreadable: Bool = false) {
         self.fiveHour = fiveHour
+        self.fiveHourUnreadable = fiveHour == nil && fiveHourUnreadable
         self.sevenDay = sevenDay
         self.scoped = scoped
         self.spend = spend
     }
+
+    /// A weekly window and no 5-hour one at all (absent or `null`): the plan has no 5-hour limit
+    /// (a verified Ultra account). cswap keeps a 5h window that has not started as `pct 0`, so
+    /// its row says so by itself (``QuotaBook/ingest(_:)``).
+    public var lacksFiveHour: Bool { fiveHour == nil && !fiveHourUnreadable && sevenDay != nil }
 
     enum CodingKeys: String, CodingKey { case fiveHour, sevenDay, scoped, spend }
 
     public init(from decoder: any Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         fiveHour = c.lenient(CswapWindow.self, forKey: .fiveHour)
+        fiveHourUnreadable = fiveHour == nil && c.contains(.fiveHour) && (try? c.decodeNil(forKey: .fiveHour)) == false
         sevenDay = c.lenient(CswapWindow.self, forKey: .sevenDay)
         scoped = c.lenient(LossyArray<CswapScopedWindow>.self, forKey: .scoped)?.elements ?? []
         spend = c.lenient(CswapSpend.self, forKey: .spend)

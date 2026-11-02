@@ -183,7 +183,7 @@ struct QuickSwitchModel: Equatable {
         struct Account {
             var id: AccountID
             var name: String
-            /// `5h 剩 98% · 1w 剩 46%`.
+            /// `5h 剩 98% · 1w 剩 46%` (`AccountVM.quotaSummary`: no 5h on a plan without one).
             var quota: String
         }
 
@@ -416,7 +416,7 @@ extension QuickSwitchModel.Input {
         input.notes = notes
         if let accounts, !accounts.isSwitching {
             input.accounts = accounts.accounts.filter { $0.id != accounts.activeAccountID && !$0.isPseudo && !$0.isDisabled }.map {
-                Account(id: $0.id, name: $0.displayName, quota: "5h 剩 \($0.fiveHour.valueText) · 1w 剩 \($0.week.valueText)")
+                Account(id: $0.id, name: $0.displayName, quota: $0.quotaSummary)
             }
         }
         let snapshot = SidebarSnapshotBuilder.build(store: store, mode: shell.sidebarMode, filter: shell.filterText)

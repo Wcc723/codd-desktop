@@ -69,9 +69,10 @@ extension AppDelegate {
         menu.addItem(settings)
     }
 
-    /// `#3 工作 · 5h 剩 91% · 1w 剩 15%` (aliases only, never an e-mail).
+    /// `#3 工作 · 5h 剩 91% · 1w 剩 15%`, on a plan without 5h `#2 藍鵲 · Fable 剩 72% · 1w 剩 46%`
+    /// (aliases only, never an e-mail).
     static func accountMenuTitle(_ account: AccountVM) -> String {
-        "\(account.displayName) · 5h 剩 \(account.fiveHour.valueText) · 1w 剩 \(account.week.valueText)"
+        "\(account.displayName) · \(account.quotaSummary)"
     }
 
     // MARK: CODD › 暫停通知 1 小時 / 恢復通知

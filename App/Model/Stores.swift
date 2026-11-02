@@ -4,7 +4,10 @@ import CoddUI
 
 /// One-line facts for the sidebar footer, status bar and menu bar panel.
 struct HostSummary: Equatable, Sendable {
+    /// The host one-liner as text: the meters' plain form, or `CODD · <root>` before the first sample.
     var line: String
+    /// D36: the footer's CPU / MEM / BAT meters; nil draws `line` instead.
+    var meters: HostMeters? = nil
     var mcpEndpoint: String
     var mcpClients: Int
     var mcpRunning: Bool

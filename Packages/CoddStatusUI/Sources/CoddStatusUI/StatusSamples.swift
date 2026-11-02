@@ -113,24 +113,23 @@ public enum StatusSamples {
             return now.addingTimeInterval(date.timeIntervalSince(referenceNow))
         }
         func reset(_ date: Date) -> String { "重置 " + ClockFormat.resetLabel(date, now: now, calendar: calendar) }
-        let five2 = at(10, 15, 13, 19), week2 = at(10, 16, 22, 59)
+        let week2 = at(10, 16, 22, 59)
         let five3 = at(10, 15, 13, 39), week3 = at(10, 18, 12, 0)
         let week1 = at(10, 19, 20, 0)
+        // 2026-11 plans: the Ultra accounts #2 and #1 have no 5h window (no 5h row); #3 is a Max account.
         return [
-            AccountCardModel(id: "2", slot: "#2", alias: "藍鵲", plan: "MAX 20x", source: .ago(now.addingTimeInterval(-180), prefix: "cswap cache · "),
-                             rows: [AccountQuotaRow(key: "5h", remaining: 98, tone: .ok, reset: reset(five2), countdown: .countdown(five2)),
-                                    AccountQuotaRow(key: "1w", remaining: 46, tone: .warn, reset: reset(week2), countdown: .countdown(week2), isSortKey: true),
-                                    AccountQuotaRow(key: "Fable", remaining: nil, tone: .muted, reset: "快取未提供", countdown: "等待回報")],
+            AccountCardModel(id: "2", slot: "#2", alias: "藍鵲", plan: "ULTRA", source: .ago(now.addingTimeInterval(-180), prefix: "cswap cache · "),
+                             rows: [AccountQuotaRow(key: "1w", remaining: 46, tone: .warn, reset: reset(week2), countdown: .countdown(week2), isSortKey: true),
+                                    AccountQuotaRow(key: "Fable", remaining: 72, tone: .ok, reset: "週額度 · 同 1w 重置", countdown: .countdown(week2))],
                              who: .pinned(1), button: .switchable),
-            AccountCardModel(id: "3", slot: "#3", alias: "工作", plan: "MAX 20x", isActive: true,
+            AccountCardModel(id: "3", slot: "#3", alias: "工作", plan: "MAX", isActive: true,
                              source: .ago(now.addingTimeInterval(-12), prefix: "statusline · "),
                              rows: [AccountQuotaRow(key: "5h", remaining: 91, tone: .ok, reset: reset(five3), countdown: .countdown(five3)),
                                     AccountQuotaRow(key: "1w", remaining: 15, tone: .crit, reset: reset(week3), countdown: .countdown(week3), isSortKey: true),
-                                    AccountQuotaRow(key: "Fable", remaining: 100, tone: .ok, reset: "週額度 · 同 1w 重置", countdown: "未使用")],
+                                    AccountQuotaRow(key: "Fable", remaining: nil, tone: .muted, reset: "快取未提供", countdown: "等待回報")],
                              pace: "↗ 1w 用量超前預期 · 預估 10/17 18:00 用完", who: .following(12), button: .active),
-            AccountCardModel(id: "1", slot: "#1", alias: "個人", plan: "MAX 20x", source: .ago(now.addingTimeInterval(-180), prefix: "cswap cache · "),
-                             rows: [AccountQuotaRow(key: "5h", remaining: 100, tone: .muted, reset: "未開始", countdown: "第一則訊息後起算"),
-                                    AccountQuotaRow(key: "1w", remaining: 100, tone: .ok, reset: reset(week1), countdown: .countdown(week1), isSortKey: true),
+            AccountCardModel(id: "1", slot: "#1", alias: "個人", plan: "ULTRA", source: .ago(now.addingTimeInterval(-180), prefix: "cswap cache · "),
+                             rows: [AccountQuotaRow(key: "1w", remaining: 100, tone: .ok, reset: reset(week1), countdown: .countdown(week1), isSortKey: true),
                                     AccountQuotaRow(key: "Fable", remaining: nil, tone: .muted, reset: "快取未提供", countdown: "等待回報")],
                              who: .none, button: .switchable),
         ]

@@ -12,13 +12,14 @@ struct SpecTextTests {
         let now = StatusSamples.referenceNow
         let cards = StatusSamples.accountCards(now: now)
         let texts = cards.map { card in card.rows.map { $0.countdown.text(now: now) } }
-        #expect(texts[0] == ["2h37m後", "1d12h後", "等待回報"])
-        #expect(texts[1] == ["2h57m後", "3d01h後", "未使用"])
-        #expect(texts[2] == ["第一則訊息後起算", "4d09h後", "等待回報"])
+        #expect(texts[0] == ["1d12h後", "1d12h後"])
+        #expect(texts[1] == ["2h57m後", "3d01h後", "等待回報"])
+        #expect(texts[2] == ["4d09h後", "等待回報"])
         #expect(cards.map { $0.source.text(now: now) } == ["cswap cache · 3m 前", "statusline · 12s 前", "cswap cache · 3m 前"])
-        #expect(cards.map { $0.rows.map(\.reset) } == [["重置 13:19", "重置 10/16 週五 22:59", "快取未提供"],
-                                                       ["重置 13:39", "重置 10/18 週日 12:00", "週額度 · 同 1w 重置"],
-                                                       ["未開始", "重置 10/19 週一 20:00", "快取未提供"]])
+        // The Ultra accounts #2 and #1 have no 5h row.
+        #expect(cards.map { $0.rows.map(\.reset) } == [["重置 10/16 週五 22:59", "週額度 · 同 1w 重置"],
+                                                       ["重置 13:39", "重置 10/18 週日 12:00", "快取未提供"],
+                                                       ["重置 10/19 週一 20:00", "快取未提供"]])
         #expect(StatusClock.elapsed(now.addingTimeInterval(-180)).text(now: now) == "3m")
         #expect(StatusText.countdown(now.addingTimeInterval(-1)).text(now: now) == "已重置")
         #expect(StatusText("等待回報").ticks == false)
@@ -82,26 +83,26 @@ struct SpecTextTests {
         // R7 order: #2, #3 (active), #1, then the add card.
         #expect(harness.page.accounts.orderedCards.map { $0.model?.slot } == ["#2", "#3", "#1"])
         #expect(harness.card("2").visibleTexts == [
-            "#2", "藍鵲", "MAX 20X", "SWITCH", "● ok", "·", "cswap cache · 3m 前",
-            "重置 13:19", "2h37m後", "重置 10/16 週五 22:59", "1d12h後", "快取未提供", "等待回報",
+            "#2", "藍鵲", "ULTRA", "SWITCH", "● ok", "·", "cswap cache · 3m 前",
+            "重置 10/16 週五 22:59", "1d12h後", "週額度 · 同 1w 重置", "1d12h後",
             "●", "1 個 session 固定（cswap run）",
         ])
         #expect(harness.card("3").visibleTexts == [
-            "#3", "工作", "MAX 20X", "ACTIVE", "● ok", "·", "statusline · 12s 前",
-            "重置 13:39", "2h57m後", "重置 10/18 週日 12:00", "3d01h後", "週額度 · 同 1w 重置", "未使用",
+            "#3", "工作", "MAX", "ACTIVE", "● ok", "·", "statusline · 12s 前",
+            "重置 13:39", "2h57m後", "重置 10/18 週日 12:00", "3d01h後", "快取未提供", "等待回報",
             "↗ 1w 用量超前預期 · 預估 10/17 18:00 用完",
             "●", "12 個 session 跟隨全域登入",
         ])
         #expect(harness.card("1").visibleTexts == [
-            "#1", "個人", "MAX 20X", "SWITCH", "● ok", "·", "cswap cache · 3m 前",
-            "未開始", "第一則訊息後起算", "重置 10/19 週一 20:00", "4d09h後", "快取未提供", "等待回報",
+            "#1", "個人", "ULTRA", "SWITCH", "● ok", "·", "cswap cache · 3m 前",
+            "重置 10/19 週一 20:00", "4d09h後", "快取未提供", "等待回報",
             "○", "0 個 session",
         ])
         // The quota bars (`.qrow`): key, value, tone.
         let bars = harness.page.accounts.orderedCards.map { $0.quotaBlocks.map { "\($0.bar.row.key) \($0.bar.row.valueText) \($0.bar.row.tone)" } }
-        #expect(bars == [["5h 98% ok", "1w 46% warn", "Fable — muted"],
-                         ["5h 91% ok", "1w 15% crit", "Fable 100% ok"],
-                         ["5h 100% muted", "1w 100% ok", "Fable — muted"]])
+        #expect(bars == [["1w 46% warn", "Fable 72% ok"],
+                         ["5h 91% ok", "1w 15% crit", "Fable — muted"],
+                         ["1w 100% ok", "Fable — muted"]])
         #expect(texts.containsInOrder(["+", "加入帳號", "cswap add · 用 claude /login 登入後擷取"]))
         #expect(texts.containsInOrder(["AUTO-SWITCH剩餘不足時自動切換", "OFF", "剩餘 ≤ 2%", "5h / 1w", "依排序第一個額度足夠的", "冷卻 300s",
                                        "設定", "// 用量只讀 statusline 與 cswap 快取，不另外打 API（避免 429）"]))

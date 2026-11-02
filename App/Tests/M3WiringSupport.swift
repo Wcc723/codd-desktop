@@ -69,7 +69,7 @@ struct FakeCswapState {
     static let h: TimeInterval = 3_600
     static let m: TimeInterval = 60
 
-    /// SPEC §5: #1 個人, #2 藍鵲 (MAX 20x), #3 工作 (active); #4 only with `accounts: 4`.
+    /// SPEC §5: #1 個人, #2 藍鵲 (tier max_20x: ULTRA), #3 工作 (active); #4 only with `accounts: 4` (max_5x: MAX).
     static let sample: [Account] = [
         Account(number: 1, email: "personal@example.com", organization: "", organizationName: "personal@example.com's Organization",
                 alias: "個人", tier: "default_claude_max_20x", five: (0, nil), week: (0, 4 * d + 9 * h), fetchedAgo: 3 * m),

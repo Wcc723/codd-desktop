@@ -255,7 +255,7 @@ public final class AddAccountDialogView: DialogContentView {
     var versionChipText: String? { versionChip.isHidden ? nil : model.cswapVersion }
 }
 
-/// `.sd-detect`: `● 偵測到 新帳號 · [MAX 20x]` in a green-tinted box (padding 5 / 10, 12 px), or
+/// `.sd-detect`: `● 偵測到 新帳號 · [ULTRA]` in a green-tinted box (padding 5 / 10, 12 px), or
 /// `● 已是 #2 藍鵲（會更新它的登入資料）` in an amber-tinted one (an update, not a new account).
 final class DetectBoxView: FlippedView {
     private var detected = DetectedLogin(isNew: true, text: "")

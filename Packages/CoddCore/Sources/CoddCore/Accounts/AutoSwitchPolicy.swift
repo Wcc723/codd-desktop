@@ -7,7 +7,7 @@ public struct AutoSwitchSettings: Sendable, Equatable, Codable {
     public var isEnabled: Bool
     /// Switch when the active account's remaining % is ≤ this (default 2, range 1–20).
     public var thresholdPercent: Double
-    /// Check the 5-hour window (default on).
+    /// Check the 5-hour window (default on), on accounts whose plan has one.
     public var checkFiveHour: Bool
     /// Check the weekly window (default on).
     public var checkWeekly: Bool
@@ -65,10 +65,11 @@ public enum AutoSwitchDecision: Sendable, Equatable {
 /// Trigger: the ACTIVE account's remaining ≤ threshold on the 5h window OR the weekly window
 /// (each only if its checkbox is on). Target: the first account in R7 order (``AccountOrdering``)
 /// whose 5h AND weekly remaining are both above the threshold — regardless of the checkboxes, as R8
-/// states. Windows are evaluated with ``QuotaWindow/status(at:)``: a not-started 5h window counts as
-/// 100 % and a passed reset as rolled over (100 %). A missing window is unknown: it can neither
-/// trigger nor qualify a target. Disabled accounts and accounts whose ``CswapUsageStatus`` does not
-/// allow switching are never targets.
+/// states. An account whose plan has no 5h window (``Account/fiveHourAbsent``, Ultra) is judged on
+/// the weekly window only, as the active account and as a target. Windows are evaluated with
+/// ``QuotaWindow/status(at:)``: a not-started 5h window counts as 100 % and a passed reset as rolled
+/// over (100 %). A missing window is unknown: it can neither trigger nor qualify a target. Disabled
+/// accounts and accounts whose ``CswapUsageStatus`` does not allow switching are never targets.
 public enum AutoSwitchPolicy {
     public static func evaluate(
         accounts: [Account], settings: AutoSwitchSettings, now: Date, lastAutoSwitchAt: Date?
@@ -77,11 +78,13 @@ public enum AutoSwitchPolicy {
         guard let active = accounts.first(where: \.isActive) else { return .noActiveAccount }
         let threshold = settings.effectiveThreshold
 
+        // The 5h checkbox applies only to an account that has a 5h window.
+        let checksFive = settings.checkFiveHour && !active.fiveHourAbsent
         var checked: [(QuotaWindowKind, Double)] = []
-        if settings.checkFiveHour, let w = active.fiveHour { checked.append((.fiveHour, w.status(at: now).remainingPercent)) }
+        if checksFive, let w = active.fiveHour { checked.append((.fiveHour, w.status(at: now).remainingPercent)) }
         if settings.checkWeekly, let w = active.weekly { checked.append((.weekly, w.status(at: now).remainingPercent)) }
         guard !checked.isEmpty else {
-            return settings.checkFiveHour || settings.checkWeekly
+            return checksFive || settings.checkWeekly
                 ? .activeUsageUnknown(accountNumber: active.number) : .activeAboveThreshold
         }
         let crossing = checked.filter { $0.1 <= threshold }.min { $0.1 < $1.1 }
@@ -103,18 +106,21 @@ public enum AutoSwitchPolicy {
         AccountOrdering.sorted(accounts, now: now).first { isEligibleTarget($0, threshold: threshold, now: now) }
     }
 
-    /// Both windows known and above `threshold`; not active, not disabled, usable status.
+    /// Both windows known and above `threshold` (the weekly one alone on a plan without 5h); not
+    /// active, not disabled, usable status.
     public static func isEligibleTarget(_ account: Account, threshold: Double, now: Date) -> Bool {
         guard !account.isActive, !account.isDisabled, account.usageStatus.allowsAutoSwitchTarget,
-              let five = account.fiveHour, let week = account.weekly else { return false }
-        return five.status(at: now).remainingPercent > threshold && week.status(at: now).remainingPercent > threshold
+              let week = account.weekly, week.status(at: now).remainingPercent > threshold else { return false }
+        if account.fiveHourAbsent { return true }
+        guard let five = account.fiveHour else { return false }
+        return five.status(at: now).remainingPercent > threshold
     }
 
     /// One row of the live preview in Settings (R8): accounts in R7 order with 「距門檻」.
     public struct PreviewRow: Sendable, Equatable {
         public var accountNumber: Int
         public var isActive: Bool
-        /// The lower of the two windows (`nil` when neither is known).
+        /// The lower of the two windows (`nil` when neither is known; 1w on a plan without 5h).
         public var lowerWindow: QuotaWindowKind?
         public var lowerRemainingPercent: Double?
         /// `lowerRemainingPercent − threshold`.
@@ -129,7 +135,7 @@ public enum AutoSwitchPolicy {
         let next = nextTarget(accounts: accounts, threshold: threshold, now: now)?.number
         return AccountOrdering.sorted(accounts, now: now).map { a in
             let windows: [(QuotaWindowKind, Double)] = [
-                a.fiveHour.map { (.fiveHour, $0.status(at: now).remainingPercent) },
+                a.fiveHourAbsent ? nil : a.fiveHour.map { (.fiveHour, $0.status(at: now).remainingPercent) },
                 a.weekly.map { (.weekly, $0.status(at: now).remainingPercent) },
             ].compactMap { $0 }
             let lower = windows.min { $0.1 < $1.1 }

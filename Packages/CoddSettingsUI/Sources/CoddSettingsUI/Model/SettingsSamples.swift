@@ -77,15 +77,16 @@ public enum SettingsSamples {
         SettingsCondenseAccount(id: "3", title: "#3 工作"),
     ]
 
-    /// R7 order: soonest weekly reset first; `#3` is the active one.
+    /// R7 order: soonest weekly reset first; `#3` is the active one. The Ultra accounts #2 and #1
+    /// have no 5h window (#2's Fable window takes its column), #3 is a Max account.
     public static let accounts: [SettingsAccountRow] = [
-        SettingsAccountRow(id: "2", slot: "#2", alias: "藍鵲", plan: "MAX 20x", fiveHour: SettingsQuota(remaining: 98),
-                           weekly: SettingsQuota(remaining: 46), resetIn: "1d12h後", resetAt: "10/16 週五 22:59",
-                           sessions: "1 session 固定 · cswap run"),
-        SettingsAccountRow(id: "3", slot: "#3", alias: "工作", plan: "MAX 20x", fiveHour: SettingsQuota(remaining: 91),
+        SettingsAccountRow(id: "2", slot: "#2", alias: "藍鵲", plan: "ULTRA", fiveHour: nil,
+                           weekly: SettingsQuota(remaining: 46), scoped: [SettingsScopedQuota(name: "Fable", quota: SettingsQuota(remaining: 72))],
+                           resetIn: "1d12h後", resetAt: "10/16 週五 22:59", sessions: "1 session 固定 · cswap run"),
+        SettingsAccountRow(id: "3", slot: "#3", alias: "工作", plan: "MAX", fiveHour: SettingsQuota(remaining: 91),
                            weekly: SettingsQuota(remaining: 15), resetIn: "3d01h後", resetAt: "10/18 週日 12:00",
                            sessions: "12 session", isActive: true),
-        SettingsAccountRow(id: "1", slot: "#1", alias: "個人", plan: "MAX 20x", fiveHour: SettingsQuota(remaining: 100, tone: .muted, text: "未開始"),
+        SettingsAccountRow(id: "1", slot: "#1", alias: "個人", plan: "ULTRA", fiveHour: nil,
                            weekly: SettingsQuota(remaining: 100), resetIn: "4d09h後", resetAt: "10/19 週一 20:00", sessions: "0 session"),
     ]
 

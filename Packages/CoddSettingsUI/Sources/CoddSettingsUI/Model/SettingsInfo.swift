@@ -301,6 +301,27 @@ public struct SettingsQuota: Equatable, Sendable {
     }
 }
 
+/// A per-model weekly window of an account (`Fable`, cswap only).
+public struct SettingsScopedQuota: Equatable, Sendable {
+    /// `Fable`.
+    public var name: String
+    public var quota: SettingsQuota
+
+    public init(name: String, quota: SettingsQuota) {
+        self.name = name
+        self.quota = quota
+    }
+
+    /// The 5h column of an account: `5h`; on a plan without a 5-hour limit (Ultra) the first
+    /// per-model weekly window (`Fable`, never ticked: auto-switch does not read it); nil when
+    /// there is neither and 1w takes both columns.
+    static func fiveHourColumn(_ fiveHour: SettingsQuota?, _ scoped: [SettingsScopedQuota])
+        -> (key: String, quota: SettingsQuota, isFiveHour: Bool)? {
+        if let fiveHour { return ("5h", fiveHour, true) }
+        return scoped.first.map { ($0.name, $0.quota, false) }
+    }
+}
+
 /// ACCOUNTS › 帳號別名: one cswap account (R7 order is the array order).
 public struct SettingsAccountRow: Equatable, Sendable, Identifiable {
     /// The cswap number as a string (`"3"`): what `SettingsActions.setAlias` receives.
@@ -309,10 +330,13 @@ public struct SettingsAccountRow: Equatable, Sendable, Identifiable {
     public var slot: String
     /// cswap's alias as it is (CJK aliases already in `sequence.json` included).
     public var alias: String
-    /// `MAX 20x` (D25); nil = no chip.
+    /// `ULTRA`, `MAX` (D25); nil = no chip.
     public var plan: String?
-    public var fiveHour: SettingsQuota
+    /// nil: the plan has no 5-hour window (Ultra); auto-switch then judges 1w only.
+    public var fiveHour: SettingsQuota?
     public var weekly: SettingsQuota
+    /// Per-model weekly windows; the first takes the 5h column on a plan without 5h.
+    public var scoped: [SettingsScopedQuota]
     /// `3d01h後` (the 1w reset countdown, the sort key).
     public var resetIn: String
     /// `10/18 週日 12:00`.
@@ -325,15 +349,16 @@ public struct SettingsAccountRow: Equatable, Sendable, Identifiable {
     /// Auto-switch may pick it (not disabled, no relogin needed).
     public var isEligibleTarget: Bool
 
-    public init(id: String, slot: String, alias: String, plan: String? = nil, fiveHour: SettingsQuota, weekly: SettingsQuota,
-                resetIn: String = "", resetAt: String = "", sessions: String = "", isActive: Bool = false, canEditAlias: Bool = true,
-                isEligibleTarget: Bool = true) {
+    public init(id: String, slot: String, alias: String, plan: String? = nil, fiveHour: SettingsQuota?, weekly: SettingsQuota,
+                scoped: [SettingsScopedQuota] = [], resetIn: String = "", resetAt: String = "", sessions: String = "",
+                isActive: Bool = false, canEditAlias: Bool = true, isEligibleTarget: Bool = true) {
         self.id = id
         self.slot = slot
         self.alias = alias
         self.plan = plan
         self.fiveHour = fiveHour
         self.weekly = weekly
+        self.scoped = scoped
         self.resetIn = resetIn
         self.resetAt = resetAt
         self.sessions = sessions
@@ -350,21 +375,24 @@ public struct SettingsPreviewRow: Equatable, Sendable, Identifiable {
     public var alias: String
     /// `3d01h後`.
     public var resetIn: String
-    /// `1w 15% · 距切換 13%`, `5h 未開始 · 距切換 98%`, `1w 2% · 已達門檻`, `未檢查任何視窗`.
+    /// `1w 15% · 距切換 13%`, `5h 未開始 · 距切換 98%`, `1w 2% · 已達門檻`, `未檢查任何視窗` (also a
+    /// plan without 5h while only 5h is checked).
     public var distance: String
     /// nil = bone, `.warn` amber (≤ 15 points), `.crit` danger (reached).
     public var distanceTone: Tone?
     public var isActive: Bool
     public var isNext: Bool
-    public var fiveHour: SettingsQuota
+    /// nil: the plan has no 5-hour window (the 5h place shows `scoped`'s first, or 1w alone).
+    public var fiveHour: SettingsQuota?
     public var weekly: SettingsQuota
+    public var scoped: [SettingsScopedQuota]
     /// Threshold ticks on the bars (the window is checked).
     public var tickFiveHour: Bool
     public var tickWeekly: Bool
 
     public init(id: String, slot: String, alias: String, resetIn: String, distance: String, distanceTone: Tone? = nil,
-                isActive: Bool = false, isNext: Bool = false, fiveHour: SettingsQuota, weekly: SettingsQuota,
-                tickFiveHour: Bool = true, tickWeekly: Bool = true) {
+                isActive: Bool = false, isNext: Bool = false, fiveHour: SettingsQuota?, weekly: SettingsQuota,
+                scoped: [SettingsScopedQuota] = [], tickFiveHour: Bool = true, tickWeekly: Bool = true) {
         self.id = id
         self.slot = slot
         self.alias = alias
@@ -375,6 +403,7 @@ public struct SettingsPreviewRow: Equatable, Sendable, Identifiable {
         self.isNext = isNext
         self.fiveHour = fiveHour
         self.weekly = weekly
+        self.scoped = scoped
         self.tickFiveHour = tickFiveHour
         self.tickWeekly = tickWeekly
     }

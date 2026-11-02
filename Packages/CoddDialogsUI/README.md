@@ -7,7 +7,7 @@ models with closures, plus a presenter. Depends only on CoddUI.
 |---|---|---|
 | A 切換帳號 | `SwitchAccountDialogView` (640 pt) | from / to mini cards, consequences, `同時暫停自動切換`, the D5 lock progress `◌ 等待 Claude Code credential lock… 9s（1/3）`, the redacted error line |
 | B Hook 差異 | `HookDiffDialogView` (640 pt) | summary, event chips, `+n` / `−n`, the diff (`DiffLinesView`, foreign handlers elided), foreign tools kept, backup path, `[套用並備份]` (or `還原` for a restore) |
-| C 加入帳號 | `AddAccountDialogView` (560 pt) | three steps, detect box (`偵測到 新帳號 · MAX 20x` / `已是 #2 藍鵲`), alias checked with cswap's rule (`DialogAliasRule`, D34), slot select, the D33 intro line |
+| C 加入帳號 | `AddAccountDialogView` (560 pt) | three steps, detect box (`偵測到 新帳號 · ULTRA` / `已是 #2 藍鵲`), alias checked with cswap's rule (`DialogAliasRule`, D34), slot select, the D33 intro line |
 | D 結束 | `QuitDialogView` (560 pt) | summary, NEEDS YOU rows, four stacked choices incl. D18's `結束 · session 繼續執行`, `下次直接保留在選單列` |
 
 M4 (I2b) additions, both additive: `HookDiffModel` takes `dialogTitle`, `footerNote` and

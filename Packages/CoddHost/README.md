@@ -1,6 +1,6 @@
 # CoddHost
 
-Host metrics for the STATUS page HOST cards and the footer host line (`cpu 23% · mem 21/36G · bat 86%`), M3 D26 / D36. Darwin, Foundation and IOKit only. There is no AppKit and no CoddCore.
+Host metrics for the STATUS page HOST cards and the footer host meters (CPU / MEM / BAT; as text `cpu 23% · mem 21/36G · bat 86%`), M3 D26 / D36. Darwin, Foundation and IOKit only. There is no AppKit and no CoddCore.
 
 | Part | Role |
 |---|---|

@@ -99,7 +99,8 @@ extension AppDelegate {
         }
     }
 
-    /// `#1 個人 5h 未開始 · 1w 剩 100% · 不佔用 #3 工作的額度`.
+    /// `#1 個人 5h 未開始 · 1w 剩 100% · 不佔用 #3 工作的額度`; on a plan without 5h its per-model
+    /// weekly window takes the 5h place (`#2 藍鵲 Fable 剩 72% · 1w 剩 46% · …`), or 1w stands alone.
     func condenseAccountHint(_ id: String) -> String {
         let active = accountStore.activeAccountID.flatMap { accountStore.account($0) }
         let account = id == "follow" ? active : accountStore.account(id)
@@ -108,7 +109,8 @@ extension AppDelegate {
             guard window.known else { return "—" }
             return window.started ? "剩 \(window.remainingPercent)%" : "未開始"
         }
-        var text = "\(account.displayName) 5h \(quota(account.fiveHour)) · 1w \(quota(account.week))"
+        let first = account.fiveHourSlot.map { "\($0.key) \(quota($0.quota)) · " } ?? ""
+        var text = "\(account.displayName) \(first)1w \(quota(account.week))"
         if id != "follow", let active, active.id != account.id { text += " · 不佔用 \(active.displayName) 的額度" }
         return text
     }

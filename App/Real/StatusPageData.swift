@@ -376,7 +376,9 @@ enum StatusPageData {
         case .reloginRequired: .reloginRequired
         }
         let source: StatusText = vm.sourceAt.map { StatusText.ago($0, prefix: "\(vm.source.isEmpty ? "—" : vm.source) · ") } ?? "尚無用量"
-        var rows = [fiveHourRow(vm.fiveHour, now: now, calendar: calendar), weeklyRow(vm.week, now: now, calendar: calendar)]
+        // A plan without 5h (Ultra) has no 5h row: 1w, then the per-model windows.
+        var rows = vm.fiveHour.map { [fiveHourRow($0, now: now, calendar: calendar)] } ?? []
+        rows.append(weeklyRow(vm.week, now: now, calendar: calendar))
         for name in scopedNames {
             rows.append(scopedRow(name: name, vm: vm, now: now, calendar: calendar))
         }

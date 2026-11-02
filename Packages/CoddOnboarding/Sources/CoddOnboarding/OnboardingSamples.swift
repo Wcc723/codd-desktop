@@ -160,11 +160,12 @@ public enum OnboardingSamples {
 
     /// R7 order (weekly reset soonest first), SPEC §5 aliases.
     public static let accountRows: [AccountsStepModel.Row] = [
-        AccountsStepModel.Row(slot: "#2", alias: "藍鵲", plan: "MAX 20x", fiveHourRemaining: 98, weeklyRemaining: 46,
+        // Ultra accounts have no 5h window: #2's per-model weekly window takes its place, #1 has 1w only.
+        AccountsStepModel.Row(slot: "#2", alias: "藍鵲", plan: "ULTRA", fiveHourKey: "Fable", fiveHourRemaining: 72, weeklyRemaining: 46,
                               weeklyReset: "1w 重置 1d12h後", active: false),
-        AccountsStepModel.Row(slot: "#3", alias: "工作", plan: "MAX 20x", fiveHourRemaining: 91, weeklyRemaining: 15,
+        AccountsStepModel.Row(slot: "#3", alias: "工作", plan: "MAX", fiveHourRemaining: 91, weeklyRemaining: 15,
                               weeklyReset: "1w 重置 3d01h後", active: true),
-        AccountsStepModel.Row(slot: "#1", alias: "個人", plan: "MAX 20x", fiveHourRemaining: 100, weeklyRemaining: 100,
+        AccountsStepModel.Row(slot: "#1", alias: "個人", plan: "ULTRA", fiveHourKey: nil, fiveHourRemaining: nil, weeklyRemaining: 100,
                               weeklyReset: "1w 重置 4d09h後", active: false),
     ]
 

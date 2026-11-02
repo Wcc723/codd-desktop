@@ -326,7 +326,7 @@ final class AddAccountFlowTests {
         try fixture.state.setLoginIdentity(email: "new@example.com", organization: "org-4")
         await m3Eventually("step 1") { flow.model.step1Done != nil }
         await flow.capture()
-        #expect(flow.model.detected == DetectedLogin.newAccount(plan: "MAX 5x"))
+        #expect(flow.model.detected == DetectedLogin.newAccount(plan: "MAX"))
 
         // cswap's alias rule first: `工作室` never reaches cswap.
         await flow.add(alias: "工作室", slot: 4)

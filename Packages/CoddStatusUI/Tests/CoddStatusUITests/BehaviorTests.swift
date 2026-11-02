@@ -92,11 +92,11 @@ struct BehaviorTests {
         harness.settle()
         let after = page.visibleTexts
 
-        // Exactly the ticking strings changed (+65 s: ages 3m → 4m, 12s → 1m, 8s → 1m; the 5h countdowns
-        // lose a minute; the weekly ones stay on the same hour).
+        // Exactly the ticking strings changed (+65 s: ages 3m → 4m, 12s → 1m, 8s → 1m; the 5h countdown
+        // loses a minute; the weekly ones stay on the same hour).
         let changed = Set(before).symmetricDifference(Set(after))
         #expect(changed == ["cswap cache · 3m 前", "cswap cache · 4m 前", "statusline · 12s 前", "statusline · 1m 前",
-                            "2h37m後", "2h36m後", "2h57m後", "2h56m後", "8s 前", "1m 前"])
+                            "2h57m後", "2h56m後", "8s 前", "1m 前"])
         #expect(after.contains("statusline · 1m 前"))
         #expect(after.contains("2h56m後"))
         #expect(after.contains("1m 前"))

@@ -3,14 +3,21 @@ import CoddUI
 
 /// What the ⌘N sheet's `.ns-quota` line shows (NewSession artboard): the account the session will
 /// use and its remaining 5h / 1w, so the user sees them before starting (D12 turned the select on).
+/// On a plan without 5h (Ultra) the 5h place shows the per-model weekly window, or nothing.
 struct NewSessionQuota: Equatable {
     /// `#3 工作`.
     var name: String
-    var fiveHour: QuotaWindow
+    /// The 5h place (`AccountVM.fiveHourSlot`).
+    var fiveHour: QuotaSlot?
     var week: QuotaWindow
 
-    /// `#3 工作 5h 91% 1w 15% 剩餘` (dump, accessibility).
-    var text: String { "\(name) 5h \(fiveHour.valueText) 1w \(week.valueText) 剩餘" }
+    /// The windows in drawing order: the 5h place (if any), then 1w.
+    var windows: [(key: String, window: QuotaWindow)] {
+        [fiveHour.map { ($0.key, $0.quota) }, ("1w", week)].compactMap { $0 }
+    }
+
+    /// `#3 工作 5h 91% 1w 15% 剩餘`, `#2 藍鵲 Fable 72% 1w 46% 剩餘` (dump, accessibility).
+    var text: String { ([name] + windows.map { "\($0.key) \($0.window.valueText)" } + ["剩餘"]).joined(separator: " ") }
 
     /// The line for an account option id: `follow` (or none) is the active account, a pin its own.
     /// nil without such an account (no cswap accounts, or the store has not read them yet).
@@ -18,7 +25,7 @@ struct NewSessionQuota: Equatable {
     static func make(option id: String?, accounts: any AccountStore) -> NewSessionQuota? {
         let accountID = id == nil || id == NewSessionAccountOption.followID ? accounts.activeAccountID : id
         guard let accountID, let account = accounts.account(accountID) else { return nil }
-        return NewSessionQuota(name: account.displayName, fiveHour: account.fiveHour, week: account.week)
+        return NewSessionQuota(name: account.displayName, fiveHour: account.fiveHourSlot, week: account.week)
     }
 }
 
@@ -68,7 +75,7 @@ final class NewSessionQuotaLineView: FlippedView {
         let mid = bounds.midY
         var x: CGFloat = 0
         x += Draw.text(TextStyle.mono(10.5, Palette.cyan).string(quota.name), x: x, centerY: mid) + 12
-        for (key, window) in [("5h", quota.fiveHour), ("1w", quota.week)] {
+        for (key, window) in quota.windows {
             x += Draw.text(Self.dim.string(key), x: x, centerY: mid) + 5
             let track = CGRect(x: x, y: floor(mid) - 1, width: Self.meterWidth, height: 2)
             Draw.fill(track, Palette.lineBright)

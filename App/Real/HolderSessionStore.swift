@@ -197,8 +197,10 @@ final class HolderSessionStore: SessionStore {
 
     /// D24: sessions that exist for one task only (dialog C's login shell): never in layout.json.
     @ObservationIgnored var ephemeral: [SessionID: EphemeralShell] = [:]
-    /// D36: `cpu 23% · mem 21/36G · bat 86%` from `HostLineService`; nil until the first sample.
-    var hostLine: String?
+    /// D36: the footer's CPU / MEM / BAT meters from `HostLineService`; nil until the first sample.
+    var hostMeters: HostMeters?
+    /// Their plain text (`cpu 23% · mem 21/36G · bat 86%`, the dump's `hostLine`).
+    var hostLine: String? { hostMeters?.line }
 
     // MARK: M4 I2a (MCP)
 
@@ -304,7 +306,7 @@ final class HolderSessionStore: SessionStore {
         case nil:
             hookStatus = "○ 未啟用"
         }
-        return HostSummary(line: hostLine ?? "CODD · \(Self.abbreviate(root.path))", mcpEndpoint: mcp?.endpoint ?? "—",
+        return HostSummary(line: hostLine ?? "CODD · \(Self.abbreviate(root.path))", meters: hostMeters, mcpEndpoint: mcp?.endpoint ?? "—",
                            mcpClients: mcp?.clientCount ?? 0, mcpRunning: mcp?.running ?? false,
                            hooksInstalled: healthy || status == .starting, hooksHealthy: healthy, cleanupSuggestions: cleanupSuggestions,
                            hookStatus: hookStatus)

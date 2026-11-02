@@ -46,7 +46,7 @@ struct AddAccountDialogTests {
         #expect(texts.contains("設定別名與編號"))
         #expect(view.step1HintText == "登入新帳號會暫時改變全域登入，加入後自動切回 #3 工作", "D24")
         #expect(view.step1TimeText == "已完成 · \(ClockFormat.hourMinute(now.addingTimeInterval(-60)))")
-        #expect(view.detectText == "● 偵測到 新帳號 · MAX 20x")
+        #expect(view.detectText == "● 偵測到 新帳號 · ULTRA")
         #expect(texts.contains("別名 ALIAS") && texts.contains("編號 SLOT"))
         #expect(texts.contains("別名只用來顯示，像 #3 工作、#2 藍鵲；之後可在 設定 › 帳號 修改"))
         #expect(view.aliasField.field.placeholderAttributedString?.string == "例如：studio")
@@ -69,7 +69,7 @@ struct AddAccountDialogTests {
         #expect(view.stepStates == [.done, .current, .pending])
         view.update(DialogSamples.addAccountExisting(now: now))
         #expect(view.stepStates == [.done, .done, .current])
-        #expect(view.detectText == "● 已是 #2 藍鵲（會更新它的登入資料） · MAX 20x")
+        #expect(view.detectText == "● 已是 #2 藍鵲（會更新它的登入資料） · ULTRA")
         // Logged in elsewhere: a capture without step 1 still makes step 3 current.
         var skipped = DialogSamples.addAccountStep1()
         skipped.detected = .newAccount(plan: nil)

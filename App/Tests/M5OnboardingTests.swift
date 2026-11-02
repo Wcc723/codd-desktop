@@ -237,7 +237,7 @@ struct M5OnboardingFactsTests {
     @Test func accountRowsAreAliasesInWeeklyResetOrder() {
         let now = Date()
         func vm(_ id: String, _ alias: String, resetIn hours: Double?, pseudo: Bool = false) -> AccountVM {
-            let account = AccountVM(id: id, slot: pseudo ? "—" : "#\(id)", alias: alias, plan: "MAX 20x",
+            let account = AccountVM(id: id, slot: pseudo ? "—" : "#\(id)", alias: alias, plan: "ULTRA",
                                     fiveHour: QuotaWindow(remainingPercent: 90, resetsAt: nil),
                                     week: QuotaWindow(remainingPercent: 40, resetsAt: hours.map { now.addingTimeInterval($0 * 3600) }),
                                     source: "", sourceAt: nil, sessionCount: 0)

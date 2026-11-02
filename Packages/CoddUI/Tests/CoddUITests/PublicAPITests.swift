@@ -178,8 +178,8 @@ struct PublicAPITests {
     }
 
     @Test func copiedControlsAreConstructible() {
-        let chip = ChipView("MAX 20x", style: .smallChip(Palette.cyan, border: Palette.lineBright))
-        chip.set("MAX 5x")
+        let chip = ChipView("ULTRA", style: .smallChip(Palette.cyan, border: Palette.lineBright))
+        chip.set("MAX")
         _ = ChipView.kbd("⌘K")
         let styles: [CoddButton.Style] = [.bracket(.normal, small: false), .bracket(.primary, small: true), .bracket(.danger, small: false),
                                           .bracket(.accent, small: true), .icon(.plus), .icon(.search, size: 24), .glyph(), .glyph(size: 22),

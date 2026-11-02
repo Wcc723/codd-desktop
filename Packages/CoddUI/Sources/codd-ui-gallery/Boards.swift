@@ -61,9 +61,9 @@ enum GalleryBoards {
         let chips = Specimen.column([
             Specimen.row(ChipKind.allCases.map { Specimen.chip(chipText($0), .chip($0)) }, spacing: 8),
             Specimen.row([Specimen.chip("● 正常", .chip(.ok, caps: true)), Specimen.chip("Active", .chip(.amber, caps: true)),
-                          Specimen.chip("MAX 20x", .chip(caps: true, mini: true)), Specimen.chip("實驗", .chip(.amber, mini: true)),
+                          Specimen.chip("ULTRA", .chip(caps: true, mini: true)), Specimen.chip("實驗", .chip(.amber, mini: true)),
                           Specimen.chip("✓ Active", .chip(.fill, caps: true, mini: true)), Specimen.chip("下一個", .chip(.cyan, mini: true)),
-                          Specimen.chip("5h", .chip(dashed: true)), Specimen.chip("MAX 20x", .chip(weight: .medium)),
+                          Specimen.chip("5h", .chip(dashed: true)), Specimen.chip("ULTRA", .chip(weight: .medium)),
                           Specimen.chip("cswap 0.26.0", .chip(display: true)), Specimen.chip("+ PreCompact", .chip(.ok, height: 22))], spacing: 8),
             Specimen.row([Specimen.chip("~/.claude/settings.json", .code), Specimen.chip("~/.claude-swap-backup", .path),
                           Specimen.chip("M4", .milestone), Specimen.chip("EXT", .ext), Specimen.chip("3", .badge),
@@ -92,7 +92,7 @@ enum GalleryBoards {
 
     private static func chipText(_ kind: ChipKind) -> String {
         switch kind {
-        case .plain: "MAX 20x"
+        case .plain: "ULTRA"
         case .amber: "◆ 1 項需要更新"
         case .ok: "+9"
         case .cyan: "1 個 session 固定"
@@ -365,7 +365,7 @@ enum GalleryBoards {
         card.attributedTitle = title
         let action = CoddButton(button, style: .bracket(hot ? .normal : .accent, small: true))
         action.isEnabled = !hot
-        card.setHeader(leading: [ChipView("MAX 20x", style: .chip(hot ? .amber : .plain, weight: .medium))], trailing: [action])
+        card.setHeader(leading: [ChipView("ULTRA", style: .chip(hot ? .amber : .plain, weight: .medium))], trailing: [action])
         card.headerSpacing = 4 + 7
         var views: [NSView] = [hStack([Label.make("● ok", style: TextStyle.mono(11, Palette.success)),
                                        Label.make("·", style: TextStyle.mono(11, Palette.dimmer)),
@@ -528,7 +528,7 @@ enum GalleryBoards {
         let head = hStack([Label.make(label, style: TextStyle.fieldLabel), spacer(),
                            ChipView(to ? "1 個 session 固定" : "Active", style: to ? .chip(.cyan) : .chip(.amber, caps: true))], spacing: 8)
         let name = hStack([Label.make(slot, style: TextStyle(font: Typeface.display(14), color: to ? Palette.cyan : Palette.amber)),
-                           Label.make(alias, style: TextStyle.mono(14, Palette.cream)), spacer(), ChipView("MAX 20x", style: .chip())], spacing: 8)
+                           Label.make(alias, style: TextStyle.mono(14, Palette.cream)), spacer(), ChipView("ULTRA", style: .chip())], spacing: 8)
         var views: [NSView] = [head, name]
         views += rows.map { QuotaBarRowView(QuotaBarRow(key: $0.0, remainingPercent: $0.1)) }
         let stack = columnStack(views, spacing: 6, edgeInsets: NSEdgeInsets(top: 11, left: 13, bottom: 11, right: 13))

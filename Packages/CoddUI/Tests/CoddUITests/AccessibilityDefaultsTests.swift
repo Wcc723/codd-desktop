@@ -116,12 +116,12 @@ struct AccessibilityDefaultsTests {
     }
 
     @Test func staticPrimitivesReadWhatTheyShow() {
-        let chip = ChipView("MAX 20x", style: .chip())
+        let chip = ChipView("ULTRA", style: .chip())
         #expect(chip.isAccessibilityElement())
         #expect(chip.accessibilityRole() == .staticText)
-        #expect(chip.accessibilityLabel() == "MAX 20x")
-        chip.set("MAX 5x")
-        #expect(chip.accessibilityLabel() == "MAX 5x")
+        #expect(chip.accessibilityLabel() == "ULTRA")
+        chip.set("MAX")
+        #expect(chip.accessibilityLabel() == "MAX")
         // A caller's label survives later text changes (Settings' cswap version chip).
         chip.setAccessibilityLabel("cswap 0.26.0")
         chip.set("0.27.0")

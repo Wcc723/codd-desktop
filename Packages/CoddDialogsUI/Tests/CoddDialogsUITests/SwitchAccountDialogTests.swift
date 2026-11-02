@@ -30,7 +30,11 @@ struct SwitchAccountDialogTests {
         #expect(to.account.chips == [DialogChip("1 個 session 固定", kind: .cyan)])
         #expect(from.fiveHourRow.row.valueText == "91%" && from.weeklyRow.row.valueText == "15%")
         #expect(from.fiveHourRow.row.tone == .ok && from.weeklyRow.row.tone == .crit)
-        #expect(to.fiveHourRow.row.valueText == "98%" && to.weeklyRow.row.valueText == "46%" && to.weeklyRow.row.tone == .warn)
+        // #2 is an Ultra account: no 5h row, its Fable window in that place.
+        #expect(to.fiveHourRow.row.key == "Fable" && to.fiveHourRow.row.valueText == "72%" && !to.fiveHourRow.isHidden)
+        #expect(to.weeklyRow.row.valueText == "46%" && to.weeklyRow.row.tone == .warn)
+        #expect(from.fiveHourRow.row.key == "5h" && from.accessibilityLabel() == "From · 剩餘 #3 工作 5h 91% 1w 15%")
+        #expect(to.accessibilityLabel() == "To · 剩餘 #2 藍鵲 Fable 72% 1w 46%")
         #expect(from.resetLine == "1w 重置 10/18 12:00 · 3d01h後")
         #expect(from.sourceLine == "statusline · 12s 前")
         #expect(to.resetLine == "1w 重置 10/16 22:59")
@@ -47,6 +51,19 @@ struct SwitchAccountDialogTests {
         #expect(view.allButtonLabels().suffix(2) == ["取消", "切換"])
         #expect(view.progressText == nil && view.errorText == nil)
         #expect(view.confirmButton.isEnabled)
+    }
+
+    /// A plan without 5h and without a per-model window: no 5h row, 1w and the lines move up.
+    @Test func aCardWithoutTheFiveHourPlaceClosesUp() {
+        var model = DialogSamples.switchAccount(now: now)
+        model.to.fiveHourKey = nil
+        let harness = make(model)
+        defer { harness.tearDown() }
+        let (from, to) = harness.view.cards
+        #expect(to.fiveHourRow.isHidden && !from.fiveHourRow.isHidden)
+        #expect(to.weeklyRow.frame.minY == from.fiveHourRow.frame.minY)
+        #expect(to.accessibilityLabel() == "To · 剩餘 #2 藍鵲 1w 46%")
+        #expect(!(to.accessibilityLabel() ?? "").contains("5h"))
     }
 
     @Test func autoSwitchOnAndNoPinnedSessions() {

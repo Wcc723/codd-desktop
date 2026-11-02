@@ -54,7 +54,7 @@ struct RenderTests {
         let cases: [(String, NSView, NSSize?, CGFloat?)] = [
             ("bracket", CoddButton("取消", style: .bracket(.normal, small: false)), nil, nil),
             ("primary", CoddButton("切換", style: .bracket(.primary, small: true)), nil, nil),
-            ("chip", ChipView("MAX 20x", style: .chip()), nil, nil),
+            ("chip", ChipView("ULTRA", style: .chip()), nil, nil),
             ("switch", SwitchToggle(label: "x"), NSSize(width: 30, height: 16), nil),
             ("segmented", SegmentedSwitch(titles: ["Off", "Subtle"]), nil, nil),
             ("select", SelectButton(titles: ["13 px（預設）"], accessibilityLabel: "UI 字級"), NSSize(width: 160, height: 30), nil),

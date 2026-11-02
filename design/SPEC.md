@@ -565,3 +565,13 @@ R8 · AUTO-SWITCH on low remaining (「剩餘倒數 % 數自動切換」), OFF b
   `CODD` (same font, color and glow; the shorter word simply takes less room). The About hero reads `CODD` + `Desktop`.
   Internal identifiers (bundle id `app.fancycodd.CODD`, queue labels, pasteboard types) are unchanged for now; a bundle id
   change is decided with release packaging (M5).
+
+## 11. REVISION (user request, 2026-11-02) — overrides R2 and earlier sections where they conflict
+- Plans: Max 20x is now Ultra (verified accounts have no 5-hour limit), Max 5x is now Max. Plan chips read `ULTRA` / `MAX`.
+  An account shows 5h only while its data has a 5h window. Without one, the 5h place shows its first per-model weekly window
+  by name (`Fable`), or 1w alone; the reset line shows the 1w reset. Auto-switch judges such an account on 1w only.
+- Sidebar footer toggle (「常常找不到關閉按鈕」): a bordered box at rest, amber on hover and press; open, it ends in an amber
+  `收合 ⌃`. The open account list scrolls inside the footer, so the toggle never leaves the window.
+- Host line (「加單列的 bar 條以及依據負載上色」): one row of meters `CPU ▬ 23%  MEM ▬ 59%  BAT ▬ 86%` in the quota colours.
+  CPU amber from 60 %, red from 85 %; MEM by macOS memory pressure (as STATUS); BAT amber at 40 % or less, red at 20 % or
+  less, green on AC power. The menu bar footer uses the same row.

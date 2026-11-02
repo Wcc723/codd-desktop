@@ -360,9 +360,12 @@ struct M3ReviewRebuildTests {
         let follow = try #require(NewSessionQuota.make(option: NewSessionAccountOption.followID, accounts: accounts))
         let active = try #require(accounts.activeAccount)
         #expect(follow.name == active.displayName)
-        #expect(follow.text == "\(active.displayName) 5h \(active.fiveHour.valueText) 1w \(active.week.valueText) 剩餘")
+        #expect(follow.text == "\(active.displayName) 5h \(active.fiveHour?.valueText ?? "") 1w \(active.week.valueText) 剩餘")
         let other = try #require(accounts.accounts.first { $0.id != active.id })
         #expect(NewSessionQuota.make(option: other.id, accounts: accounts)?.name == other.displayName)
+        // The Ultra accounts: no 5h, their Fable window in its place or 1w alone.
+        #expect(NewSessionQuota.make(option: "2", accounts: accounts)?.text == "#2 藍鵲 Fable 72% 1w 46% 剩餘")
+        #expect(NewSessionQuota.make(option: "1", accounts: accounts)?.text == "#1 個人 1w 100% 剩餘")
         #expect(NewSessionQuota.make(option: "nope", accounts: accounts) == nil)
         let line = NewSessionQuotaLineView()
         #expect(line.isHidden)

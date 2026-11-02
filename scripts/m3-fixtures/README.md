@@ -149,7 +149,7 @@ scripts/m3-fixtures/make-cswap-state.sh <cswapRoot> <claudeDir> [--now <iso>] [-
   itself only accepts `^[a-z0-9_.-]+$` (D34). Reading them is fine.
 - **#4 and the fake login.** #4 is also the identity `fake-claude-m3.sh` logs in as with
   `FAKE_LOGIN_AS=4`.
-- **Expected CODD results.** R7 order `#2 #3 #1`; plan chip `MAX 20x` (#4: `MAX 5x`).
+- **Expected CODD results.** R7 order `#2 #3 #1`; plan chip `ULTRA` (tier `max_20x`; #4: `MAX`, tier `max_5x`).
 
 ### Usage rows (`cache/usage.json` `lastGood`, offsets from now)
 
